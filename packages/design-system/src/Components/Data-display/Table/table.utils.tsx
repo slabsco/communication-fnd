@@ -24,10 +24,7 @@ import {
 import { Button } from '../../Inputs/Button/button.component';
 import { CheckBox } from '../../Inputs/CheckBox/checkBox.component';
 import { IconButton } from '../../Inputs/Icon-Button/iconButton.component';
-import {
-    RadioGroup,
-    RadioGroupItem,
-} from '../../Inputs/RadioGroup/radioGroup.component';
+import { RadioGroupItem } from '../../Inputs/RadioGroup/radioGroup.component';
 import {
     Menubar,
     MenubarContent,
@@ -147,12 +144,9 @@ export const handleTableItemDisplay = (
             if (isArcPortal)
                 return (
                     <p
-                        className={cn(
-                            'text-polaris-text-success font-medium ',
-                            {
-                                'text-polaris-text-critical': !data,
-                            }
-                        )}
+                        className={cn('font-medium text-polaris-text-success', {
+                            'text-polaris-text-critical': !data,
+                        })}
                     >
                         {data ? 'Active' : 'Inactive'}
                     </p>
@@ -184,7 +178,7 @@ export const handleTableItemDisplay = (
             if (isArcPortal)
                 return (
                     <p
-                        className={cn('text-polaris-text-success font-medium', {
+                        className={cn('font-medium text-polaris-text-success', {
                             'text-polaris-text-critical': !data,
                         })}
                     >
@@ -305,7 +299,7 @@ export const handleTableColumn = (
                         });
                     }}
                 >
-                    <div className={cn('flex items-center gap-2')}>
+                    <div className={cn('flex gap-2 items-center')}>
                         {col.name}
                         {!isSorted && (
                             <ArrowDownUp
@@ -333,9 +327,9 @@ export const handleTableColumn = (
         return (
             <Typography
                 variant='span'
-                noStyle
                 color='white'
-                className='centralize'
+                className='uppercase centralize'
+                weight='medium'
             >
                 {col.name}
             </Typography>
@@ -402,10 +396,7 @@ export const handleSeletedColumnHeader = (
     if (rowNumbering) {
         return (
             <TableCell
-                className={cn(
-                    'border-l-0 border-y border-base-300 ',
-                    className
-                )}
+                className={cn('border-l-0 border-y border-base-300', className)}
             >
                 <Typography
                     color='white'
@@ -478,7 +469,7 @@ export const handleSeletedColumnRow = ({
 
         return (
             <TableCell className='flex justify-center w-0 !align-top'>
-                <div className='flex justify-center gap-2'>
+                <div className='flex gap-2 justify-center'>
                     <IconButton
                         size='xs'
                         appearance='secondary'
@@ -580,7 +571,7 @@ export const SelectableMenu = ({
                             <>
                                 <MenubarSeparator />
                                 <MenubarItem
-                                    className='flex gap-2 text-error item focus:bg-error '
+                                    className='flex gap-2 text-error item focus:bg-error'
                                     onClick={() => onClickToClear(col)}
                                 >
                                     <XCircle size={14} />

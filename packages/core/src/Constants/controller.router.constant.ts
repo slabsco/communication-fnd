@@ -9,6 +9,7 @@ import { SourceMapController } from '../backend/common/controllers/source.map.co
 import TallyGroupController from '../backend/common/controllers/tally.group.controller';
 import UserNotificationController from '../backend/common/controllers/user.notification.controller';
 import { CommunicationTemplateController } from '../backend/communication/controller/commuinication.templates.controller';
+import { ContactController } from '../backend/communication/controller/contact.controller';
 import { ScheduleBroadcastController } from '../backend/communication/controller/schedule.broadcast.controller';
 import { MetaVendorOwnershipTransferController } from '../backend/meta/controllers/meta.vendor.ownership.transfer.controller';
 import { SlabsController } from '../backend/meta/controllers/slabs.controller';
@@ -60,6 +61,7 @@ export const LISTING_CONTROLLER_ROUTER = {
     listing_preference: ListingPreferenceController,
     communication_template: CommunicationTemplateController,
     schedule_broadcast: ScheduleBroadcastController,
+    contact: ContactController,
 } as const;
 
 export const SPOTLIGHT_QUERY_CONTROLLER_ROUTE = {
