@@ -1,5 +1,3 @@
-'use client';
+import MainDashboard from '../src/Modules/dashboards/main.dashboard';
 
-export default function Page() {
-    return <div>Dashboard</div>;
-}
+export default MainDashboard;
