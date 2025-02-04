@@ -55,12 +55,12 @@ const ArcHeader = () => {
     const checkAvailableProduct = isProductAvailable && products?.length > 1;
 
     return (
-        <nav className='sticky top-0 justify-between py-4 pl-0 pr-8 navbar bg-polaris-bg-inverse text-polaris-text-inverse'>
+        <nav className='sticky top-0 justify-between py-4 pr-8 pl-0 navbar bg-polaris-bg-inverse text-polaris-text-inverse'>
             <SidebarBanner className='w-[var(--sidebar-expand-width)] pl-4' />
-            <div className='flex justify-between flex-1'>
-                <div className='flex justify-center flex-1'>
+            <div className='flex flex-1 justify-between'>
+                <div className='flex flex-1 justify-center'>
                     <InputField
-                        className='rounded-lg bg-polaris-bg-surface-inverse hover:bg-polaris-bg-surface-hover text-polaris-text-inverse '
+                        className='rounded-lg bg-polaris-bg-surface-inverse hover:bg-polaris-bg-surface-hover text-polaris-text-inverse'
                         inputClassName='bg-polaris-bg-fill-inverse header-search text-polaris-text-inverse'
                         addonStart={
                             <Icon
@@ -70,7 +70,7 @@ const ArcHeader = () => {
                             />
                         }
                         addonEnd={
-                            <span className='text-xs bg-transparent border-0 text-base-tertiary whitespace-nowrap'>
+                            <span className='text-xs whitespace-nowrap bg-transparent border-0 text-base-tertiary'>
                                 {osType === 'mac' ? '⌘' : 'Ctrl'} + K
                             </span>
                         }
@@ -80,8 +80,8 @@ const ArcHeader = () => {
                         size='sm'
                     />
                 </div>
-                <div className='items-center gap-4 row-flex'>
-                    <HeaderNotification />
+                <div className='gap-4 items-center row-flex'>
+                    {/* <HeaderNotification /> */}
                     {checkAvailableProduct && !isArc ? (
                         <Popover
                             element={<ProductSwitchSelector />}
