@@ -2,19 +2,18 @@ import { useMemo, useRef, useState } from 'react';
 
 import {
     ARC_HOME_ROUTE,
-    Debounce,
     GenericListingType,
     IsEmptyArray,
     useFetchParams,
 } from '@finnoto/core';
 import {
+    AccessNestedObject,
     ArcBreadcrumbs,
     ArcPagination,
     cn,
     Container,
     IndexFilter,
     IsFunction,
-    Loading,
     NoDataFound,
     PageLoader,
     sanitizeFilterData,
@@ -115,12 +114,16 @@ const ArcGenericSplitDetail = (props: ArcGenericSplitDetailProps) => {
 
     const newBreadCrumbData = useMemo(() => {
         return (customBreadCrumbData || breadcrumbData.route)?.concat({
-            name: `${details?.name ?? details?.[breadcrumbKey] ?? ' '}`,
+            name: `${
+                details?.name ??
+                AccessNestedObject(details, breadcrumbKey) ??
+                ' '
+            }`,
         });
     }, [breadcrumbData.route, breadcrumbKey, customBreadCrumbData, details]);
     return (
         <Container
-            className={cn('px-5 overflow-hidden col-flex h-content-screen')}
+            className={cn('overflow-hidden px-5 col-flex h-content-screen')}
         >
             <ArcBreadcrumbs
                 mainClassName='rounded py-4 rounded-none pb-2'
@@ -132,7 +135,7 @@ const ArcGenericSplitDetail = (props: ArcGenericSplitDetailProps) => {
             />
             <div
                 className={cn(
-                    'justify-between flex-1 gap-2 py-4 pt-0 overflow-y-auto col-flex',
+                    'overflow-y-auto flex-1 gap-2 justify-between py-4 pt-0 col-flex',
                     splitContainerClassName
                 )}
             >
@@ -140,19 +143,19 @@ const ArcGenericSplitDetail = (props: ArcGenericSplitDetailProps) => {
                     renderTopBar()
                 ) : (
                     <IndexFilter
-                        className='border rounded-lg'
+                        className='rounded-lg border'
                         filters={filters}
                         filterTabs={tabs}
                         definitionKey={definitionKey}
                         tabFilterQueryKey={tabFilterKey}
                         defaultActiveTab={defaultActiveTab}
                         rightTabContent={
-                            <div className='flex items-center gap-2'>
+                            <div className='flex gap-2 items-center'>
                                 {renderRightFilterComponent}
                                 {renderRightActionComponent}
                                 {!IsEmptyArray(actions) && (
                                     <div className='col-flex'>
-                                        <div className='flex-wrap justify-end gap-2 row-flex'>
+                                        <div className='flex-wrap gap-2 justify-end row-flex'>
                                             {renderListingActionButton(actions)}
                                         </div>
                                     </div>
@@ -222,13 +225,13 @@ const ArcGenericSplitDetail = (props: ArcGenericSplitDetailProps) => {
                             return (
                                 <div
                                     className={cn(
-                                        'flex-1 overflow-hidden col-flex',
+                                        'overflow-hidden flex-1 col-flex',
                                         listContainerClassName
                                     )}
                                 >
                                     <div
                                         className={cn(
-                                            'flex-1 overflow-y-auto scrollbar-none px-2 py-2 space-y-2 ',
+                                            'overflow-y-auto flex-1 px-2 py-2 space-y-2 scrollbar-none',
                                             listWrapperClassName
                                         )}
                                         ref={
