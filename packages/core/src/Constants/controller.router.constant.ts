@@ -11,6 +11,7 @@ import UserNotificationController from '../backend/common/controllers/user.notif
 import { CommunicationTemplateController } from '../backend/communication/controller/commuinication.templates.controller';
 import { ContactController } from '../backend/communication/controller/contact.controller';
 import { ScheduleBroadcastController } from '../backend/communication/controller/schedule.broadcast.controller';
+import { TeamInboxController } from '../backend/communication/controller/team.inbox.controller';
 import { MetaVendorOwnershipTransferController } from '../backend/meta/controllers/meta.vendor.ownership.transfer.controller';
 import { SlabsController } from '../backend/meta/controllers/slabs.controller';
 import { UpiPaymentController } from '../backend/payment/accounts/controllers/upi.payment.controller';
@@ -62,6 +63,7 @@ export const LISTING_CONTROLLER_ROUTER = {
     communication_template: CommunicationTemplateController,
     schedule_broadcast: ScheduleBroadcastController,
     contact: ContactController,
+    teamInbox: TeamInboxController,
 } as const;
 
 export const SPOTLIGHT_QUERY_CONTROLLER_ROUTE = {
