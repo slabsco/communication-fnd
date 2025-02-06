@@ -36,6 +36,8 @@ const ScheduleBroadcastForm = ({ initialData }: any) => {
             type: 'date_time_separate',
             label: 'Schedule At',
             required: true,
+            message:
+                'Setting a date/time in the past will send the messages immediately',
         },
         template_id: {
             type: 'reference_select',
@@ -127,7 +129,7 @@ const ScheduleBroadcastForm = ({ initialData }: any) => {
                 <FormBuilder
                     initValues={{
                         name: initialData?.name,
-                        scheduled_at: initialData?.scheduled_at,
+                        scheduled_at: initialData?.scheduled_at || new Date(),
                         template_id: initialData?.template_id,
                         description: initialData?.description,
                     }}
