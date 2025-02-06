@@ -44,9 +44,9 @@ export default function YourTemplateCreationModule() {
                     ]}
                 />
                 <div className='flex gap-4 justify-end items-center'>
-                    <Button appearance='secondary' outline>
+                    {/* <Button appearance='secondary' outline>
                         Save as Draft
-                    </Button>
+                    </Button> */}
                     <Button
                         key={ref?.current}
                         disabled={isDisabled}
