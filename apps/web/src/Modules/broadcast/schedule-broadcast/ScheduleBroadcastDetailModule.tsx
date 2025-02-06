@@ -10,12 +10,21 @@ import {
     useFetchParams,
     WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
-import { Breadcrumbs, Button, Container } from '@finnoto/design-system';
+import {
+    Badge,
+    Breadcrumbs,
+    Button,
+    Container,
+    Icon,
+    Tooltip,
+} from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { openTemplateViewer } from '../your-templates/components/TemplateViewer.component';
 import { useScheduleBroadCastDetail } from './hooks/useScheduleBroadcastDetail.hook';
 import { openScheduleBroadcast } from './ScheduleBroadcastTemplateListModule';
+
+import { ErrorSvgIcon, InfoCircleSvgIcon } from 'assets';
 
 const ScheduleBroadcastDetailModule = () => {
     const { id } = useFetchParams();
@@ -47,7 +56,31 @@ const ScheduleBroadcastDetailModule = () => {
         {
             name: 'Success',
             key: 'is_error',
-            type: 'boolean',
+            renderValue: (data) => {
+                const isSuccess = !data?.is_error;
+                return (
+                    <div className='flex gap-2 items-center'>
+                        <Badge
+                            label={isSuccess ? 'Success' : 'Error'}
+                            appearance={isSuccess ? 'success' : 'error'}
+                        />
+                        {!isSuccess && (
+                            <Tooltip
+                                asChild
+                                message={data?.response?.error?.message}
+                            >
+                                <div className='cursor-pointer'>
+                                    <Icon
+                                        isSvg
+                                        source={ErrorSvgIcon}
+                                        iconColor='text-error'
+                                    />
+                                </div>
+                            </Tooltip>
+                        )}
+                    </div>
+                );
+            },
         },
     ];
     return (
