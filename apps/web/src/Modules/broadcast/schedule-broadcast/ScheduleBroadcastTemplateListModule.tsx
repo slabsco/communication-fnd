@@ -15,16 +15,16 @@ const ScheduleBroadcastTemplateListModule = () => {
     const props: GenericDocumentListingProps = {
         name: 'Schedule Broadcast',
         type: 'schedule_broadcast',
-        rowActions: [
-            {
-                name: 'Edit',
-                key: 'edit',
-                visible: (row) => IsUndefinedOrNull(row?.initiated_at),
-                action: (row: any) => {
-                    openScheduleBroadcast(row);
-                },
-            },
-        ],
+        // rowActions: [
+        //     {
+        //         name: 'Edit',
+        //         key: 'edit',
+        //         visible: (row) => IsUndefinedOrNull(row?.initiated_at),
+        //         action: (row: any) => {
+        //             openScheduleBroadcast(row);
+        //         },
+        //     },
+        // ],
         table: [
             {
                 name: 'Broadcast Name',
@@ -70,11 +70,11 @@ const ScheduleBroadcastTemplateListModule = () => {
                 key: 'scheduled_at',
                 type: 'date_time',
             },
-            {
-                name: 'Completed At',
-                key: 'completed_at',
-                type: 'date_time',
-            },
+            // {
+            //     name: 'Completed At',
+            //     key: 'completed_at',
+            //     type: 'date_time',
+            // },
         ],
         actions: [
             {
