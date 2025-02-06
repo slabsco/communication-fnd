@@ -1,20 +1,14 @@
 import Joi from 'joi';
-import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useEffectOnce } from 'react-use';
 
 import {
-    FORGOT_PASSWORD_ROUTE,
     formatJoiErrorMessages,
     FormBuilderFormSchema,
     getJoiValidationOptions,
     IsEmptyObject,
     IsFunction,
     IsValidString,
-    LOGIN_ROUTE,
     Navigation,
-    OTP_LENGTH,
-    SIGNUP_ROUTE,
     useFetchParams,
     useLogin,
     useOtpLogin,
@@ -28,12 +22,10 @@ import {
     InputField,
     OTPInput,
     PageLoader,
-    Typography,
 } from '@finnoto/design-system';
 
 import GoogleLoginButton from './Components/googleLoginButton.component';
 import LoginPageFrame, {
-    AuthenticationUIFooter,
     AuthenticationUIWrapper,
 } from './Components/loginPageFrame.component';
 
@@ -80,7 +72,7 @@ const LoginScreen = () => {
 
     return (
         <AuthenticationUIWrapper
-            title='SLAB Communication'
+            title='Dart Inbox'
             subTitle='Enter your credentials to access your account'
             containerClassName='gap-4'
         >

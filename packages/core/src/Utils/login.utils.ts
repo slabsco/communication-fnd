@@ -10,6 +10,7 @@ import {
     REFERRER_STORE,
     VENDOR_CLIENT_ROUTE,
     VENDOR_REGISTER_ROUTE,
+    WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '../Constants';
 import { FetchData } from '../Hooks/useFetchData.hook';
 import { UserBusiness } from '../Models/Business/user.business';
@@ -65,7 +66,7 @@ export const handleLoginNextScreen = async (data: ObjectDto) => {
     );
 
     const pathState = getProductPathState(1);
-    window.location.replace('/');
+    window.location.replace(WHATSAPP_TEMPLATE_LIST_ROUTE);
 
     return businesses?.[0];
 

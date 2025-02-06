@@ -5,7 +5,9 @@ import {
     FormBuilderFormSchema,
     FormBuilderSubmitType,
     IsUndefinedOrNull,
+    Navigation,
     RefetchGenericListing,
+    SCHEDULE_BROADCAST_LIST_ROUTE,
     toastBackendError,
 } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
@@ -115,6 +117,9 @@ const ScheduleBroadcastForm = ({ initialData }: any) => {
 
         if (!success) return toastBackendError(response);
 
+        Navigation.navigate({
+            url: `${SCHEDULE_BROADCAST_LIST_ROUTE}/${response.id}`,
+        });
         RefetchGenericListing();
 
         queryClient.invalidateQueries({
@@ -125,7 +130,7 @@ const ScheduleBroadcastForm = ({ initialData }: any) => {
     };
 
     return (
-        <ModalContainer title={'Schedule Broadcast'}>
+        <ModalContainer title={'Broadcast Message'}>
             <ModalBody className=''>
                 <FormBuilder
                     initValues={{
@@ -136,6 +141,7 @@ const ScheduleBroadcastForm = ({ initialData }: any) => {
                     }}
                     onSubmit={onSubmit}
                     formSchema={schema}
+                    buttonLabel='Send'
                 />
             </ModalBody>
         </ModalContainer>

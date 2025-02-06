@@ -57,7 +57,7 @@ const ScheduleBroadcastTemplateListModule = () => {
                             className='text-info hover:underline'
                             href={col?.csv}
                         >
-                            CSC File
+                            File
                         </Link>
                     );
                 },
