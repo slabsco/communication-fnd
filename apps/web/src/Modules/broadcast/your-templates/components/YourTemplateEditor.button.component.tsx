@@ -58,7 +58,7 @@ const YourTemplateEditorButton = ({
     }));
 
     return (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 min-h-[300px]'>
             <hr className='my-4 border-t border-gray-300' />
             <div className='flex gap-4 justify-between items-center'>
                 <h3>Buttons (Recommended)</h3>
