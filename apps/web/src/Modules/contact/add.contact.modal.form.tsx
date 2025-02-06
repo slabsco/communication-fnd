@@ -24,7 +24,13 @@ import {
 
 import { DeleteSvgIcon } from 'assets';
 
-const AddContactForm = ({ initial_data }: { initial_data?: any }) => {
+const AddContactForm = ({
+    initial_data,
+    callback,
+}: {
+    initial_data?: any;
+    callback: (_: any) => void;
+}) => {
     const [attributes, { updateAt, push, removeAt }] = useList<ObjectDto>(
         ...[initial_data?.custom_attributes || []]
     );
@@ -61,6 +67,7 @@ const AddContactForm = ({ initial_data }: { initial_data?: any }) => {
         });
 
         if (success) {
+            callback?.(response);
             RefetchGenericListing();
             return SlidingPane.close();
         }
@@ -166,6 +173,12 @@ const AddContactForm = ({ initial_data }: { initial_data?: any }) => {
 
 export default AddContactForm;
 
-export const openAddContactForm = (initial_data: any) => {
-    SlidingPane.open({ component: AddContactForm, props: { initial_data } });
+export const openAddContactForm = (
+    initial_data?: any,
+    options?: { callback?: (__: any) => void }
+) => {
+    SlidingPane.open({
+        component: AddContactForm,
+        props: { initial_data, ...options },
+    });
 };

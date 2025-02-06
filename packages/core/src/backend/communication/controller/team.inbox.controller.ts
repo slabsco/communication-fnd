@@ -1,6 +1,9 @@
 import { BaseModel } from '../../../Models/base.models';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
-import { SendTeamInboxMessagePayloadDto } from '../dto/send.team.inbox.message.payload.dto';
+import {
+    SendTeamInboxMessagePayloadDto,
+    SendTeamInboxSimpleMessagePayloadDto,
+} from '../dto/send.team.inbox.message.payload.dto';
 
 export class TeamInboxController extends BaseModel {
     protected endPoint = 'api/b/team-inbox';
@@ -27,6 +30,12 @@ export class TeamInboxController extends BaseModel {
     async create() {
         this.api = `${this.endPoint}`;
         this.bodyDto = SendTeamInboxMessagePayloadDto;
+
+        return this.post();
+    }
+    async sendMessage(id: number) {
+        this.api = `${this.endPoint}/${id}/send-message`;
+        this.bodyDto = SendTeamInboxSimpleMessagePayloadDto;
 
         return this.post();
     }

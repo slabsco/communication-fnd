@@ -5,3 +5,5 @@ export const WHATSAPP_TEMPLATE_CREATION_ROUTE =
     WHATSAPP_TEMPLATE_LIST_ROUTE + '/create';
 
 export const SCHEDULE_BROADCAST_LIST_ROUTE = HOME_ROUTE + 'schedule-broadcast';
+
+export const TEAM_INBOX_SPLIT_LIST = HOME_ROUTE + 'team-inbox';

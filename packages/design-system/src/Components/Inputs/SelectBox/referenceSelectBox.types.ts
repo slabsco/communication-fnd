@@ -36,4 +36,5 @@ export interface ReferenceSelectBoxProps
     isCurrentUserShow?: boolean;
     limit?: number;
     disableNetwork?: boolean;
+    isValueKeyNumber?: boolean;
 }

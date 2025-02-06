@@ -16,6 +16,8 @@ import {
     useUpdateEffect,
 } from 'react-use';
 
+import { IsUndefinedOrNull } from '@finnoto/design-system';
+
 import { joiResolver } from '@hookform/resolvers/joi';
 
 import { useWizardEvent } from '../../../design-system/src/Composites/Wizard/Hooks';
@@ -28,6 +30,7 @@ import {
 import { SCRIPT_TYPE } from '../Constants/scriptType.constants';
 import { user } from '../Models';
 import {
+    DependencyType,
     FormBuilderFormSchema,
     FormBuilderHandleFormDataType,
     FormBuilderHasErrorType,
@@ -53,6 +56,8 @@ import {
     UnsubscribeEvent,
 } from '../Utils/stateManager.utils';
 import { formElements } from '../Utils/ui.utils';
+import passwordComplexity from './passwordComplexity.utils';
+import resolveDependencies from './resolveDependencies';
 import { useApp } from './useApp.hook';
 import { useCustomField } from './useCustomField.hook';
 import { FetchData } from './useFetchData.hook';
@@ -66,6 +71,8 @@ export const useFormBuilder = (
         onSubmit,
         formKey,
         context,
+        dependencies = [],
+        orientation = 'vertical',
     }: FormBuilderProps,
     ref?: any
 ) => {
@@ -77,6 +84,7 @@ export const useFormBuilder = (
         getDefaultValues: getCustomFieldDefaultValues,
         fetchCustomColumns,
         sanitizedDateValues,
+        sanitizeCustomFieldData,
         parseMaskedDateValues,
     } = useCustomField({
         type_id: customFieldType,
@@ -89,14 +97,13 @@ export const useFormBuilder = (
     const [isAsyncValidating, setIsAsyncValidating] = useToggle(false);
     const [initial, setInitial] = useState(true);
     const [scripts, setScripts] = useState<any>([]);
-
     const [tempFormSchema, setTempFormSchema] =
         useState<FormBuilderFormSchema>(propsFormSchema);
 
+    const [warnings, setWarning] = useSetState({});
+
     const customFieldSchema: FormBuilderFormSchema = useMemo(() => {
-        const customSchema = getCustomColumnSchema(
-            IsFunction(initValues) ? {} : initValues
-        );
+        const customSchema = getCustomColumnSchema();
         if (!IsEmptyObject(customSchema)) {
             return {
                 custom_field_data: {
@@ -106,7 +113,7 @@ export const useFormBuilder = (
             };
         }
         return {};
-    }, [getCustomColumnSchema, initValues]);
+    }, [getCustomColumnSchema]);
 
     const formSchema: FormBuilderFormSchema = useMemo(
         () => ({
@@ -116,8 +123,12 @@ export const useFormBuilder = (
         [customFieldSchema, tempFormSchema]
     );
 
+    const dependencyTargets = dependencies.map(
+        (dependency) => dependency.targetField
+    );
+
     const getValidationSchema = useCallback(
-        (formSchema: FormBuilderFormSchema) => {
+        (formSchema: FormBuilderFormSchema, values: ObjectDto) => {
             const newValidationSchema: any = {};
 
             Object.keys(formSchema).forEach((elementKey: string) => {
@@ -128,7 +139,7 @@ export const useFormBuilder = (
 
                 if (schema.type === 'object' && schema.formSchema) {
                     newValidationSchema[elementKey] = Joi.object(
-                        getValidationSchema(schema.formSchema)
+                        getValidationSchema(schema.formSchema, values)
                     );
                     return;
                 }
@@ -155,8 +166,9 @@ export const useFormBuilder = (
                 if (['number'].includes(schema.type)) {
                     validation = Joi.number().empty(0);
 
-                    if (schema.min && schema.type === 'number') {
+                    if (!IsUndefined(schema.min) && schema.type === 'number') {
                         validation = validation.min(schema.min);
+                        if (!schema.required) validation = validation.allow(0);
                         if (schema?.customErrorMessage) {
                             validation = validation.message({
                                 'number.min': schema.customErrorMessage,
@@ -170,7 +182,8 @@ export const useFormBuilder = (
                         .email({
                             tlds: { allow: false },
                         })
-                        .trim();
+                        .trim()
+                        .message('Please enter a valid email address.');
                 }
                 if (schema.type === 'tel') {
                     validation = Joi.string()
@@ -206,6 +219,12 @@ export const useFormBuilder = (
                     }
                 }
 
+                if (schema.pwdComplexityCheck && schema.type === 'password') {
+                    validation = passwordComplexity({
+                        requirementCount: 5,
+                    });
+                }
+
                 if (schema.type === 'hidden') {
                     validation = Joi.any();
                 }
@@ -235,6 +254,9 @@ export const useFormBuilder = (
                     [
                         'drag_drop_file_upload',
                         'small_multiple_file_upload',
+                        'single_file_upload',
+                        'card_multiple_file_upload',
+                        'compact_multiple_file_upload',
                     ].includes(schema.type)
                 ) {
                     validation = Joi.array().items(
@@ -250,6 +272,15 @@ export const useFormBuilder = (
                 }
                 if (schema.type === 'profile_upload') {
                     validation = Joi.string();
+                }
+                if (schema.type === 'date_range') {
+                    validation = Joi.any()
+                        .required()
+                        .messages({
+                            'any.required': `${
+                                schema.label || 'Date Range'
+                            } is required.`,
+                        });
                 }
 
                 if (schema.type === 'email_template') {
@@ -293,8 +324,20 @@ export const useFormBuilder = (
                     );
                 }
 
+                if (schema.type === 'reference_multi_select') {
+                    if (schema?.required) {
+                        validation = Joi.array()
+                            .min(1)
+                            .message(`${schema.label} Is Required`);
+                    }
+                }
+
+                if (schema.customValidation) {
+                    validation = schema.customValidation;
+                }
+
                 if (schema.refKey && IsValidString(schema.refKey)) {
-                    validation = Joi.any()
+                    validation = validation
                         .equal(Joi.ref(schema.refKey))
                         .messages({ 'any.only': '{{#label}} does not match' });
                 }
@@ -302,7 +345,7 @@ export const useFormBuilder = (
                     schema.notValidRefKey &&
                     IsValidString(schema.notValidRefKey)
                 ) {
-                    validation = Joi.any()
+                    validation = validation
                         .invalid(Joi.ref(schema.notValidRefKey))
                         .messages({
                             'any.invalid':
@@ -313,7 +356,7 @@ export const useFormBuilder = (
                         });
                 }
 
-                validation = validation.empty(null).empty('');
+                validation = validation.empty(null).empty('').empty(0);
                 if (!schema?.required) validation = validation.allow(null);
 
                 if (schema.required) {
@@ -325,6 +368,42 @@ export const useFormBuilder = (
                             .optional();
                     } else {
                         validation = validation.allow('').optional();
+                    }
+                }
+
+                if (dependencyTargets.includes(elementKey)) {
+                    const elementDependencies = dependencies.filter(
+                        (dependency) => dependency.targetField === elementKey
+                    );
+
+                    const hasRequired = elementDependencies.some(
+                        (dep) => dep.type === DependencyType.REQUIRE
+                    );
+
+                    if (hasRequired) {
+                        const isRequired = elementDependencies.some(
+                            (dependency) => {
+                                const sourceValues = (() => {
+                                    if (Array.isArray(dependency.sourceField))
+                                        return dependency.sourceField.map(
+                                            (field) => values?.[field]
+                                        );
+
+                                    return values?.[dependency.sourceField];
+                                })();
+
+                                if (dependency.type === DependencyType.REQUIRE)
+                                    return dependency.when(
+                                        sourceValues,
+                                        values?.[elementKey]
+                                    );
+
+                                return false;
+                            }
+                        );
+
+                        if (isRequired) validation = validation.required();
+                        else validation = validation.optional();
                     }
                 }
 
@@ -340,7 +419,7 @@ export const useFormBuilder = (
 
             return newValidationSchema;
         },
-        []
+        [dependencies, dependencyTargets]
     );
 
     const getFormScripts = useCallback(async () => {
@@ -372,6 +451,7 @@ export const useFormBuilder = (
         setError: setFormHookError,
         handleSubmit: handleFormHookSubmit,
         trigger: validateFields,
+        clearErrors: removeFormHookError,
         reset,
         watch,
     } = useForm({
@@ -419,10 +499,12 @@ export const useFormBuilder = (
                 custom_field_data: data,
             };
         },
-        resolver: joiResolver(
-            Joi.object(getValidationSchema(formSchema)),
-            getJoiValidationOptions()
-        ),
+        resolver: (values, context, options) => {
+            return joiResolver(
+                Joi.object(getValidationSchema(formSchema, values)),
+                getJoiValidationOptions()
+            )(values, context, options);
+        },
         context,
         mode: 'onTouched',
         delayError: 1000,
@@ -504,7 +586,7 @@ export const useFormBuilder = (
                 errorObj[error] = {};
                 Object.keys(formErrors[error]).forEach((errorKey) => {
                     errorObj[error][errorKey] =
-                        formErrors[error][errorKey].message;
+                        formErrors[error][errorKey]?.message;
                 });
             }
         });
@@ -520,17 +602,39 @@ export const useFormBuilder = (
         [errors]
     );
 
-    const setError = (errors: ObjectDto) => {
-        if (!errors || IsEmptyObject(errors)) return;
+    const setError = useCallback(
+        (errors: ObjectDto) => {
+            if (!errors || IsEmptyObject(errors)) return;
 
-        Object.keys(errors).forEach((errorKey, idx) =>
-            setFormHookError(
-                errorKey,
-                { message: errors[errorKey] },
-                { shouldFocus: idx === 0 }
-            )
-        );
-    };
+            Object.keys(errors).forEach((errorKey, idx) =>
+                setFormHookError(
+                    errorKey,
+                    { message: errors[errorKey] },
+                    { shouldFocus: idx === 0 }
+                )
+            );
+        },
+        [setFormHookError]
+    );
+
+    const clearErrors = useCallback(
+        (errorKeys: string[]) => {
+            errorKeys.forEach((key) => {
+                if (!errors || IsUndefinedOrNull(errors[key])) return;
+                removeFormHookError(key);
+            });
+        },
+        [errors, removeFormHookError]
+    );
+
+    const clearWarnings = useCallback(
+        (warningKeys: string[]) => {
+            warningKeys.forEach((key) => {
+                delete warnings[key];
+            });
+        },
+        [warnings]
+    );
 
     const handleAsyncValidation = useCallback(
         (validationFn: string, elementKey: string, forceTouch?: boolean) => {
@@ -564,6 +668,22 @@ export const useFormBuilder = (
 
                 setIsAsyncValidating(false);
 
+                if (typeof result === 'object' && !IsUndefinedOrNull(result)) {
+                    const { type, message } = result;
+
+                    if (type === 'warning') {
+                        setWarning({ [elementKey]: message });
+                        setAsyncValidated({ [elementKey]: false });
+                        next(false);
+                        return true;
+                    }
+
+                    setFormHookError(elementKey, { message });
+                    setAsyncValidated({ [elementKey]: false });
+                    next(false);
+                    return false;
+                }
+
                 if (typeof result === 'string') {
                     setFormHookError(elementKey, { message: result });
                     setAsyncValidated({ [elementKey]: false });
@@ -573,6 +693,7 @@ export const useFormBuilder = (
 
                 setAsyncValidated({ [elementKey]: true });
                 next(true);
+                setWarning({ [elementKey]: undefined });
                 return true;
             };
 
@@ -588,6 +709,7 @@ export const useFormBuilder = (
             setAsyncValidated,
             setFormHookError,
             setIsAsyncValidating,
+            setWarning,
             validateFields,
         ]
     );
@@ -668,9 +790,17 @@ export const useFormBuilder = (
                                 !isDate(customFieldValue) &&
                                 typeof customFieldValue === 'object'
                             ) {
-                                customFieldData[customFieldKey] = (
-                                    customFieldValue as ObjectDto
-                                )?.id;
+                                if (
+                                    (customFieldValue as any)?.min &&
+                                    (customFieldValue as any)?.max
+                                ) {
+                                    customFieldData[customFieldKey] =
+                                        customFieldValue as ObjectDto;
+                                } else {
+                                    customFieldData[customFieldKey] = (
+                                        customFieldValue as ObjectDto
+                                    )?.id;
+                                }
                             }
 
                             body.custom_field_data = customFieldData;
@@ -722,11 +852,17 @@ export const useFormBuilder = (
             toggleFormUpdated,
         ]
     );
-
     const renderFormFields: FormBuilderRenderElement = useCallback(
         (elementKey, propSchema, props = {}) => {
             let schema = propSchema || formSchema[elementKey];
-            if (schema?.visible === false) return;
+            const {
+                isHidden,
+                isDisabled,
+                isRequired: isRequiredByDependency,
+                overrideCustomProps = {},
+            } = resolveDependencies(dependencies, elementKey, watch);
+
+            if (schema?.visible === false || isHidden) return;
 
             if (!schema) {
                 const keySegment = elementKey.split('.');
@@ -756,7 +892,13 @@ export const useFormBuilder = (
             const hasError = fieldState.isTouched && !!fieldState.error;
 
             const messageComponent =
-                props.messageComponent || schema.messageComponent;
+                props.messageComponent ?? schema.messageComponent;
+            const isRequired =
+                schema?.required ||
+                schema?.isRequired ||
+                props?.isRequired ||
+                props?.required ||
+                isRequiredByDependency;
             return formElements({
                 ...schema,
                 key: elementKey,
@@ -765,6 +907,7 @@ export const useFormBuilder = (
                     schema.asyncValidation,
                     elementKey
                 ),
+
                 onChange: (value: any) => {
                     formUtils.OnChangeListener({
                         column: elementKey,
@@ -774,7 +917,15 @@ export const useFormBuilder = (
 
                     setAsyncValidated({ [elementKey]: false });
                 },
+                disabled: isDisabled || schema.disabled,
+                orientation,
                 ...props,
+                required: isRequired,
+                isRequired,
+                ...overrideCustomProps,
+                min: undefined,
+                warning: warnings[elementKey],
+
                 messageComponent: IsFunction(messageComponent)
                     ? messageComponent(getValues(elementKey), {
                           errors,
@@ -789,9 +940,13 @@ export const useFormBuilder = (
         },
         [
             formSchema,
+            dependencies,
+            watch,
             getFieldState,
             formState,
             handleAsyncValidation,
+            orientation,
+            warnings,
             getValues,
             errors,
             handleFormData,
@@ -825,7 +980,10 @@ export const useFormBuilder = (
         [getValues, setValue]
     );
 
-    const disableSubmit = (isSubmitted && !isValid) || isAsyncValidating;
+    const hasAnyError = Object.keys(errors).length > 0;
+
+    const disableSubmit =
+        (isSubmitted && !isValid) || isAsyncValidating || hasAnyError;
 
     const formUpdated = useCallback(
         (payload: FormUtilSelfObj['form'] & { updateState: boolean }) => {
@@ -872,6 +1030,7 @@ export const useFormBuilder = (
             validateFields,
             setFormData,
             reset,
+            watch,
         }),
         [
             isFormUpdated,
@@ -883,6 +1042,7 @@ export const useFormBuilder = (
             validateFields,
             setFormData,
             reset,
+            watch,
         ]
     );
 
@@ -913,16 +1073,21 @@ export const useFormBuilder = (
         getValues,
         hasError,
         setError,
+        clearErrors,
         handleSubmit,
         handleFormData,
         renderFormFields,
         toggleFormUpdated,
         validateFields,
         setFormData,
-        customFieldSchema: customFieldSchema,
+        customFieldSchema,
+        sanitizeCustomFieldData,
         formUtils,
         reset,
         watch,
+        formState,
+        clearWarnings,
+        isSubmitted,
     };
 };
 

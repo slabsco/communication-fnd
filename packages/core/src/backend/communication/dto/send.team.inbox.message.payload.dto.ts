@@ -1,5 +1,6 @@
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ObjectDto } from '../../Dtos';
 
 export class SendTeamInboxMessagePayloadDto {
     @Expose()
@@ -9,15 +10,17 @@ export class SendTeamInboxMessagePayloadDto {
 
     @Expose()
     @IsNumber()
-    @IsOptional()
-    mobile: string;
+    @IsNotEmpty()
+    contact_id: string;
 
     @Expose()
-    @IsNumber()
-    @IsOptional()
-    dialing_code: number;
+    @IsNotEmpty()
+    custom_attributes: ObjectDto;
+}
 
+export class SendTeamInboxSimpleMessagePayloadDto {
     @Expose()
-    @IsOptional()
-    custom_attributes: { key: string; value: string }[];
+    @IsNotEmpty()
+    @IsString()
+    data: string;
 }
