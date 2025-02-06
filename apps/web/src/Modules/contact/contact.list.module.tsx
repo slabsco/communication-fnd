@@ -11,7 +11,7 @@ const ContactListModule = () => {
         name: 'Contacts',
         type: 'contact',
         table: [
-            { name: 'Name', key: 'name' },
+            { name: 'Name', key: 'display_name' },
             { name: 'Dialling Code', key: 'dialing_code' },
             { name: 'Mobile', key: 'mobile' },
             { name: 'active', key: 'active', type: 'activate' },

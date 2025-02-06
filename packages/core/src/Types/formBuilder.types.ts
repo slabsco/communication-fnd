@@ -1,3 +1,4 @@
+import { Schema } from 'joi';
 import { ReactNode } from 'react';
 import {
     Control,
@@ -28,6 +29,21 @@ export interface FormBuilderChildrenProps {
     // pushTouched?: (value: string) => void;
 }
 
+export type Dependency<SchemaType> = {
+    type: DependencyType;
+
+    sourceField: string | string[];
+    targetField: string;
+    when: (sourceValue: any, targetValue: any) => boolean;
+    customProps?: (sourceValue: any, targetValue: any) => ObjectDto | ObjectDto;
+};
+
+export enum DependencyType {
+    DISABLE,
+    REQUIRE,
+    HIDE,
+    CUSTOM_PROPS,
+}
 export interface FormBuilderProps {
     loading?: boolean;
     className?: string;
@@ -55,8 +71,9 @@ export interface FormBuilderProps {
     children?: (props: FormBuilderChildrenProps) => ReactNode;
     formKey?: string;
     context?: ObjectDto;
+    dependencies?: Dependency<Schema>[];
+    orientation?: 'horizontal' | 'vertical';
 }
-
 export interface FormBuilderFormSchema {
     [key: string]: FormSchemaValues;
 }
