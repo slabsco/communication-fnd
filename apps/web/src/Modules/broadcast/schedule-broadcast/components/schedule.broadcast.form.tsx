@@ -32,13 +32,22 @@ const ScheduleBroadcastForm = ({ initialData }: any) => {
             label: 'Name',
             required: true,
         },
-        scheduled_at: {
-            type: 'date_time_separate',
-            label: 'Schedule At',
-            required: true,
-            message:
-                'Setting a date/time in the past will send the messages immediately',
-        },
+        // sendNow: {
+        //     type: 'radio_group',
+        //     label: 'Send Now',
+        //     options: [
+        //         { label: 'Yes', value: true },
+        //         { label: 'No', value: false },
+        //     ],
+        //     required: true,
+        // },
+        // scheduled_at: {
+        //     type: 'date_time_separate',
+        //     label: 'Schedule At',
+        //     required: true,
+        //     message:
+        //         'Setting a date/time in the past will send the messages immediately',
+        // },
         template_id: {
             type: 'reference_select',
             controller: CommunicationTemplateController,
@@ -92,14 +101,6 @@ const ScheduleBroadcastForm = ({ initialData }: any) => {
         value: any,
         { setError }
     ) => {
-        console.log({
-            ...value,
-            id: initialData?.id,
-            csv_link: !IsUndefinedOrNull(value?.csv_link)
-                ? value?.csv_link?.[0]?.document_url
-                : initialData?.csv_link,
-        });
-
         const { success, response } = await FetchData({
             className: ScheduleBroadcastController,
             method: 'create',

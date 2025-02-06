@@ -1,10 +1,7 @@
 import Link from 'next/link';
 
-import {
-    IsUndefinedOrNull,
-    SCHEDULE_BROADCAST_LIST_ROUTE,
-} from '@finnoto/core';
-import { Modal, SlidingPane } from '@finnoto/design-system';
+import { SCHEDULE_BROADCAST_LIST_ROUTE } from '@finnoto/core';
+import { Modal } from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../../Components/GenericDocumentListing/genericDocumentListing.types';
@@ -13,7 +10,7 @@ import ScheduleBroadcastForm from './components/schedule.broadcast.form';
 
 const ScheduleBroadcastTemplateListModule = () => {
     const props: GenericDocumentListingProps = {
-        name: 'Schedule Broadcast',
+        name: 'Broadcast Messages',
         type: 'schedule_broadcast',
         // rowActions: [
         //     {
@@ -65,11 +62,11 @@ const ScheduleBroadcastTemplateListModule = () => {
                     );
                 },
             },
-            {
-                name: 'Scheduled At',
-                key: 'scheduled_at',
-                type: 'date_time',
-            },
+            // {
+            //     name: 'Scheduled At',
+            //     key: 'scheduled_at',
+            //     type: 'date_time',
+            // },
             // {
             //     name: 'Completed At',
             //     key: 'completed_at',
@@ -78,7 +75,7 @@ const ScheduleBroadcastTemplateListModule = () => {
         ],
         actions: [
             {
-                name: 'Schedule Broadcast',
+                name: 'Broadcast Message',
                 type: 'create',
                 action: openScheduleBroadcast,
             },
