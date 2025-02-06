@@ -475,14 +475,14 @@ const GenericDocumentListing = ({
                 {!asInnerTable && (
                     <>
                         {!isArcPortal ? (
-                            <div className='flex items-center justify-between '>
+                            <div className='flex justify-between items-center'>
                                 <Breadcrumbs
                                     title={name}
                                     route={
                                         customBreadcrumbData || breadcrumbData
                                     }
                                 />
-                                <div className='flex items-center gap-4'>
+                                <div className='flex gap-4 items-center'>
                                     <OuterFilterList
                                         {...{
                                             filterData,
@@ -493,7 +493,7 @@ const GenericDocumentListing = ({
                                     {renderRightActionComponent}
                                     {!IsEmptyArray(sanitizeActions) && (
                                         <div className='col-flex'>
-                                            <div className='flex-wrap justify-end gap-4 row-flex'>
+                                            <div className='flex-wrap gap-4 justify-end row-flex'>
                                                 {renderListingActionButton(
                                                     sanitizeActions,
                                                     records
@@ -540,7 +540,7 @@ const GenericDocumentListing = ({
                         position='topleft'
                     />
                     <IndexFilter
-                        className='mb-2 border rounded-lg'
+                        className='mb-2 rounded-lg border'
                         filters={filters}
                         filterTabs={tabs}
                         defaultActiveTab={defaultActiveTab || 'all'}
@@ -557,10 +557,10 @@ const GenericDocumentListing = ({
                         hideFilter={hideFilter}
                         hideSaveFilter={hideSaveFilter}
                         rightTabContent={
-                            <div className='flex items-center gap-2'>
+                            <div className='flex gap-2 items-center'>
                                 {renderRightFilterComponent}
 
-                                {enableDownLoadIcon && (
+                                {/* {enableDownLoadIcon && (
                                     <IconButton
                                         onClick={downloadCsv}
                                         icon={DownloadChartSvgIcon}
@@ -573,7 +573,7 @@ const GenericDocumentListing = ({
                                                 : 'primary'
                                         }
                                     />
-                                )}
+                                )} */}
                             </div>
                         }
                         onSearchChange={(value) => {
@@ -593,7 +593,7 @@ const GenericDocumentListing = ({
                         }}
                         withLegacyFilter={withLegacyFilter}
                     />
-                    <div className={cn('h-full overflow-y-auto', tableClass)}>
+                    <div className={cn('overflow-y-auto h-full', tableClass)}>
                         {tableType === 'normal' && (
                             <Table
                                 rowAction={{
@@ -746,9 +746,9 @@ export const TableDateFilter = ({
                     />
                 </div>
             ) : (
-                <div className='border rounded cursor-pointer select-none row-flex bg-base-100'>
+                <div className='rounded border cursor-pointer select-none row-flex bg-base-100'>
                     <div className='flex px-4 py-2'>
-                        <div className='flex items-center text-sm text-base-primary pt-3/2 whitespace-nowrap'>
+                        <div className='flex items-center text-sm whitespace-nowrap text-base-primary pt-3/2'>
                             {!IsEmptyObject(filterData.date?.range) &&
                                 format(
                                     GetDateValue(filterData.date?.range?.min),
@@ -768,7 +768,7 @@ export const TableDateFilter = ({
                                 )}
                         </div>
                     </div>
-                    <div className='px-2 my-2 border-l '>
+                    <div className='px-2 my-2 border-l'>
                         <Icon
                             source={CalendarSvgIcon}
                             className={'text-primary'}
@@ -831,7 +831,7 @@ export const renderListingActionButton = (actions, records?: any) => {
                         outline={value?.outline}
                         disabled={value?.outline ?? false}
                     >
-                        <div className='items-center gap-2 row-flex'>
+                        <div className='gap-2 items-center row-flex'>
                             {value?.icon && (
                                 <Icon source={value?.icon} size={18} isSvg />
                             )}
@@ -852,7 +852,7 @@ export const renderListingActionButton = (actions, records?: any) => {
                         outline={value?.outline}
                         data-title={value?.key}
                     >
-                        <div className='items-center gap-1 row-flex'>
+                        <div className='gap-1 items-center row-flex'>
                             {value?.type == 'create' && (
                                 <Icon source={'add_circle_outline'} />
                             )}
