@@ -1,27 +1,75 @@
 import Link from 'next/link';
 
-import { SCHEDULE_BROADCAST_LIST_ROUTE } from '@finnoto/core';
-import { Modal } from '@finnoto/design-system';
+import {
+    FetchData,
+    IsUndefinedOrNull,
+    Navigation,
+    RefetchGenericListing,
+    SCHEDULE_BROADCAST_CREATION_ROUTE,
+    SCHEDULE_BROADCAST_LIST_ROUTE,
+    toastBackendError,
+} from '@finnoto/core';
+import { ScheduleBroadcastController } from '@finnoto/core/src/backend/communication/controller/schedule.broadcast.controller';
+import { ConfirmUtil, Modal } from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../../Components/GenericDocumentListing/genericDocumentListing.types';
 import { openTemplateViewer } from '../your-templates/components/TemplateViewer.component';
-import ScheduleBroadcastForm from './components/schedule.broadcast.form';
+
+import { DeleteSvgIcon } from 'assets';
+
+const deleteScheduleMessages = async (
+    id: number,
+    options?: { callback?: (__: any) => void }
+) => {
+    const deleteData = async () => {
+        const { success, response } = await FetchData({
+            className: ScheduleBroadcastController,
+            method: 'remove',
+            methodParams: id,
+        });
+
+        Modal.close();
+        if (!success) return toastBackendError(response);
+        return options.callback?.(response);
+    };
+    return ConfirmUtil({
+        message: 'Are you sure want to delete this',
+        title: 'Delete !',
+        isArc: true,
+        icon: DeleteSvgIcon,
+        onConfirmPress: deleteData,
+        appearance: 'error',
+    });
+};
 
 const ScheduleBroadcastTemplateListModule = () => {
     const props: GenericDocumentListingProps = {
         name: 'Broadcast Messages',
         type: 'schedule_broadcast',
-        // rowActions: [
-        //     {
-        //         name: 'Edit',
-        //         key: 'edit',
-        //         visible: (row) => IsUndefinedOrNull(row?.initiated_at),
-        //         action: (row: any) => {
-        //             openScheduleBroadcast(row);
-        //         },
-        //     },
-        // ],
+        rowActions: [
+            {
+                name: 'Edit',
+                key: 'edit',
+                visible: (row) => IsUndefinedOrNull(row?.initiated_at),
+                action: (row: any) => {
+                    Navigation.navigate({
+                        url: `${SCHEDULE_BROADCAST_CREATION_ROUTE}?id=${row.id}`,
+                    });
+                },
+            },
+            {
+                name: 'Delete',
+                key: 'delete',
+                isCancel: true,
+                visible: (row) => IsUndefinedOrNull(row?.initiated_at),
+                action: (row: any) => {
+                    deleteScheduleMessages(row.id, {
+                        callback: RefetchGenericListing,
+                    });
+                },
+            },
+        ],
         table: [
             {
                 name: 'Broadcast Name',
@@ -62,22 +110,26 @@ const ScheduleBroadcastTemplateListModule = () => {
                     );
                 },
             },
-            // {
-            //     name: 'Scheduled At',
-            //     key: 'scheduled_at',
-            //     type: 'date_time',
-            // },
-            // {
-            //     name: 'Completed At',
-            //     key: 'completed_at',
-            //     type: 'date_time',
-            // },
+            {
+                name: 'Scheduled At',
+                key: 'scheduled_at',
+                type: 'date_time',
+            },
+            {
+                name: 'Completed At',
+                key: 'completed_at',
+                type: 'date_time',
+            },
         ],
         actions: [
             {
                 name: 'Broadcast Message',
                 type: 'create',
-                action: openScheduleBroadcast,
+                action: () => {
+                    Navigation.navigate({
+                        url: SCHEDULE_BROADCAST_CREATION_ROUTE,
+                    });
+                },
             },
         ],
     };
@@ -86,10 +138,3 @@ const ScheduleBroadcastTemplateListModule = () => {
 };
 
 export default ScheduleBroadcastTemplateListModule;
-
-export const openScheduleBroadcast = (data?: any) => {
-    Modal.open({
-        component: ScheduleBroadcastForm,
-        props: { initialData: data },
-    });
-};

@@ -24,8 +24,6 @@ export const DateTimePicker = forwardRef(
             [rest?.value]
         );
 
-        console.log({ value });
-
         return (
             <div ref={ref} className='gap-4 items-center row-flex'>
                 <MaskedDatePickerInput
@@ -34,7 +32,7 @@ export const DateTimePicker = forwardRef(
                     className={cn('w-full', rest?.className)}
                     inputAddOnClassName={'min-w-[220px]'}
                     dateFormat={DEFAULT_DATE_FORMAT}
-                    label='Date'
+                    label={rest?.label || 'Date'}
                     isRequired={rest?.isRequired}
                     onChange={(date_value) => {
                         if (!date_value) return;

@@ -376,7 +376,12 @@ const MessageItem = ({ message }: { message: any }) => {
             ) : message?.attributes?.sent_by ? (
                 <div className='flex flex-row-reverse gap-2 items-end'>
                     {message?.is_error && (
-                        <Tooltip message={JSON.stringify(message.response)}>
+                        <Tooltip
+                            message={JSON.stringify(
+                                message.attributes?.errors?.[0]?.error_data
+                                    ?.details || message.response
+                            )}
+                        >
                             <Info size={14} color='red' />
                         </Tooltip>
                     )}
@@ -482,8 +487,9 @@ const AddInboxModal = () => {
         });
 
         SlidingPane.closeAll();
-        if (success) return;
-        toastBackendError(response);
+        if (!success) return toastBackendError(response);
+
+        Navigation.navigate({ url: `${TEAM_INBOX_SPLIT_LIST}/${response.id}` });
     };
 
     const { renderFormFields, handleFormData, watch, handleSubmit } =
