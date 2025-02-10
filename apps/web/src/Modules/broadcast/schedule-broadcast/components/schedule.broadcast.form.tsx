@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useState } from 'react';
 
 import {
     FetchData,
@@ -9,16 +10,19 @@ import {
     RefetchGenericListing,
     SCHEDULE_BROADCAST_LIST_ROUTE,
     toastBackendError,
+    useFormBuilder,
 } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { ScheduleBroadcastController } from '@finnoto/core/src/backend/communication/controller/schedule.broadcast.controller';
 import {
     Button,
-    FormBuilder,
     Modal,
     ModalBody,
     ModalContainer,
+    ModalFooter,
+    Switch,
 } from '@finnoto/design-system';
+import { Label } from '@finnoto/design-system/src/Components/Inputs/InputField/label.component';
 
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -26,6 +30,8 @@ import { openTemplateViewer } from '../../your-templates/components/TemplateView
 
 const ScheduleBroadcastForm = ({ initialData }: any) => {
     const queryClient = useQueryClient();
+
+    const [isNow, setIsNow] = useState<any>(false);
 
     const schema: FormBuilderFormSchema = {
         name: {
@@ -37,9 +43,8 @@ const ScheduleBroadcastForm = ({ initialData }: any) => {
         scheduled_at: {
             type: 'date_time_separate',
             label: 'Schedule At',
-            required: true,
-            message:
-                'Setting a date/time in the past will send the messages immediately',
+            name: 'Schedule At',
+            required: false,
         },
         template_id: {
             type: 'reference_select',
@@ -120,21 +125,49 @@ const ScheduleBroadcastForm = ({ initialData }: any) => {
         Modal.close();
     };
 
+    const { renderFormFields, handleSubmit } = useFormBuilder({
+        onSubmit,
+        formSchema: schema,
+        initValues: {
+            name: initialData?.name,
+            scheduled_at: initialData?.scheduled_at || new Date(),
+            template_id: initialData?.template_id,
+            description: initialData?.description,
+        },
+    });
+
     return (
         <ModalContainer title={'Broadcast Message'}>
-            <ModalBody className=''>
-                <FormBuilder
-                    initValues={{
-                        name: initialData?.name,
-                        scheduled_at: initialData?.scheduled_at || new Date(),
-                        template_id: initialData?.template_id,
-                        description: initialData?.description,
-                    }}
-                    onSubmit={onSubmit}
-                    formSchema={schema}
-                    buttonLabel='Send'
-                />
+            <ModalBody className='gap-2 col-flex'>
+                {renderFormFields('name')}
+                <div className='gap-2 col-flex'>
+                    {!isNow && renderFormFields('scheduled_at')}
+                    <div className='col-flex'>
+                        <Label label='Send Now' />
+                        <Switch checked={isNow} onChange={(e) => setIsNow(e)} />
+                    </div>
+                </div>
+                {renderFormFields('template_id')}
+                {renderFormFields('description')}
             </ModalBody>
+
+            <ModalFooter className='py-4 justify'>
+                <div className='flex-1 gap-4 row-flex'>
+                    <Button
+                        appearance='errorHover'
+                        onClick={() => Modal.close()}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        appearance='primary'
+                        className='flex-1'
+                        onClick={handleSubmit}
+                    >
+                        Save
+                    </Button>
+                </div>
+            </ModalFooter>
         </ModalContainer>
     );
 };

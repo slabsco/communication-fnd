@@ -1,6 +1,9 @@
 import Link from 'next/link';
 
-import { SCHEDULE_BROADCAST_LIST_ROUTE } from '@finnoto/core';
+import {
+    IsUndefinedOrNull,
+    SCHEDULE_BROADCAST_LIST_ROUTE,
+} from '@finnoto/core';
 import { Modal } from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
@@ -12,16 +15,16 @@ const ScheduleBroadcastTemplateListModule = () => {
     const props: GenericDocumentListingProps = {
         name: 'Broadcast Messages',
         type: 'schedule_broadcast',
-        // rowActions: [
-        //     {
-        //         name: 'Edit',
-        //         key: 'edit',
-        //         visible: (row) => IsUndefinedOrNull(row?.initiated_at),
-        //         action: (row: any) => {
-        //             openScheduleBroadcast(row);
-        //         },
-        //     },
-        // ],
+        rowActions: [
+            {
+                name: 'Edit',
+                key: 'edit',
+                visible: (row) => IsUndefinedOrNull(row?.initiated_at),
+                action: (row: any) => {
+                    openScheduleBroadcast(row);
+                },
+            },
+        ],
         table: [
             {
                 name: 'Broadcast Name',
@@ -62,16 +65,16 @@ const ScheduleBroadcastTemplateListModule = () => {
                     );
                 },
             },
-            // {
-            //     name: 'Scheduled At',
-            //     key: 'scheduled_at',
-            //     type: 'date_time',
-            // },
-            // {
-            //     name: 'Completed At',
-            //     key: 'completed_at',
-            //     type: 'date_time',
-            // },
+            {
+                name: 'Scheduled At',
+                key: 'scheduled_at',
+                type: 'date_time',
+            },
+            {
+                name: 'Completed At',
+                key: 'completed_at',
+                type: 'date_time',
+            },
         ],
         actions: [
             {
