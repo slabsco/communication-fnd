@@ -1,15 +1,15 @@
 export enum WhatsappTemplateCategoryEnum {
-    MARKETING = 1,
-    AUTHENTICATION = 2,
-    UTILITY = 3,
+    MARKETING = 200,
+    AUTHENTICATION = 201,
+    UTILITY = 202,
 }
 
 export enum WhatsappTemplateStatusEnum {
-    DRAFT = 6,
-    PENDING = 7,
-    APPROVED = 8,
-    REJECTED = 9,
-    DELETED = 10,
-    PAUSED = 11,
-    DISABLED = 12,
+    DRAFT = 100,
+    PENDING = 101,
+    APPROVED = 102,
+    REJECTED = 103,
+    DELETED = 104,
+    PAUSED = 105,
+    DISABLED = 106,
 }
