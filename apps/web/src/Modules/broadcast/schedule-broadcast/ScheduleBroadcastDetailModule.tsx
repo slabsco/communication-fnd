@@ -4,9 +4,10 @@ import Link from 'next/link';
 
 import {
     FormatDisplayDate,
-    GetDateValue,
     HOME_ROUTE,
     IsUndefinedOrNull,
+    Navigation,
+    SCHEDULE_BROADCAST_CREATION_ROUTE,
     useFetchParams,
     WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
@@ -22,9 +23,8 @@ import {
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { openTemplateViewer } from '../your-templates/components/TemplateViewer.component';
 import { useScheduleBroadCastDetail } from './hooks/useScheduleBroadcastDetail.hook';
-import { openScheduleBroadcast } from './ScheduleBroadcastTemplateListModule';
 
-import { ErrorSvgIcon, InfoCircleSvgIcon } from 'assets';
+import { ErrorSvgIcon } from 'assets';
 
 const ScheduleBroadcastDetailModule = () => {
     const { id } = useFetchParams();
@@ -97,7 +97,9 @@ const ScheduleBroadcastDetailModule = () => {
                     disabled={!IsUndefinedOrNull(data?.initiated_at)}
                     color={'primary'}
                     onClick={() => {
-                        openScheduleBroadcast(data);
+                        Navigation.navigate({
+                            url: `${SCHEDULE_BROADCAST_CREATION_ROUTE}?id=${data.id}`,
+                        });
                     }}
                 >
                     Edit Detail
@@ -217,7 +219,7 @@ const getSampleContent = (data: any) => {
         (val) => val?.type === 'body'
     );
     const title = data?.payload?.template?.components?.find(
-        (val) => val?.type === 'title'
+        (val) => val?.type === 'header'
     );
 
     const parameters = [

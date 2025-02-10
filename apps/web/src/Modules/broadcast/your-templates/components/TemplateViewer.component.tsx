@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
+import { useUpdateEffect } from 'react-use';
 
-import { FetchData, IsEmptyObject } from '@finnoto/core';
+import { FetchData, IsEmptyObject, IsFunction } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { Loading, Modal, PageLoader } from '@finnoto/design-system';
 
@@ -12,9 +13,11 @@ import { YourTemplatesPreview } from './YourTemplatesPriview.component';
 export const AsyncTemplateViewer = ({
     id,
     sample_contents,
+    getData,
 }: {
     id: number;
     sample_contents?: any;
+    getData?: Function;
 }) => {
     const { data, isLoading } = useQuery({
         queryKey: ['template_detail', id],
@@ -30,6 +33,11 @@ export const AsyncTemplateViewer = ({
         },
     });
 
+    useUpdateEffect(() => {
+        if (!IsFunction(getData)) return;
+        getData?.(data);
+    }, [data]);
+
     const defaultData = useMemo(() => {
         if (IsEmptyObject(data)) return {} as any;
         return ConvertRawApiDataIntoFormSuitable(data);
@@ -38,16 +46,18 @@ export const AsyncTemplateViewer = ({
     return isLoading ? (
         <Loading size='xl' />
     ) : (
-        <YourTemplatesPreview
-            sampleContent={sample_contents || defaultData.sample_contents}
-            footer={defaultData?.footer}
-            body={defaultData?.body}
-            configuration={defaultData?.button_configurations}
-            title={{
-                type: defaultData?.title?.type || 'text',
-                value: defaultData?.title?.value || '',
-            }}
-        />
+        <>
+            <YourTemplatesPreview
+                sampleContent={sample_contents || defaultData.sample_contents}
+                footer={defaultData?.footer}
+                body={defaultData?.body}
+                configuration={defaultData?.button_configurations}
+                title={{
+                    type: defaultData?.title?.type || 'text',
+                    value: defaultData?.title?.value || '',
+                }}
+            />
+        </>
     );
 };
 
