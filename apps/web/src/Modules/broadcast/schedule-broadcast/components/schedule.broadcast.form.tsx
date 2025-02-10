@@ -34,22 +34,13 @@ const ScheduleBroadcastForm = ({ initialData }: any) => {
             label: 'Name',
             required: true,
         },
-        // sendNow: {
-        //     type: 'radio_group',
-        //     label: 'Send Now',
-        //     options: [
-        //         { label: 'Yes', value: true },
-        //         { label: 'No', value: false },
-        //     ],
-        //     required: true,
-        // },
-        // scheduled_at: {
-        //     type: 'date_time_separate',
-        //     label: 'Schedule At',
-        //     required: true,
-        //     message:
-        //         'Setting a date/time in the past will send the messages immediately',
-        // },
+        scheduled_at: {
+            type: 'date_time_separate',
+            label: 'Schedule At',
+            required: true,
+            message:
+                'Setting a date/time in the past will send the messages immediately',
+        },
         template_id: {
             type: 'reference_select',
             controller: CommunicationTemplateController,
