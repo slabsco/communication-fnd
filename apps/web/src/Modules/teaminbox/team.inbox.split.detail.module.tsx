@@ -7,6 +7,7 @@ import {
     FetchData,
     FormBuilderFormSchema,
     FormBuilderSubmitType,
+    IsEmptyArray,
     IsUndefinedOrNull,
     Navigation,
     ObjectDto,
@@ -233,32 +234,35 @@ const RightSection = ({
                         </div>
                     </div>
 
-                    {/* Contact Attributes Section */}
-                    <div className='space-y-4'>
-                        <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
-                            <h3 className='flex gap-2 items-center font-medium'>
-                                <Contact size={18} />
-                                Contact Attributes
-                            </h3>
-                        </div>
+                    {!IsEmptyArray(data?.contact?.custom_attributes) && (
+                        <div className='space-y-4'>
+                            <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
+                                <h3 className='flex gap-2 items-center font-medium'>
+                                    <Contact size={18} />
+                                    Contact Attributes
+                                </h3>
+                            </div>
 
-                        {/* Attributes List */}
-                        <div className='space-y-2 p-2 max-h-[300px] overflow-y-auto border rounded'>
-                            {data?.contact?.custom_attributes?.map((val) => {
-                                return (
-                                    <div
-                                        className='gap-0 col-flex'
-                                        key={val?.key}
-                                    >
-                                        <label className='text-sm text-gray-500'>
-                                            {val?.key}
-                                        </label>
-                                        <div>{val?.value}</div>
-                                    </div>
-                                );
-                            })}
+                            {/* Attributes List */}
+                            <div className='space-y-2 p-2 max-h-[300px] overflow-y-auto border rounded'>
+                                {data?.contact?.custom_attributes?.map(
+                                    (val) => {
+                                        return (
+                                            <div
+                                                className='gap-0 col-flex'
+                                                key={val?.key}
+                                            >
+                                                <label className='text-sm text-gray-500'>
+                                                    {val?.key}
+                                                </label>
+                                                <div>{val?.value}</div>
+                                            </div>
+                                        );
+                                    }
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             )}
         </div>

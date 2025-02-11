@@ -6,7 +6,7 @@ import {
     Button,
     cn,
     InputField,
-    MultiSelectFilter,
+    SelectBox,
     Switch,
 } from '@finnoto/design-system';
 
@@ -50,6 +50,7 @@ const YourTemplateEditorButton = ({
 }) => {
     const [isOpen, setIsOpen] = useState(true);
     const defaultOpen = Object.keys(configuration);
+
     const [buttons, setButtons] = useState<any>(defaultOpen);
 
     const options = YOUR_TEMPLATE_SUPPORTED_CONFIG.map((val) => ({
@@ -65,19 +66,20 @@ const YourTemplateEditorButton = ({
                 <Switch
                     checked={isOpen}
                     onChange={(val) => {
-                        setIsOpen(val);
                         setConfiguration({});
+                        setIsOpen(val);
+                        setButtons([]);
                     }}
                 />
             </div>
 
             <div className={cn('flex flex-col gap-2', { hidden: !isOpen })}>
-                <MultiSelectFilter
+                <SelectBox
                     placeholder='Select Button'
                     value={buttons}
                     options={options as any}
-                    onChangeFilter={(evt) => {
-                        setButtons(evt);
+                    onChange={(evt) => {
+                        setButtons([evt?.value]);
                     }}
                 />
                 <RenderButtonConfiguration
@@ -284,7 +286,7 @@ const RenderQuickReplyButton = ({
         <div className='flex gap-3 p-4 border'>
             <div className='flex flex-col flex-1 gap-2'>
                 {quickReplies.map((reply, index) => (
-                    <div key={index} className='flex gap-2 items-center'>
+                    <div key={index + 1} className='flex gap-2 items-center'>
                         <div className='py-1 w-40 text-center text-white bg-gray-400 rounded'>
                             Quick Reply
                         </div>
