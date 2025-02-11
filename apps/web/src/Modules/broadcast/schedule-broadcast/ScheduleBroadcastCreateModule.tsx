@@ -90,6 +90,7 @@ const DetailPage = ({ initialData }: any) => {
             type: 'single_file_upload',
             label: 'Upload File',
             placeholder: 'Please upload your csv.',
+            fileSupportText: 'CSV',
             required: true,
         },
         description: {
