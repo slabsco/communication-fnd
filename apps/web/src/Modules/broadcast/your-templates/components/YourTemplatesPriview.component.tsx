@@ -147,12 +147,23 @@ export const MessageSectionPreview = ({
                 (val) => val?.type === key
             );
 
+            if (getValues?.type === 'PROMO_CODE') {
+                return (
+                    <div
+                        key={key}
+                        className='flex gap-2 justify-center items-center w-full text-xs text-center text-info'
+                    >
+                        {getValues?.icon} {getValues?.name}
+                    </div>
+                );
+            }
+
             if (IsArray(val)) {
                 return val?.map((data: any, index) => {
                     return (
                         <div
                             key={index}
-                            className='flex gap-2 justify-center items-center w-full text-xs font-medium text-center text-info'
+                            className='flex gap-2 justify-center items-center w-full text-xs text-center text-info'
                         >
                             {getValues?.icon} {data}
                         </div>
@@ -163,7 +174,7 @@ export const MessageSectionPreview = ({
             return (
                 <div
                     key={key}
-                    className='flex gap-2 justify-center items-center w-full text-xs font-medium text-center text-info'
+                    className='flex gap-2 justify-center items-center w-full text-xs text-center text-info'
                 >
                     {getValues?.icon} {val?.name}
                 </div>

@@ -1,13 +1,18 @@
 'use client';
 
+import EmojiPicker from 'emoji-picker-react';
 import { Check, CheckCheck, Contact, Info } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useList } from 'react-use';
 
 import {
+    AccessManager,
     FetchData,
     FormBuilderFormSchema,
     FormBuilderSubmitType,
     IsEmptyArray,
+    IsEmptyObject,
     IsUndefinedOrNull,
     Navigation,
     ObjectDto,
@@ -15,6 +20,7 @@ import {
     TEAM_INBOX_SPLIT_LIST,
     toastBackendError,
     useFormBuilder,
+    UserBusiness,
 } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { ContactController } from '@finnoto/core/src/backend/communication/controller/contact.controller';
@@ -23,22 +29,39 @@ import {
     Avatar,
     Button,
     cn,
+    CommonFileUploader,
+    DropdownMenu,
     FormatDisplayDateStyled,
+    handleDocumentIcon,
+    Icon,
+    IconButton,
     InputField,
     Loading,
+    Modal,
     ModalBody,
     ModalContainer,
     ModalFooter,
-    SlidingPane,
+    openResourceViewerModal,
+    Popover,
+    TextareaField,
     Tooltip,
+    Typography,
 } from '@finnoto/design-system';
+import { Label } from '@finnoto/design-system/src/Components/Inputs/InputField/label.component';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import ArcGenericSplitDetailComponent from '../../Components/ArcGenericSplitDetail/arcGenericSplitDetail.component';
-import { openTemplateViewer } from '../broadcast/your-templates/components/TemplateViewer.component';
+import { AsyncTemplateViewer } from '../broadcast/your-templates/components/TemplateViewer.component';
 import { MessageSectionPreview } from '../broadcast/your-templates/components/YourTemplatesPriview.component';
 import { openAddContactForm } from '../contact/add.contact.modal.form';
+
+import {
+    ArcMessageSvgIcon,
+    AttachmentsSvgIcon,
+    EmojiSvgIcon,
+    MoreIcon,
+} from 'assets';
 
 const TeamInboxModuleDetail = () => {
     return (
@@ -48,14 +71,15 @@ const TeamInboxModuleDetail = () => {
             title='Team Inbox'
             type='teamInbox'
             breadcrumbKey='contact.display_name'
+            // renderTopBar={() => {
+            //     return <></>;
+            // }}
             actions={[
                 {
-                    name: 'Action',
-                    type: 'action_btn',
+                    name: 'Add Inbox',
+                    type: 'create',
+                    action: openAddInbox,
                     outline: true,
-                    buttonActions: [
-                        { name: 'Add Inbox', action: openAddInbox },
-                    ],
                 },
             ]}
             renderCardItem={(item, activeId) => {
@@ -110,27 +134,6 @@ const DetailSection = ({
     data: any;
     isLoading?: boolean;
 }) => {
-    const queryClient = useQueryClient();
-    const [input, setInput] = useState('');
-
-    const sendMessage = async () => {
-        const { success, response } = await FetchData({
-            className: TeamInboxController,
-            method: 'sendMessage',
-            methodParams: data?.id,
-            classParams: {
-                data: input,
-            },
-        });
-
-        if (!success) return;
-        setInput('');
-
-        queryClient.invalidateQueries({
-            queryKey: ['team_inbox_messages'],
-        });
-    };
-
     return (
         <div className='grid overflow-hidden grid-cols-3 gap-2 items-center h-full'>
             <div className='overflow-y-auto col-span-2 h-full rounded border bg-polaris-bg-surface'>
@@ -140,29 +143,12 @@ const DetailSection = ({
                     </div>
                 )}
                 {!isLoading && (
-                    <form
-                        className='relative gap-1 p-2 h-full col-flex'
-                        onSubmit={async (e) => {
-                            e.preventDefault();
-                            await sendMessage();
-                        }}
-                    >
+                    <div className='relative gap-1 p-2 h-full col-flex'>
                         <div className='overflow-hidden flex-1 border'>
                             <RenderMessageDetail data={data} />
                         </div>
-                        <div className='flex sticky right-0 bottom-0 left-0 gap-2 items-center'>
-                            <InputField
-                                value={input}
-                                onChange={setInput}
-                                placeholder={'Enter Message Here'}
-                                className='w-full'
-                                size='sm'
-                            />
-                            <Button type='submit' disabled={input.length <= 0}>
-                                Send
-                            </Button>
-                        </div>
-                    </form>
+                        <MessageChat data={data} />
+                    </div>
                 )}
             </div>
             <RightSection data={data} isLoading={isLoading} />
@@ -330,27 +316,20 @@ const MessageItem = ({ message }: { message: any }) => {
         return content;
     }, [body, footer, header]);
 
-    const repliedContent = useMemo(() => {
-        const content = {};
-
-        getData(message?.parent_payload?.template?.components, 'body')?.forEach(
-            (element) => {
-                content[element?.parameter_name] = element?.text;
-            }
-        );
-
-        return content;
-    }, [message?.parent_payload?.template?.components]);
-
     return (
         <div
-            className={cn('w-fit col-flex gap-2', {
+            className={cn('w-full col-flex gap-2', {
                 'mr-auto ': message.is_replied,
                 'ml-auto ': message?.attributes?.sent_by,
             })}
         >
             {component ? (
                 <div className='flex flex-row-reverse gap-2 items-end'>
+                    {message?.is_error && (
+                        <Tooltip message={'Error Sending the message'}>
+                            <Info size={14} color='red' />
+                        </Tooltip>
+                    )}
                     <MessageSectionPreview
                         sampleContent={sampleContent}
                         configuration={message?.template_button_configurations}
@@ -390,17 +369,8 @@ const MessageItem = ({ message }: { message: any }) => {
                         </Tooltip>
                     )}
 
-                    <div
-                        className={cn(
-                            'rounded-md p-3 shadow-md  self-end flex flex-col gap-1 text-black max-w-[50%] bg-green-200'
-                        )}
-                    >
-                        <div className='flex flex-col gap-2'>
-                            <span className='text-sm text-primary-950'>
-                                {message?.payload?.text?.body}
-                            </span>
-                        </div>
-                    </div>
+                    <RenderInnerTextMessage message={message} />
+
                     <div className='flex gap-1'>
                         {FormatDisplayDateStyled({
                             value: message?.created_at,
@@ -423,41 +393,31 @@ const MessageItem = ({ message }: { message: any }) => {
             )}
 
             {message?.is_replied && (
-                <div className='flex gap-2 items-end'>
-                    <div className='gap-2 items-start p-3 bg-gray-300 rounded col-flex'>
-                        {message?.template_parent_body && (
-                            <div
-                                className='h-[70px] overflow-hidden text-ellipsis whitespace-pre-line line-clamp-3 w-[200px] bg-primary/70 text-xs p-1 rounded text-primary-content'
-                                dangerouslySetInnerHTML={{
-                                    __html: replaceVariablesInString(
-                                        message?.template_parent_body,
-                                        repliedContent
-                                    ),
-                                }}
-                            ></div>
-                        )}
-
-                        <span>
-                            {message?.payload?.button?.text ||
-                                message?.payload?.text?.body}
-                        </span>
-                    </div>
-                    {FormatDisplayDateStyled({
-                        value: message?.created_at,
-                        size: 'xs',
-                        className: 'text-base-secondary',
-                    })}
-                </div>
+                <RenderUserMessageBubble message={message} />
             )}
         </div>
     );
 };
 
-const openAddInbox = () => {
-    SlidingPane.open({ component: AddInboxModal });
+const openAddInbox = (options?: {
+    contact_id?: number;
+    disableContact?: boolean;
+}) => {
+    Modal.open({
+        component: AddInboxModal,
+        modalSize: 'lg',
+        props: { ...options },
+    });
 };
 
-const AddInboxModal = () => {
+const AddInboxModal = ({
+    contact_id,
+    disableContact = false,
+}: {
+    contact_id: number;
+    disableContact?: boolean;
+}) => {
+    const [templateData, setTemplateData] = useState<any>();
     const [attributes, setAttributes] = useState({});
 
     const formSchema: FormBuilderFormSchema = {
@@ -469,7 +429,7 @@ const AddInboxModal = () => {
             controller: ContactController,
             required: true,
             labelKey: 'display_name',
-            autoSelectZeroth: true,
+            disabled: disableContact,
         },
         template_id: {
             type: 'reference_select',
@@ -477,6 +437,7 @@ const AddInboxModal = () => {
             label: 'Template',
             placeholder: 'Select Template',
             required: true,
+            autoSelectZeroth: true,
         },
     };
 
@@ -490,7 +451,7 @@ const AddInboxModal = () => {
             classParams: { ...values, custom_attributes: attributes },
         });
 
-        SlidingPane.closeAll();
+        Modal.closeAll();
         if (!success) return toastBackendError(response);
 
         Navigation.navigate({ url: `${TEAM_INBOX_SPLIT_LIST}/${response.id}` });
@@ -500,65 +461,69 @@ const AddInboxModal = () => {
         useFormBuilder({
             formSchema,
             onSubmit,
+            initValues: { contact_id },
         });
+
     return (
         <ModalContainer title='Send Message'>
-            <ModalBody className='flex-1 col-flex'>
-                <div className='w-full col-flex'>
-                    {renderFormFields('contact_id')}
-                    <Button
-                        size='xs'
-                        appearance='plain'
-                        outline
-                        className='justify-end ml-auto text-right w-fit'
-                        onClick={() =>
-                            openAddContactForm(undefined, {
-                                callback: (data) => {
-                                    handleFormData('contact_id', data?.id);
-                                },
-                            })
-                        }
-                    >
-                        Add Contact
-                    </Button>
-                </div>
-
-                {renderFormFields('template_id')}
-
-                {true && (
-                    <div className='gap-2 px-2 py-3 mt-3 col-flex bg-base-200'>
-                        <Button
-                            onClick={() =>
-                                openTemplateViewer(watch('template_id'))
-                            }
-                            size={'xs'}
-                            appearance='accent'
-                            outline
-                        >
-                            View Template
-                        </Button>
-
+            <ModalBody className='grid flex-1 grid-cols-2 gap-2'>
+                <div className='col-flex'>
+                    <div className='w-full col-flex'>
+                        {renderFormFields('contact_id')}
+                        {!disableContact && (
+                            <Button
+                                size='xs'
+                                appearance='plain'
+                                outline
+                                className='justify-end ml-auto text-right w-fit'
+                                onClick={() =>
+                                    openAddContactForm(undefined, {
+                                        callback: (data) => {
+                                            handleFormData(
+                                                'contact_id',
+                                                data?.id
+                                            );
+                                        },
+                                    })
+                                }
+                            >
+                                Add Contact
+                            </Button>
+                        )}
+                    </div>
+                    {renderFormFields('template_id')}
+                    {!IsUndefinedOrNull(templateData) && (
                         <DisplayAttributesField
                             template_id={watch('template_id')}
                             setAttributes={setAttributes}
+                            attributes={attributes}
                         />
-                    </div>
-                )}
+                    )}
+                </div>
+                <div className='flex justify-center items-center p-4 rounded bg-primary h-[650px]'>
+                    <AsyncTemplateViewer
+                        getData={(data) => {
+                            setTemplateData(data);
+                        }}
+                        id={watch('template_id')}
+                        sample_contents={attributes}
+                    />
+                </div>
             </ModalBody>
             <ModalFooter className='py-4 justify'>
                 <div className='flex-1 gap-4 row-flex'>
                     <Button
                         appearance='errorHover'
-                        onClick={() => SlidingPane.close()}
+                        onClick={() => Modal.close()}
                     >
                         Cancel
                     </Button>
                     <Button
                         appearance='primary'
-                        className='flex-1'
+                        defaultMinWidth
                         onClick={handleSubmit}
                     >
-                        Save
+                        Send
                     </Button>
                 </div>
             </ModalFooter>
@@ -569,9 +534,11 @@ const AddInboxModal = () => {
 const DisplayAttributesField = ({
     template_id,
     setAttributes,
+    attributes,
 }: {
     template_id: number;
     setAttributes: (data: any) => void;
+    attributes: any;
 }) => {
     const { isFetching, data } = useQuery({
         queryKey: ['template_detail', template_id],
@@ -595,13 +562,14 @@ const DisplayAttributesField = ({
     if (!template_id) return <></>;
     if (isFetching)
         return (
-            <div className='flex justify-center items-center'>
+            <div className='flex justify-center items-center mt-4'>
                 <Loading size='lg' color='primary' />
             </div>
         );
 
     return (
-        <div className='gap-2 items-center w-full col-flex'>
+        <div className='gap-2 items-center p-2 mt-4 w-full rounded col-flex bg-base-300'>
+            <Label label='Attributes' required />
             {Object.entries(data?.sample_contents)?.map(([key, value]) => {
                 return (
                     <InputField
@@ -610,11 +578,349 @@ const DisplayAttributesField = ({
                         key={key}
                         placeholder={key}
                         className='w-full'
+                        value={attributes?.[key]}
                         onChange={(e) => {
                             setAttributes((prev) => ({ ...prev, [key]: e }));
                         }}
                     />
                 );
+            })}
+        </div>
+    );
+};
+
+const MessageChat = ({ data }) => {
+    const queryClient = useQueryClient();
+
+    const emojiRef = useRef(null);
+
+    const [input, setInput] = useState('');
+    const [files, { removeAt, set: setFiles }] = useList<any[]>();
+
+    const sendMessage = async () => {
+        const doc: any = files?.[0];
+
+        const { success, response } = await FetchData({
+            className: TeamInboxController,
+            method: 'sendMessage',
+            methodParams: data?.id,
+            classParams: {
+                ignore_dto_all: true,
+                data: input,
+                attachment: doc && {
+                    type: doc?.type,
+                    name: doc?.name,
+                    link: doc?.serverUrl,
+                },
+            },
+        });
+
+        if (!success) return toastBackendError(response);
+
+        setInput('');
+        setFiles(null);
+
+        queryClient.invalidateQueries({
+            queryKey: ['team_inbox_messages'],
+        });
+    };
+
+    const handleKeyPress = useCallback(
+        (e: KeyboardEvent) => {
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            const hasPressed = isMac ? e.metaKey : e.ctrlKey;
+
+            // For Windows/Linux: Ctrl+Enter
+            // For Mac: Cmd+Enter
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                sendMessage();
+            }
+        },
+        [sendMessage]
+    );
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyPress);
+        return () => document.removeEventListener('keydown', handleKeyPress);
+    }, [handleKeyPress]);
+
+    return (
+        <div className='sticky right-0 bottom-0 left-0 gap-2 col-flex'>
+            <TextareaField
+                value={input}
+                onChange={setInput}
+                placeholder={'Enter Message Here'}
+                className='w-full'
+                size='sm'
+            />
+            <div className='gap-2 w-full col-flex'>
+                {files?.map((file: any, index): any => {
+                    return (
+                        <UploadedFileCard
+                            key={`${file?.serverUrl}-${index}`}
+                            file={file}
+                            handleRemoveFile={() => {
+                                removeAt(index);
+                            }}
+                            hideDelete={false}
+                            imageViwer={() =>
+                                openResourceViewerModal([], {
+                                    document_url: file?.serverUrl,
+                                    ...file,
+                                })
+                            }
+                        />
+                    );
+                })}
+            </div>
+            <div className='flex gap-2 items-center'>
+                <div className='flex flex-1 items-center'>
+                    <IconButton
+                        name='Template Message'
+                        icon={ArcMessageSvgIcon}
+                        onClick={() => {
+                            openAddInbox({
+                                contact_id: data?.contact_id,
+                                disableContact: true,
+                            });
+                        }}
+                        outline
+                        appearance='polaris-transparent'
+                    />
+                    <CommonFileUploader
+                        is_multiple={false}
+                        onFileUpload={(data) => {
+                            setFiles(data as any);
+                        }}
+                    >
+                        {({ uploading }) => {
+                            return (
+                                <div>
+                                    <IconButton
+                                        icon={AttachmentsSvgIcon}
+                                        outline
+                                        appearance='polaris-transparent'
+                                    />
+                                </div>
+                            );
+                        }}
+                    </CommonFileUploader>
+
+                    <Popover
+                        ref={emojiRef}
+                        element={
+                            <EmojiPicker
+                                className='absolute'
+                                allowExpandReactions
+                                onEmojiClick={({ emoji }) => {
+                                    setInput((prev) => prev + emoji);
+                                    emojiRef.current.toggle(false);
+                                }}
+                            />
+                        }
+                    >
+                        <IconButton
+                            name='Add Emoji'
+                            icon={EmojiSvgIcon}
+                            appearance='plain'
+                        />
+                    </Popover>
+                </div>
+                <Button onClick={sendMessage} disabled={input.length <= 0}>
+                    Send
+                </Button>
+            </div>
+        </div>
+    );
+};
+
+const UploadedFileCard = ({
+    file,
+    handleRemoveFile,
+    imageViwer,
+    hideDelete,
+}: any) => {
+    const isDeleteOptionShow = useMemo(() => {
+        if (hideDelete && file?.id) return false;
+        if (AccessManager.hasRoleIdentifier('ua_document_manager')) return true;
+        let activeFile: any = file;
+        if (activeFile?.attributes?.no_edit) return false;
+        if (!activeFile?.created_by) return true;
+        const business = UserBusiness.getCurrentBusiness();
+        const loggedUserObj: any = UserBusiness.getIdObject();
+
+        if (!business?.owner_id || !loggedUserObj?.user_id) return true; //business information initially not set
+        return (
+            AccessManager.isAuthUser(activeFile?.created_by) ||
+            AccessManager.isBusinessOwner(activeFile?.created_by)
+        );
+    }, [file, hideDelete]);
+    const actions = [
+        { name: 'View', action: imageViwer },
+        {
+            name: 'delete',
+            action: handleRemoveFile,
+            isCancel: true,
+            visible: isDeleteOptionShow,
+        },
+    ];
+
+    return (
+        <div className='flex overflow-hidden gap-4 justify-between items-center px-4 py-2 text-xs rounded border bg-base-100 border-base-300'>
+            <div className='flex overflow-hidden gap-3 items-center'>
+                <Icon
+                    source={handleDocumentIcon(
+                        file?.document_url || file?.serverUrl
+                    )}
+                    isSvg
+                    size={20}
+                    iconColor='text-base-tertiary -mt-1'
+                />
+                <div className='overflow-hidden font-medium text-left col-flex text-base-primary'>
+                    <Typography className='overflow-hidden w-full text-xs truncate text-ellipsis'>
+                        {file?.name}
+                    </Typography>
+
+                    <Typography className='text-[10px] font-normal uppercase text-base-tertiary '>
+                        {Math.round(file?.size / 1024)}KB
+                    </Typography>
+                </div>
+            </div>
+
+            <DropdownMenu hideOnNoAction={false} actions={actions}>
+                <div className='btn btn-square btn-ghost btn-xs hover:bg-primary/10 hover:text-primary'>
+                    <Icon
+                        source={MoreIcon}
+                        size={22}
+                        isSvg
+                        iconClass='rotate-90'
+                    />
+                </div>
+            </DropdownMenu>
+        </div>
+    );
+};
+
+const RenderInnerTextMessage = ({ message }: any) => {
+    const payload = message?.payload;
+
+    const renderComponent = () => {
+        if (!IsEmptyObject(payload?.image)) {
+            return (
+                <div className='flex flex-col gap-2'>
+                    <Image
+                        height={300}
+                        width={300}
+                        alt='image'
+                        src={payload?.image.link}
+                    />
+
+                    <span className='text-sm text-primary-950'>
+                        {payload?.image?.caption}
+                    </span>
+                </div>
+            );
+        }
+
+        return (
+            <div className='flex flex-col gap-2'>
+                <span className='text-sm text-primary-950'>
+                    {payload?.text?.body}
+                </span>
+            </div>
+        );
+    };
+
+    return (
+        <div
+            className={cn(
+                'rounded-md p-3 shadow-md  self-end flex flex-col gap-1 text-black max-w-[50%] bg-green-200'
+            )}
+        >
+            {renderComponent()}
+        </div>
+    );
+};
+
+const RenderUserMessageBubble = ({ message }) => {
+    const payload = message?.payload;
+
+    const { data, isLoading } = useQuery({
+        queryKey: ['image', payload?.image?.id],
+        enabled: !IsUndefinedOrNull(payload?.image?.id),
+        queryFn: async () => {
+            const { success, response } = await FetchData({
+                className: TeamInboxController,
+                method: 'getImages',
+                methodParams: payload?.image?.id,
+            });
+
+            if (success) return data;
+        },
+    });
+
+    console.log(data);
+
+    const repliedContent = useMemo(() => {
+        const content = {};
+
+        getData(message?.parent_payload?.template?.components, 'body')?.forEach(
+            (element) => {
+                content[element?.parameter_name] = element?.text;
+            }
+        );
+
+        return content;
+    }, [message?.parent_payload?.template?.components]);
+
+    const renderComponent = () => {
+        if (payload?.image?.id) {
+            return (
+                <div className='gap-1 col-flex'>
+                    <div className='flex flex-col gap-2'>
+                        <image
+                            height={300}
+                            width={300}
+                            className='h-[300px] w-[300px]'
+                            href={data}
+                        />
+
+                        <span className='text-sm text-primary-950'>
+                            {payload?.image?.caption}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <span>
+                {message?.payload?.button?.text || message?.payload?.text?.body}
+            </span>
+        );
+    };
+
+    return (
+        <div className='flex gap-2 items-end'>
+            <div className='gap-2 items-start p-3 bg-gray-300 rounded col-flex'>
+                {message?.template_parent_body && (
+                    <div
+                        className='h-[70px] overflow-hidden text-ellipsis whitespace-pre-line line-clamp-3 w-[200px] bg-primary/70 text-xs p-1 rounded text-primary-content'
+                        dangerouslySetInnerHTML={{
+                            __html: replaceVariablesInString(
+                                message?.template_parent_body,
+                                repliedContent
+                            ),
+                        }}
+                    ></div>
+                )}
+                {renderComponent()}
+            </div>
+            {FormatDisplayDateStyled({
+                value: message?.created_at,
+                size: 'xs',
+                className: 'text-base-secondary',
             })}
         </div>
     );

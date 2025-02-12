@@ -118,7 +118,7 @@ export const MultiSelectFilter = ({
                         }}
                     />
 
-                    <ChevronsLeftRight className='rotate-90 ' size={18} />
+                    <ChevronsLeftRight className='rotate-90' size={18} />
                 </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -126,12 +126,12 @@ export const MultiSelectFilter = ({
                 align={align}
                 avoidCollisions={isCollision}
                 className={cn(
-                    'mt-2 rounded min-w-[200px] col-flex flex-1 z-[99999] overflow-hidden  max-h-[calc(var(--radix-dropdown-menu-content-available-height)-15px)] bg-base-100 w-[var(--radix-dropdown-menu-trigger-width)]',
+                    'overflow-hidden flex-1 mt-2 rounded border shadow-lg min-w-[200px] col-flex z-[99999] max-h-[calc(var(--radix-dropdown-menu-content-available-height)-15px)] bg-base-100 w-[var(--radix-dropdown-menu-trigger-width)]',
                     containerClassName
                 )}
             >
                 {isSearchable && (
-                    <div className='w-full p-2 pb-0'>
+                    <div className='p-2 pb-0 w-full'>
                         <InputField
                             addonEnd={<SearchIcon size={18} />}
                             placeholder={'Search Options'}
@@ -149,12 +149,12 @@ export const MultiSelectFilter = ({
                     </div>
                 )}
 
-                <div className='py-2 overflow-y-auto col-flex max-h-80'>
+                <div className='overflow-y-auto py-2 max-h-80 col-flex'>
                     {filterOptions.map((option) => {
                         return (
                             <div
                                 key={option?.value as any}
-                                className='px-2 hover:bg-base-200 '
+                                className='px-2 hover:bg-base-200'
                             >
                                 <CheckBox
                                     size='xs'
@@ -174,14 +174,11 @@ export const MultiSelectFilter = ({
 
                 <div
                     className={cn(
-                        'items-center justify-between p-3 text-sm border-t row-flex',
+                        'justify-between items-center p-3 text-sm border-t row-flex',
                         footerClassName
                     )}
                 >
-                    <div
-                        onClick={() => setSelected([])}
-                        className='table-link '
-                    >
+                    <div onClick={() => setSelected([])} className='table-link'>
                         Clear All
                     </div>
                     {!IsValidString(search) ? (
@@ -223,7 +220,7 @@ const DisplaySelected = ({
 
     const renderSelected = React.useCallback(() => {
         if (!selected?.length)
-            return <div className='text-base-secondary '>{placeholder}..</div>;
+            return <div className='text-base-secondary'>{placeholder}..</div>;
 
         const selectedDisplays = [...(selectedOptions || [])].splice(
             0,
@@ -238,7 +235,7 @@ const DisplaySelected = ({
             <div
                 ref={elementRef}
                 className={cn(
-                    'items-center w-full gap-2 cursor-pointer row-flex',
+                    'gap-2 items-center w-full cursor-pointer row-flex',
                     {
                         'cursor-not-allowed': disabled,
                     }
@@ -288,7 +285,7 @@ const DisplaySelected = ({
         selectedSuffix,
     ]);
     return (
-        <div className='items-center flex-1 gap-1 row-flex whitespace-nowrap'>
+        <div className='flex-1 gap-1 items-center whitespace-nowrap row-flex'>
             {renderLabel()} {renderSelected()}
         </div>
     );

@@ -13,6 +13,7 @@ export { default as FilterIcon } from './SVGIcons/filter.svg';
 export { default as Setting } from './SVGIcons/setting.svg';
 
 export { default as ActiveCircleSvgIcon } from './SVGIcons/Iconactivecircle.svg';
+export { default as EmojiSvgIcon } from './SVGIcons/emojiicon.svg';
 export { default as InactiveSvgIcon } from './SVGIcons/Iconinactiveicon.svg';
 export { default as FilePPTSvgIcon } from './SVGIcons/PPT.svg';
 export { default as AddCircleSvgIcon } from './SVGIcons/add-circleadd-circle.svg';

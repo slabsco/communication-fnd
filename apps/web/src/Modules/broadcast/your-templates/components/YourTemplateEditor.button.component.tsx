@@ -1,4 +1,4 @@
-import { Reply } from 'lucide-react';
+import { Copy, Link, PhoneCallIcon, Reply } from 'lucide-react';
 import { useState } from 'react';
 import { useList, useUpdateEffect } from 'react-use';
 
@@ -6,25 +6,26 @@ import {
     Button,
     cn,
     InputField,
+    MultiSelectFilter,
     SelectBox,
     Switch,
 } from '@finnoto/design-system';
 
 export const YOUR_TEMPLATE_SUPPORTED_CONFIG = [
-    // {
-    //     type: 'CALL',
-    //     name: 'Call  Now',
-    //     value: '+977-9823624253',
-    //     icon: <PhoneCallIcon size={14} />,
-    //     limit: 1,
-    // },
-    // {
-    //     type: 'URL',
-    //     name: 'Visit Us',
-    //     value: 'https://finnoto.com',
-    //     icon: <Link size={14} />,
-    //     limit: 2,
-    // },
+    {
+        type: 'CALL',
+        name: 'Call  Now',
+        value: '+977-9823624253',
+        icon: <PhoneCallIcon size={14} />,
+        limit: 1,
+    },
+    {
+        type: 'URL',
+        name: 'Visit Us',
+        value: 'https://finnoto.com',
+        icon: <Link size={14} />,
+        limit: 2,
+    },
     {
         type: 'QUICK_REPLY',
         name: 'Quick Reply',
@@ -32,13 +33,13 @@ export const YOUR_TEMPLATE_SUPPORTED_CONFIG = [
         icon: <Reply size={14} />,
         limit: 3,
     },
-    // {
-    //     type: 'PROMO_CODE',
-    //     name: 'Promo Code',
-    //     value: '#23w21321',
-    //     limit: 1,
-    //     icon: <Copy size={14} />,
-    // },
+    {
+        type: 'PROMO_CODE',
+        name: 'Copy Offer Code',
+        value: '#23w21321',
+        limit: 1,
+        icon: <Copy size={14} />,
+    },
 ];
 
 const YourTemplateEditorButton = ({
@@ -59,7 +60,7 @@ const YourTemplateEditorButton = ({
     }));
 
     return (
-        <div className='flex flex-col gap-2 min-h-[300px]'>
+        <div className='flex flex-col gap-2'>
             <hr className='my-4 border-t border-gray-300' />
             <div className='flex gap-4 justify-between items-center'>
                 <h3>Buttons (Recommended)</h3>
@@ -74,12 +75,15 @@ const YourTemplateEditorButton = ({
             </div>
 
             <div className={cn('flex flex-col gap-2', { hidden: !isOpen })}>
-                <SelectBox
+                <MultiSelectFilter
+                    side='top'
+                    footerClassName='hidden'
                     placeholder='Select Button'
                     value={buttons}
+                    isSearchable={false}
                     options={options as any}
-                    onChange={(evt) => {
-                        setButtons([evt?.value]);
+                    onChangeFilter={(evt) => {
+                        setButtons(evt);
                     }}
                 />
                 <RenderButtonConfiguration
@@ -177,6 +181,7 @@ const RenderOfferCodeButton = ({
                 Copy offer code
             </div>
             <InputField
+                value={configuration?.PROMO_CODE}
                 placeholder='Enter the Coupon Code'
                 defaultValue={configuration?.PROMO_CODE}
                 onChange={(e) => {
@@ -206,6 +211,7 @@ const RenderCallNowButton = ({
             </div>
             <InputField
                 placeholder='Button Text'
+                value={call?.name}
                 onChange={(e) => {
                     setCall((prev) => ({
                         ...prev,
@@ -215,6 +221,7 @@ const RenderCallNowButton = ({
             />
             <InputField
                 placeholder='Mobile Number'
+                value={call?.value}
                 onChange={(e) => {
                     setCall((prev) => ({ ...prev, value: e }));
                 }}
@@ -230,11 +237,11 @@ const RenderVisitUsButton = ({
     onOptionsChange: any;
     configuration: any;
 }) => {
-    const [value, setValue] = useState<any>(configuration?.['URL'] || {});
+    const [visitUs, setVisitUs] = useState<any>(configuration?.['URL'] || {});
 
     useUpdateEffect(() => {
-        onOptionsChange(value);
-    }, [value]);
+        onOptionsChange(visitUs);
+    }, [visitUs]);
     return (
         <div className='flex gap-2 items-center'>
             <div className='py-1 w-40 text-center text-white bg-gray-400 rounded'>
@@ -242,17 +249,19 @@ const RenderVisitUsButton = ({
             </div>
             <InputField
                 placeholder='Button Text'
+                value={visitUs?.name}
                 onChange={(e) => {
-                    setValue((prev) => ({
+                    setVisitUs((prev) => ({
                         ...prev,
                         name: e,
                     }));
                 }}
             />
             <InputField
-                placeholder='https://finnoto.com'
+                value={visitUs?.value}
+                placeholder='https://example.com'
                 onChange={(e) => {
-                    setValue((prev) => ({ ...prev, value: e }));
+                    setVisitUs((prev) => ({ ...prev, value: e }));
                 }}
             />
         </div>
@@ -298,7 +307,7 @@ const RenderQuickReplyButton = ({
                         {index !== 0 && (
                             <Button
                                 onClick={() => handleDelete(index)}
-                                appearance={'plain'}
+                                appearance={'errorHover'}
                                 size={'xs'}
                                 color={'error'}
                             >

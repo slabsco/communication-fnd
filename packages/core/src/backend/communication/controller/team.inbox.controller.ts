@@ -39,4 +39,9 @@ export class TeamInboxController extends BaseModel {
 
         return this.post();
     }
+
+    async getImages(slug: string) {
+        this.api = `${this.endPoint}/${slug}/get-image`;
+        return this.get();
+    }
 }
