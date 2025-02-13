@@ -1,32 +1,42 @@
 'use client';
 
+import axios from 'axios';
 import EmojiPicker from 'emoji-picker-react';
-import { Check, CheckCheck, Contact, Info } from 'lucide-react';
+import { Check, CheckCheck, Contact, FileIcon, Info } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useList } from 'react-use';
+import { useEffectOnce, useList } from 'react-use';
 
 import {
+    ACCESS_TOKEN,
     AccessManager,
+    BUSINESS_API_URL,
+    Ellipsis,
     FetchData,
     FormBuilderFormSchema,
     FormBuilderSubmitType,
+    GetItem,
     IsEmptyArray,
     IsEmptyObject,
     IsUndefinedOrNull,
     Navigation,
     ObjectDto,
+    RefetchGenericListing,
+    RemoveEmptyArray,
     replaceVariablesInString,
     TEAM_INBOX_SPLIT_LIST,
     toastBackendError,
     useFormBuilder,
     UserBusiness,
+    useRecursiveFetch,
 } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { ContactController } from '@finnoto/core/src/backend/communication/controller/contact.controller';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import {
     Avatar,
+    Badge,
     Button,
     cn,
     CommonFileUploader,
@@ -47,7 +57,6 @@ import {
     Tooltip,
     Typography,
 } from '@finnoto/design-system';
-import { Label } from '@finnoto/design-system/src/Components/Inputs/InputField/label.component';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -59,11 +68,22 @@ import { openAddContactForm } from '../contact/add.contact.modal.form';
 import {
     ArcMessageSvgIcon,
     AttachmentsSvgIcon,
+    DocumentSvgIcon,
     EmojiSvgIcon,
+    FileDownloadSvgIcon,
     MoreIcon,
 } from 'assets';
 
 const TeamInboxModuleDetail = () => {
+    const [recursiveFetch] = useRecursiveFetch(RefetchGenericListing, {
+        delay: 1000,
+        repeat: Infinity,
+    });
+
+    useEffectOnce(() => {
+        recursiveFetch();
+    });
+
     return (
         <ArcGenericSplitDetailComponent
             defaultActiveTab='all'
@@ -76,10 +96,9 @@ const TeamInboxModuleDetail = () => {
             // }}
             actions={[
                 {
-                    name: 'Add Inbox',
+                    name: 'Send New Message',
                     type: 'create',
                     action: openAddInbox,
-                    outline: true,
                 },
             ]}
             renderCardItem={(item, activeId) => {
@@ -119,10 +138,15 @@ const Card = ({ data, isActive }: { data: any; isActive: boolean }) => {
                 </div>
                 <div className='mt-0'>
                     <span className='text-sm'>
-                        {FormatDisplayDateStyled({ value: data?.updated_at })}
+                        {FormatDisplayDateStyled({
+                            value: data?.last_activity_at,
+                        })}
                     </span>
                 </div>
             </div>
+            {data?.expired_at && (
+                <Badge label={'Expired'} size='sm' appearance='error' />
+            )}
         </div>
     );
 };
@@ -259,6 +283,7 @@ const RenderMessageDetail = ({ data }: { data: { id: string } }) => {
     const mainRef = useRef(null);
     const { data: response, isLoading } = useQuery({
         refetchInterval: 5000,
+        cacheTime: Infinity,
         queryKey: ['team_inbox_messages', data?.id],
         queryFn: async () => {
             const { success, response } = await FetchData({
@@ -285,6 +310,7 @@ const RenderMessageDetail = ({ data }: { data: { id: string } }) => {
             className='flex overflow-y-auto flex-col-reverse gap-2 p-4 h-full'
             ref={mainRef}
         >
+            {isLoading && <Loading />}
             {response?.records.map((message: any) => (
                 <MessageItem key={message?.id} message={message} />
             ))}
@@ -441,6 +467,19 @@ const AddInboxModal = ({
         },
     };
 
+    const isAllAttributesFilled = useMemo(() => {
+        if (IsEmptyObject(templateData?.sample_contents)) return false;
+        if (IsEmptyObject(attributes)) return false;
+
+        const sample_contents = Object.values(templateData?.sample_contents);
+        const att = RemoveEmptyArray(Object.values(attributes));
+
+        if (sample_contents.length === att.length) return true;
+        return false;
+
+        return;
+    }, [attributes, templateData?.sample_contents]);
+
     const onSubmit: FormBuilderSubmitType = async (
         values: ObjectDto,
         { setError, isCreateAnother }
@@ -457,7 +496,7 @@ const AddInboxModal = ({
         Navigation.navigate({ url: `${TEAM_INBOX_SPLIT_LIST}/${response.id}` });
     };
 
-    const { renderFormFields, handleFormData, watch, handleSubmit } =
+    const { renderFormFields, hasError, handleFormData, watch, handleSubmit } =
         useFormBuilder({
             formSchema,
             onSubmit,
@@ -466,7 +505,7 @@ const AddInboxModal = ({
 
     return (
         <ModalContainer title='Send Message'>
-            <ModalBody className='grid flex-1 grid-cols-2 gap-2'>
+            <ModalBody className='grid flex-1 grid-cols-2 gap-6'>
                 <div className='col-flex'>
                     <div className='w-full col-flex'>
                         {renderFormFields('contact_id')}
@@ -522,6 +561,7 @@ const AddInboxModal = ({
                         appearance='primary'
                         defaultMinWidth
                         onClick={handleSubmit}
+                        disabled={!isAllAttributesFilled || hasError()}
                     >
                         Send
                     </Button>
@@ -569,10 +609,10 @@ const DisplayAttributesField = ({
 
     return (
         <div className='gap-2 items-center p-2 mt-4 w-full rounded col-flex bg-base-300'>
-            <Label label='Attributes' required />
             {Object.entries(data?.sample_contents)?.map(([key, value]) => {
                 return (
                     <InputField
+                        label={key}
                         size='sm'
                         required
                         key={key}
@@ -597,7 +637,7 @@ const MessageChat = ({ data }) => {
     const [input, setInput] = useState('');
     const [files, { removeAt, set: setFiles }] = useList<any[]>();
 
-    const sendMessage = async () => {
+    const sendMessage = useCallback(async () => {
         const doc: any = files?.[0];
 
         const { success, response } = await FetchData({
@@ -623,7 +663,7 @@ const MessageChat = ({ data }) => {
         queryClient.invalidateQueries({
             queryKey: ['team_inbox_messages'],
         });
-    };
+    }, [data?.id, files, input, queryClient, setFiles]);
 
     const handleKeyPress = useCallback(
         (e: KeyboardEvent) => {
@@ -640,10 +680,38 @@ const MessageChat = ({ data }) => {
         [sendMessage]
     );
 
+    const sendTemplateMessage = () => {
+        openAddInbox({
+            contact_id: data?.contact_id,
+            disableContact: true,
+        });
+    };
+
     useEffect(() => {
         document.addEventListener('keydown', handleKeyPress);
         return () => document.removeEventListener('keydown', handleKeyPress);
     }, [handleKeyPress]);
+
+    if (data?.expired_at) {
+        return (
+            <div className='p-3 rounded bg-primary col-flex'>
+                <h3 className='text-lg font-semibold text-primary-content'>
+                    This is a broadcast only chat.{' '}
+                </h3>
+                <p className='text-sm text-primary-content'>
+                    Until you receive a message from the customer, WhatsApp
+                    allows only template messages to be sent in these chats.
+                </p>
+                <Button
+                    onClick={sendTemplateMessage}
+                    className='mt-2'
+                    appearance='polaris-info'
+                >
+                    Send Template Message
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className='sticky right-0 bottom-0 left-0 gap-2 col-flex'>
@@ -679,12 +747,7 @@ const MessageChat = ({ data }) => {
                     <IconButton
                         name='Template Message'
                         icon={ArcMessageSvgIcon}
-                        onClick={() => {
-                            openAddInbox({
-                                contact_id: data?.contact_id,
-                                disableContact: true,
-                            });
-                        }}
+                        onClick={sendTemplateMessage}
                         outline
                         appearance='polaris-transparent'
                     />
@@ -822,6 +885,43 @@ const RenderInnerTextMessage = ({ message }: any) => {
                 </div>
             );
         }
+        if (!IsEmptyObject(payload?.document)) {
+            const isNotPdf = !(payload?.document?.link as string).endsWith(
+                '.pdf'
+            );
+            return (
+                <div className='flex flex-col gap-2'>
+                    {isNotPdf ? (
+                        <div className='flex gap-2 items-center px-3 py-1 rounded bg-base-200'>
+                            <Icon source={DocumentSvgIcon} isSvg />
+                            <span className='text-sm'>
+                                {Ellipsis({ text: payload?.document?.link })}
+                            </span>
+                            <Link
+                                href={payload?.document?.link}
+                                target='_blank'
+                            >
+                                <IconButton
+                                    icon={FileDownloadSvgIcon}
+                                    size='xs'
+                                    appearance='base'
+                                />
+                            </Link>
+                        </div>
+                    ) : (
+                        <iframe
+                            src={payload?.document?.link}
+                            width='100%'
+                            height='100%'
+                        />
+                    )}
+
+                    <span className='text-sm text-primary-950'>
+                        {payload?.document?.caption}
+                    </span>
+                </div>
+            );
+        }
 
         return (
             <div className='flex flex-col gap-2'>
@@ -845,22 +945,35 @@ const RenderInnerTextMessage = ({ message }: any) => {
 
 const RenderUserMessageBubble = ({ message }) => {
     const payload = message?.payload;
+    const identifierPayload = payload.image || payload.document;
 
     const { data, isLoading } = useQuery({
-        queryKey: ['image', payload?.image?.id],
-        enabled: !IsUndefinedOrNull(payload?.image?.id),
+        queryKey: ['document', identifierPayload?.id],
+        enabled: !IsUndefinedOrNull(identifierPayload?.id),
+        cacheTime: Infinity,
         queryFn: async () => {
-            const { success, response } = await FetchData({
-                className: TeamInboxController,
-                method: 'getImages',
-                methodParams: payload?.image?.id,
-            });
+            const baseurl = GetItem(BUSINESS_API_URL, true);
 
-            if (success) return data;
+            const response = await axios.get(
+                `${baseurl}api/b/team-inbox/${identifierPayload?.id}/get-document`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${GetItem(ACCESS_TOKEN, false)}`,
+                    },
+                    responseType: 'blob', // Changed from 'stream' to 'blob'
+                }
+            );
+
+            if (response.status === 200) {
+                const blob = new Blob([response.data], {
+                    type: response.headers['content-type'],
+                });
+                return URL.createObjectURL(blob);
+            }
+
+            return null;
         },
     });
-
-    console.log(data);
 
     const repliedContent = useMemo(() => {
         const content = {};
@@ -879,12 +992,23 @@ const RenderUserMessageBubble = ({ message }) => {
             return (
                 <div className='gap-1 col-flex'>
                     <div className='flex flex-col gap-2'>
-                        <image
-                            height={300}
-                            width={300}
-                            className='h-[300px] w-[300px]'
-                            href={data}
-                        />
+                        <div className='h-[300px] w-[300px] flex items-center justify-center overflow-hidden'>
+                            {isLoading ? (
+                                <Loading
+                                    size='xl'
+                                    color='primary'
+                                    type='balls'
+                                />
+                            ) : (
+                                <Image
+                                    alt='Image'
+                                    src={data}
+                                    height={300}
+                                    width={300}
+                                    className='object-contain'
+                                />
+                            )}
+                        </div>
 
                         <span className='text-sm text-primary-950'>
                             {payload?.image?.caption}
@@ -893,10 +1017,49 @@ const RenderUserMessageBubble = ({ message }) => {
                 </div>
             );
         }
+        if (payload?.document?.id) {
+            const isNotPdf = !(payload?.document?.filename as string).endsWith(
+                '.pdf'
+            );
+
+            return (
+                <div className='gap-1 col-flex'>
+                    <div className='flex flex-col gap-2'>
+                        {isNotPdf ? (
+                            <div className='flex gap-2 items-center px-3 py-1 rounded bg-base-200'>
+                                <FileIcon size={14} />
+                                <span className='text-sm'>
+                                    {Ellipsis({
+                                        text: payload?.document?.filename,
+                                    })}
+                                </span>
+                                <Link href={data || ''} target='_blank'>
+                                    <IconButton
+                                        icon={FileDownloadSvgIcon}
+                                        size='xs'
+                                        appearance='base'
+                                    />
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className='h-[300px] w-[300px] overflow-hidden flex items-center justify-center'>
+                                <iframe src={data} width='100%' height='100%' />
+                            </div>
+                        )}
+
+                        <span className='text-sm text-primary-950'>
+                            {payload?.document?.caption}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
 
         return (
             <span>
-                {message?.payload?.button?.text || message?.payload?.text?.body}
+                {message?.payload?.button?.text ||
+                    message?.payload?.text?.body ||
+                    'Unsupported Format'}
             </span>
         );
     };

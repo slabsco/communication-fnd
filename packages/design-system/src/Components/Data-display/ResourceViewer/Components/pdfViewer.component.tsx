@@ -70,10 +70,10 @@ export const PdfViewer = ({
 
     return (
         <div
-            className='relative h-full overflow-hidden pdf-viewer'
+            className='overflow-hidden relative h-full pdf-viewer'
             ref={docRef}
         >
-            <div className='h-full overflow-auto'>
+            <div className='overflow-auto h-full'>
                 <Document
                     key={`${fileUrl}${password}`}
                     file={fileUrl}
@@ -96,7 +96,7 @@ export const PdfViewer = ({
                 </Document>
 
                 {showpasswordPrompt && (
-                    <div className='absolute inset-0 z-10 flex items-center justify-center '>
+                    <div className='flex absolute inset-0 z-10 justify-center items-center'>
                         <CustomPasswordInput
                             onPasswordEntered={handlePasswordEntered}
                             error={errorPassword}
