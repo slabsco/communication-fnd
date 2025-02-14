@@ -66,7 +66,7 @@ export interface ProfileUploaderInterface extends CommonFileUploderInterface {
 
 export interface UplodedFileProps {
     file: any;
-    handleRemoveFile: () => void;
+    handleRemoveFile?: () => void;
     imageViwer: () => void;
     hideDelete?: boolean;
 }

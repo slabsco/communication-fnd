@@ -5,8 +5,14 @@ import EmojiPicker from 'emoji-picker-react';
 import { Check, CheckCheck, Contact, FileIcon, Info } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useEffectOnce, useList } from 'react-use';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
+import { useClickAway, useEffectOnce, useList } from 'react-use';
 
 import {
     ACCESS_TOKEN,
@@ -28,11 +34,13 @@ import {
     TEAM_INBOX_SPLIT_LIST,
     toastBackendError,
     useFormBuilder,
+    useOperatingSystem,
     UserBusiness,
     useRecursiveFetch,
 } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { ContactController } from '@finnoto/core/src/backend/communication/controller/contact.controller';
+import { QuickReplyController } from '@finnoto/core/src/backend/communication/controller/quick.reply.controller';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import {
     Avatar,
@@ -64,6 +72,7 @@ import ArcGenericSplitDetailComponent from '../../Components/ArcGenericSplitDeta
 import { AsyncTemplateViewer } from '../broadcast/your-templates/components/TemplateViewer.component';
 import { MessageSectionPreview } from '../broadcast/your-templates/components/YourTemplatesPriview.component';
 import { openAddContactForm } from '../contact/add.contact.modal.form';
+import { openQuickReplySelect } from '../quickreply/quick.reply.select.list';
 
 import {
     ArcMessageSvgIcon,
@@ -72,11 +81,12 @@ import {
     EmojiSvgIcon,
     FileDownloadSvgIcon,
     MoreIcon,
+    ReplySvgICon,
 } from 'assets';
 
 const TeamInboxModuleDetail = () => {
     const [recursiveFetch] = useRecursiveFetch(RefetchGenericListing, {
-        delay: 1000,
+        delay: 2000,
         repeat: Infinity,
     });
 
@@ -428,6 +438,7 @@ const MessageItem = ({ message }: { message: any }) => {
 const openAddInbox = (options?: {
     contact_id?: number;
     disableContact?: boolean;
+    callback?: () => void;
 }) => {
     Modal.open({
         component: AddInboxModal,
@@ -439,9 +450,11 @@ const openAddInbox = (options?: {
 const AddInboxModal = ({
     contact_id,
     disableContact = false,
+    callback,
 }: {
     contact_id: number;
     disableContact?: boolean;
+    callback?: any;
 }) => {
     const [templateData, setTemplateData] = useState<any>();
     const [attributes, setAttributes] = useState({});
@@ -476,8 +489,6 @@ const AddInboxModal = ({
 
         if (sample_contents.length === att.length) return true;
         return false;
-
-        return;
     }, [attributes, templateData?.sample_contents]);
 
     const onSubmit: FormBuilderSubmitType = async (
@@ -494,6 +505,7 @@ const AddInboxModal = ({
         if (!success) return toastBackendError(response);
 
         Navigation.navigate({ url: `${TEAM_INBOX_SPLIT_LIST}/${response.id}` });
+        callback?.(response);
     };
 
     const { renderFormFields, hasError, handleFormData, watch, handleSubmit } =
@@ -635,7 +647,14 @@ const MessageChat = ({ data }) => {
     const emojiRef = useRef(null);
 
     const [input, setInput] = useState('');
-    const [files, { removeAt, set: setFiles }] = useList<any[]>();
+    const [files, { removeAt, set: setFiles, push: addFiles }] =
+        useList<any[]>();
+
+    const invalidateMessage = useCallback(() => {
+        queryClient.invalidateQueries({
+            queryKey: ['team_inbox_messages'],
+        });
+    }, [queryClient]);
 
     const sendMessage = useCallback(async () => {
         const doc: any = files?.[0];
@@ -658,12 +677,9 @@ const MessageChat = ({ data }) => {
         if (!success) return toastBackendError(response);
 
         setInput('');
-        setFiles(null);
-
-        queryClient.invalidateQueries({
-            queryKey: ['team_inbox_messages'],
-        });
-    }, [data?.id, files, input, queryClient, setFiles]);
+        setFiles([]);
+        invalidateMessage();
+    }, [data?.id, files, input, invalidateMessage, setFiles]);
 
     const handleKeyPress = useCallback(
         (e: KeyboardEvent) => {
@@ -684,6 +700,7 @@ const MessageChat = ({ data }) => {
         openAddInbox({
             contact_id: data?.contact_id,
             disableContact: true,
+            callback: invalidateMessage,
         });
     };
 
@@ -713,14 +730,38 @@ const MessageChat = ({ data }) => {
         );
     }
 
+    const setQuickReplyData = (quickReplyData: any) => {
+        const documents = [];
+        const attributes = {};
+
+        (quickReplyData?.document as any[]).forEach((doc) => {
+            documents.push({
+                ...doc?.attributes,
+                serverUrl: doc?.document_url,
+            });
+        });
+
+        data?.contact?.custom_attributes?.forEach((quickReplyData) => {
+            attributes[quickReplyData?.key] = quickReplyData?.value;
+        });
+
+        addFiles(...documents);
+
+        const withVariable = replaceVariablesInString(quickReplyData?.message, {
+            name: data?.contact?.display_name,
+            mobile: data?.contact?.mobile,
+            ...attributes,
+        });
+
+        setInput((prev) => `${prev} ${withVariable}`);
+    };
+
     return (
         <div className='sticky right-0 bottom-0 left-0 gap-2 col-flex'>
-            <TextareaField
-                value={input}
-                onChange={setInput}
-                placeholder={'Enter Message Here'}
-                className='w-full'
-                size='sm'
+            <ChatTextareaComponent
+                input={input}
+                setInput={setInput}
+                onSelect={setQuickReplyData}
             />
             <div className='gap-2 w-full col-flex'>
                 {files?.map((file: any, index): any => {
@@ -751,6 +792,7 @@ const MessageChat = ({ data }) => {
                         outline
                         appearance='polaris-transparent'
                     />
+
                     <CommonFileUploader
                         is_multiple={false}
                         onFileUpload={(data) => {
@@ -769,6 +811,18 @@ const MessageChat = ({ data }) => {
                             );
                         }}
                     </CommonFileUploader>
+
+                    <IconButton
+                        name='Quick Reply'
+                        icon={ReplySvgICon}
+                        onClick={() => {
+                            openQuickReplySelect({
+                                getData: setQuickReplyData,
+                            });
+                        }}
+                        outline
+                        appearance='polaris-transparent'
+                    />
 
                     <Popover
                         ref={emojiRef}
@@ -1088,3 +1142,126 @@ const RenderUserMessageBubble = ({ message }) => {
         </div>
     );
 };
+
+const ChatTextareaComponent = ({
+    setInput,
+    input,
+    onSelect,
+}: {
+    input: string;
+    setInput: any;
+    onSelect: (data: any) => void;
+}) => {
+    const ref = useRef<any>(null);
+    const [isQuickReplyOpen, setIsQuickReplyOpen] = useState(false);
+
+    useClickAway(ref, () => {
+        setIsQuickReplyOpen(false);
+    });
+
+    const { type: osType } = useOperatingSystem();
+
+    const handleKeyPress = useCallback(
+        (e: KeyboardEvent) => {
+            const isMac = osType === 'mac';
+
+            const hasPressed = isMac ? e.metaKey : e.ctrlKey;
+
+            //ctrl+l or ctrl+shift+l
+            if (e?.key === '/' && hasPressed) {
+                setIsQuickReplyOpen((prev) => !prev);
+            }
+        },
+        [osType]
+    );
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyPress);
+        return () => document.removeEventListener('keydown', handleKeyPress);
+    }, [handleKeyPress]);
+
+    return (
+        <Popover
+            trigger='manual'
+            side='top'
+            offsetY={120}
+            offsetX={10}
+            align='start'
+            visible={isQuickReplyOpen}
+            element={
+                <QuickReplySelectBox
+                    ref={ref}
+                    onSelect={(data) => {
+                        onSelect(data);
+                        setIsQuickReplyOpen(false);
+                    }}
+                />
+            }
+        >
+            <TextareaField
+                value={input}
+                onChange={(val) => setInput(val)}
+                placeholder={
+                    'Type your message here or press (⌘ + /) for the quick replies.'
+                }
+                className='w-full'
+                size='sm'
+            />
+        </Popover>
+    );
+};
+const QuickReplySelectBox = React.forwardRef<
+    HTMLDivElement,
+    { onSelect: (data: any) => void }
+>(({ onSelect }, ref) => {
+    const [input, setInput] = useState('');
+
+    const { data, isLoading } = useQuery({
+        queryKey: ['find', 'quick_reply'],
+        queryFn: async () => {
+            const { response, success } = await FetchData({
+                className: QuickReplyController,
+                method: 'find',
+                classParams: { str: input },
+            });
+
+            if (success) return response;
+        },
+    });
+
+    return (
+        <div
+            ref={ref}
+            className='gap-2 items-center p-3 rounded shadow-lg bg-base-100 col-flex'
+        >
+            <InputField
+                placeholder={'search here..'}
+                size='sm'
+                value={input}
+                onChange={(e) => setInput(e)}
+            />
+            <div className='w-full'>
+                {isLoading ? (
+                    <div className='p-2 text-sm'>Loading...</div>
+                ) : (
+                    <div className='overflow-y-auto max-h-60'>
+                        {data?.map((val) => (
+                            <div
+                                key={val?.id}
+                                onClick={() => onSelect(val)}
+                                className='p-2 text-sm rounded cursor-pointer hover:bg-primary hover:text-primary-content'
+                            >
+                                {val?.name}{' '}
+                                <span className='text-accent'>
+                                    (/{val?.shortcut})
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+});
+
+QuickReplySelectBox.displayName = 'QuickReplySelectBox';

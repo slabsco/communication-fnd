@@ -19,7 +19,7 @@ export const UplodedFile = ({
     hideDelete,
 }: UplodedFileProps) => {
     const isDeleteOptionShow = useMemo(() => {
-        if (hideDelete && file?.id) return false;
+        if (hideDelete) return false;
         if (AccessManager.hasRoleIdentifier('ua_document_manager')) return true;
         let activeFile: any = file;
         if (activeFile?.attributes?.no_edit) return false;
