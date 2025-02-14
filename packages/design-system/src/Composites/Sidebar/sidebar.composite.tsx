@@ -102,24 +102,20 @@ export const SidebarBanner = (props: { className?: string }) => {
             className='flex items-center text-xl normal-case'
         >
             <div className={cn(' w-[180px]', props.className)}>
-                {process.env['MAIN_LOGO'] ? (
-                    <Image
-                        src={process.env['MAIN_LOGO']}
-                        alt='Brand Logo'
-                        height={isArc ? ARC_LOGO_HEIGHT : 32}
-                        width={149}
-                        style={{
-                            maxHeight: isArc ? ARC_LOGO_HEIGHT : 32,
-                            maxWidth: 279,
-                            objectFit: 'contain',
-                            objectPosition: 'left',
-                        }}
-                        unoptimized
-                        priority
-                    />
-                ) : (
-                    <Icons.SidebarBrandLogo />
-                )}
+                <Image
+                    src={'/logo.png'}
+                    alt='Brand Logo'
+                    height={isArc ? ARC_LOGO_HEIGHT : 32}
+                    width={149}
+                    style={{
+                        maxHeight: isArc ? ARC_LOGO_HEIGHT : 32,
+                        maxWidth: 279,
+                        objectFit: 'contain',
+                        objectPosition: 'left',
+                    }}
+                    unoptimized
+                    priority
+                />
             </div>
         </Link>
     );
