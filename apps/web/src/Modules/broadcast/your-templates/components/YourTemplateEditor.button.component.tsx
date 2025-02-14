@@ -2,18 +2,20 @@ import { Copy, Link, PhoneCallIcon, Reply } from 'lucide-react';
 import { useState } from 'react';
 import { useList, useUpdateEffect } from 'react-use';
 
+import { IsEmptyObject } from '@finnoto/core';
 import {
     Button,
     cn,
     InputField,
     MultiSelectFilter,
-    SelectBox,
     Switch,
 } from '@finnoto/design-system';
 
+import { BUTTON_CONFIG_TYPE } from '../enums/whatsapp.template.category.enum';
+
 export const YOUR_TEMPLATE_SUPPORTED_CONFIG = [
     {
-        type: 'CALL',
+        type: BUTTON_CONFIG_TYPE.PHONE_NUMBER,
         name: 'Call  Now',
         value: '+977-9823624253',
         icon: <PhoneCallIcon size={14} />,
@@ -27,14 +29,14 @@ export const YOUR_TEMPLATE_SUPPORTED_CONFIG = [
         limit: 2,
     },
     {
-        type: 'QUICK_REPLY',
+        type: BUTTON_CONFIG_TYPE.QUICK_REPLY,
         name: 'Quick Reply',
         value: 'https://finnoto.com',
         icon: <Reply size={14} />,
         limit: 3,
     },
     {
-        type: 'PROMO_CODE',
+        type: BUTTON_CONFIG_TYPE.COPY_CODE,
         name: 'Copy Offer Code',
         value: '#23w21321',
         limit: 1,
@@ -84,6 +86,17 @@ const YourTemplateEditorButton = ({
                     options={options as any}
                     onChangeFilter={(evt) => {
                         setButtons(evt);
+
+                        if (IsEmptyObject(configuration)) return;
+                        setConfiguration((prev) => {
+                            const newData = {};
+
+                            evt.forEach((data) => {
+                                newData[data] = prev[data];
+                            });
+
+                            return newData;
+                        });
                     }}
                 />
                 <RenderButtonConfiguration
@@ -109,14 +122,14 @@ const RenderButtonConfiguration = ({
 }) => {
     const render = (data: any) => {
         switch (data) {
-            case 'CALL':
+            case BUTTON_CONFIG_TYPE.PHONE_NUMBER:
                 return (
                     <RenderCallNowButton
                         configuration={configuration}
                         onOptionsChange={(data) => {
                             setConfiguration((prev) => ({
                                 ...prev,
-                                ['CALL']: data,
+                                [BUTTON_CONFIG_TYPE.PHONE_NUMBER]: data,
                             }));
                         }}
                     />
@@ -133,26 +146,26 @@ const RenderButtonConfiguration = ({
                         }}
                     />
                 );
-            case 'QUICK_REPLY':
+            case BUTTON_CONFIG_TYPE.QUICK_REPLY:
                 return (
                     <RenderQuickReplyButton
                         configuration={configuration}
                         onOptionsChange={(data) => {
                             setConfiguration((prev) => ({
                                 ...prev,
-                                ['QUICK_REPLY']: data,
+                                [BUTTON_CONFIG_TYPE.QUICK_REPLY]: data,
                             }));
                         }}
                     />
                 );
-            case 'PROMO_CODE':
+            case BUTTON_CONFIG_TYPE?.COPY_CODE:
                 return (
                     <RenderOfferCodeButton
                         configuration={configuration}
                         onOptionsChange={(data) => {
                             setConfiguration((prev) => ({
                                 ...prev,
-                                ['PROMO_CODE']: data,
+                                [BUTTON_CONFIG_TYPE?.COPY_CODE]: data,
                             }));
                         }}
                     />
@@ -181,9 +194,9 @@ const RenderOfferCodeButton = ({
                 Copy offer code
             </div>
             <InputField
-                value={configuration?.PROMO_CODE}
+                value={configuration?.[BUTTON_CONFIG_TYPE?.COPY_CODE]}
                 placeholder='Enter the Coupon Code'
-                defaultValue={configuration?.PROMO_CODE}
+                defaultValue={configuration?.[BUTTON_CONFIG_TYPE?.COPY_CODE]}
                 onChange={(e) => {
                     onOptionsChange(e);
                 }}
@@ -199,7 +212,9 @@ const RenderCallNowButton = ({
     onOptionsChange: any;
     configuration: any;
 }) => {
-    const [call, setCall] = useState<any>(configuration?.['CALL'] || {});
+    const [call, setCall] = useState<any>(
+        configuration?.[BUTTON_CONFIG_TYPE.PHONE_NUMBER] || {}
+    );
 
     useUpdateEffect(() => {
         onOptionsChange(call);
@@ -275,7 +290,9 @@ const RenderQuickReplyButton = ({
     onOptionsChange: (value: any) => void;
     configuration: any;
 }) => {
-    const values = Object.values(configuration?.QUICK_REPLY || { key: ' ' });
+    const values = Object.values(
+        configuration?.[BUTTON_CONFIG_TYPE.QUICK_REPLY] || { key: ' ' }
+    );
     const [quickReplies, { push, removeAt, updateAt }] = useList<any>(values);
 
     const handleChange = (index: number, newValue: string) => {

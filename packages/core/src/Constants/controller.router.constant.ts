@@ -10,6 +10,7 @@ import TallyGroupController from '../backend/common/controllers/tally.group.cont
 import UserNotificationController from '../backend/common/controllers/user.notification.controller';
 import { CommunicationTemplateController } from '../backend/communication/controller/commuinication.templates.controller';
 import { ContactController } from '../backend/communication/controller/contact.controller';
+import { QuickReplyController } from '../backend/communication/controller/quick.reply.controller';
 import { ScheduleBroadcastController } from '../backend/communication/controller/schedule.broadcast.controller';
 import { TeamInboxController } from '../backend/communication/controller/team.inbox.controller';
 import { MetaVendorOwnershipTransferController } from '../backend/meta/controllers/meta.vendor.ownership.transfer.controller';
@@ -64,6 +65,7 @@ export const LISTING_CONTROLLER_ROUTER = {
     schedule_broadcast: ScheduleBroadcastController,
     contact: ContactController,
     teamInbox: TeamInboxController,
+    quickReply: QuickReplyController,
 } as const;
 
 export const SPOTLIGHT_QUERY_CONTROLLER_ROUTE = {

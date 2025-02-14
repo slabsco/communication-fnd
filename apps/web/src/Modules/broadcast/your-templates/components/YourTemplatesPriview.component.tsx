@@ -16,6 +16,7 @@ import {
 import { cn } from '@finnoto/design-system';
 import { PdfViewer } from '@finnoto/design-system/src/Components/Data-display/ResourceViewer/Components/pdfViewer.component';
 
+import { BUTTON_CONFIG_TYPE } from '../enums/whatsapp.template.category.enum';
 import { YOUR_TEMPLATE_SUPPORTED_CONFIG } from './YourTemplateEditor.button.component';
 
 export const YourTemplatesPreview = ({
@@ -147,7 +148,7 @@ export const MessageSectionPreview = ({
                 (val) => val?.type === key
             );
 
-            if (getValues?.type === 'PROMO_CODE') {
+            if (getValues?.type === BUTTON_CONFIG_TYPE?.COPY_CODE) {
                 return (
                     <div
                         key={key}

@@ -7,6 +7,7 @@ export const ERROR_ROUTE = HOME_ROUTE + '_error';
 export const PAGE_NOT_FOUND_ROUTE = HOME_ROUTE + '404';
 export const LOGIN_ROUTE = HOME_ROUTE + 'login';
 export const SIGNUP_ROUTE = HOME_ROUTE + 'signup';
+export const PRIVACY_POLICY = HOME_ROUTE + 'privacy-policy';
 export const FORGOT_PASSWORD_ROUTE = HOME_ROUTE + 'forgot-password';
 export const FORGOT_2FA_ROUTE = HOME_ROUTE + 'forgot-2fa';
 export const RESET_PASSWORD_ROUTE = HOME_ROUTE + 'reset-password';
