@@ -5,6 +5,7 @@ import {
     ArcBreadcrumbs,
     Button,
     cn,
+    ConfirmUtil,
     Container,
     DropdownMenu,
     FormBuilder,
@@ -15,10 +16,10 @@ import {
     Modal,
     ModalBody,
     ModalContainer,
+    Toast,
 } from '@finnoto/design-system';
-import { InputPassword } from '@finnoto/design-system/src/Components/Inputs/InputField/input.password.component';
 
-import { InfoCircleSvgIcon, MoreIcon } from 'assets';
+import { InfoCircleSvgIcon, MoreIcon, WarningErrorSvgIcon } from 'assets';
 
 const ClientConfigModule = () => {
     const {
@@ -130,9 +131,10 @@ const ClientConfigModule = () => {
                                             disabled
                                             value={val?.identifier}
                                         />
-                                        <InputPassword
+                                        <InputField
                                             label='Client Secret'
                                             disabled
+                                            type='password'
                                             value={val?.credential}
                                         />
                                     </div>
@@ -164,8 +166,43 @@ const GenerateSecret = ({
     };
 
     const handleSubmit = async (values: any) => {
-        await generateSecret({ ...values, id: initialData?.id });
+        const data = await generateSecret({ ...values, id: initialData?.id });
+        const credentials = data?.credential;
         Modal.close();
+
+        ConfirmUtil({
+            message: (
+                <div className='gap-4 col-flex'>
+                    <div className='relative mx-auto w-14 h-14 rounded-full bg-warning'>
+                        <Icon
+                            className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'
+                            source={WarningErrorSvgIcon}
+                            size={20}
+                            isSvg
+                            iconColor='text-warning'
+                        />
+                    </div>
+                    <p>
+                        On clicking Copy, your credentials will be copied to
+                        your clipboard. You can only view them once - they will
+                        be hidden after closing this dialog.
+                    </p>
+                    <InputField width={'100%'} disabled value={credentials} />
+                </div>
+            ),
+            title: 'Here is your Secret!!',
+            confirmText: 'Copy',
+            confirmAppearance: 'success',
+            cancelAppearance: 'errorHover',
+            cancelText: 'Close',
+            onConfirmPress: () => {
+                navigator.clipboard.writeText(credentials);
+                Toast.success({
+                    position: 'top-right',
+                    description: 'The client secret is Copied Successfully!!',
+                });
+            },
+        });
     };
     return (
         <ModalContainer title='Manage Secret'>
