@@ -362,11 +362,8 @@ const MessageItem = ({ message }: { message: any }) => {
         >
             {component ? (
                 <div className='flex flex-row-reverse gap-2 items-end'>
-                    {message?.is_error && (
-                        <Tooltip message={'Error Sending the message'}>
-                            <Info size={14} color='red' />
-                        </Tooltip>
-                    )}
+                    <RenderSeenUnseen message={message} />
+
                     <MessageSectionPreview
                         sampleContent={sampleContent}
                         configuration={message?.template_button_configurations}
@@ -391,6 +388,7 @@ const MessageItem = ({ message }: { message: any }) => {
                         </Tooltip>
                     )}
 
+                    <RenderSeenUnseen message={message} />
                     <RenderInnerTextMessage message={message} />
                     <MessageBubbleTimePopper message={message} />
                 </div>
@@ -1251,15 +1249,24 @@ const MessageBubbleTimePopper = ({ message }: { message: any }) => {
                     containerClass: 'text-[10px]',
                 })}
             </div>
-            <div className='flex items-center'>
-                {message?.read_at ? (
-                    <CheckCheck size={10} color='green' />
-                ) : message?.delivered_at ? (
-                    <CheckCheck size={10} />
-                ) : message?.sent_at ? (
-                    <Check size={10} />
-                ) : null}
-            </div>
+        </div>
+    );
+};
+
+const RenderSeenUnseen = ({ message }: any) => {
+    return message?.is_error ? (
+        <Tooltip message={'Error Sending the message'}>
+            <Info size={14} color='red' />
+        </Tooltip>
+    ) : (
+        <div className='flex items-center'>
+            {message?.read_at ? (
+                <CheckCheck size={10} color='green' />
+            ) : message?.delivered_at ? (
+                <CheckCheck size={10} />
+            ) : message?.sent_at ? (
+                <Check size={10} />
+            ) : null}
         </div>
     );
 };
