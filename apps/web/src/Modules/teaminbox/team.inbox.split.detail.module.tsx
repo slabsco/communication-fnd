@@ -333,6 +333,7 @@ const getData = (components: any[], type: string) => {
     return components?.find((val) => val?.type === type)?.parameters || [];
 };
 // Add a new MessageItem component to render individual messages
+
 const MessageItem = ({ message }: { message: any }) => {
     const component = message?.payload?.template?.components;
 
@@ -375,22 +376,7 @@ const MessageItem = ({ message }: { message: any }) => {
                         className='max-w-[50%] bg-green-200'
                         showTime={false}
                     />
-                    <div className='flex gap-1'>
-                        {FormatDisplayDateStyled({
-                            value: message?.created_at,
-                            size: 'xs',
-                            className: 'text-base-secondary',
-                        })}
-                        <div className='flex items-center'>
-                            {message?.read_at ? (
-                                <CheckCheck size={10} color='green' />
-                            ) : message?.delivered_at ? (
-                                <CheckCheck size={10} />
-                            ) : message?.sent_at ? (
-                                <Check size={10} />
-                            ) : null}
-                        </div>
-                    </div>
+                    <MessageBubbleTimePopper message={message} />
                 </div>
             ) : message?.attributes?.sent_by ? (
                 <div className='flex flex-row-reverse gap-2 items-end'>
@@ -406,23 +392,7 @@ const MessageItem = ({ message }: { message: any }) => {
                     )}
 
                     <RenderInnerTextMessage message={message} />
-
-                    <div className='flex gap-1'>
-                        {FormatDisplayDateStyled({
-                            value: message?.created_at,
-                            size: 'xs',
-                            className: 'text-base-secondary',
-                        })}
-                        <div className='flex items-center'>
-                            {message?.read_at ? (
-                                <CheckCheck size={10} color='green' />
-                            ) : message?.delivered_at ? (
-                                <CheckCheck size={10} />
-                            ) : message?.sent_at ? (
-                                <Check size={10} />
-                            ) : null}
-                        </div>
-                    </div>
+                    <MessageBubbleTimePopper message={message} />
                 </div>
             ) : (
                 <></>
@@ -1138,6 +1108,7 @@ const RenderUserMessageBubble = ({ message }) => {
                 value: message?.created_at,
                 size: 'xs',
                 className: 'text-base-secondary',
+                containerClass: 'text-[10px]',
             })}
         </div>
     );
@@ -1265,3 +1236,30 @@ const QuickReplySelectBox = React.forwardRef<
 });
 
 QuickReplySelectBox.displayName = 'QuickReplySelectBox';
+
+const MessageBubbleTimePopper = ({ message }: { message: any }) => {
+    return (
+        <div className='flex gap-1'>
+            <div>
+                <span className='text-base-secondary text-[10px]'>
+                    {message.creator}
+                </span>
+                {FormatDisplayDateStyled({
+                    value: message?.created_at,
+                    size: 'xs',
+                    className: 'text-base-secondary',
+                    containerClass: 'text-[10px]',
+                })}
+            </div>
+            <div className='flex items-center'>
+                {message?.read_at ? (
+                    <CheckCheck size={10} color='green' />
+                ) : message?.delivered_at ? (
+                    <CheckCheck size={10} />
+                ) : message?.sent_at ? (
+                    <Check size={10} />
+                ) : null}
+            </div>
+        </div>
+    );
+};
