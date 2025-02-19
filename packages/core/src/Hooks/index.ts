@@ -36,12 +36,13 @@ export * from './useNotifications.hook';
 export * from './useOpenProperties.hook';
 export * from './useOperatingSystem.hook';
 export * from './usePolicyManager.hook';
+export * from './user.hook';
 export * from './useSpotlightSearch.hook';
 export * from './useTheme.hook';
 export * from './useUserLoggedInHandler.hook';
-export * from './user.hook';
 
 export * from './ChatHook';
+export * from './CommunicationHooks';
 export * from './CompositeHook';
 export * from './ExpenseHooks';
 export * from './GstinHooks';

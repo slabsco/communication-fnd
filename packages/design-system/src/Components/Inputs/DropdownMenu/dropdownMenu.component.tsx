@@ -141,7 +141,7 @@ export const DropdownMenu = ({
                 className={cn(
                     'min-w-[150px]',
                     {
-                        'min-w-[100px] col-flex gap-1': isArc,
+                        'gap-1 min-w-[100px] col-flex': isArc,
                     },
                     className
                 )}
@@ -248,8 +248,8 @@ const DropdownItem = (props: DropdownMenuActionProps & { params?: any }) => {
                         props.isCancel,
                     'text-error focus:!bg-error/20 focus:!text-error hover:!bg-error/20 hover:!text-error':
                         isArc && props.isCancel,
-                    'text-success focus:!bg-success/20 focus:!text-success hover:bg-success/20 hover:text-success':
-                        isArc && props.isSuccess,
+                    'text-success focus:!bg-success focus:!text-success-content hover:bg-success hover:text-success-content':
+                        props.isSuccess,
                 },
                 props.className
             )}
@@ -265,7 +265,7 @@ const DropdownItem = (props: DropdownMenuActionProps & { params?: any }) => {
         >
             <div
                 className={cn(
-                    'flex w-full h-full px-3 justify-start items-center gap-2',
+                    'flex gap-2 justify-start items-center px-3 w-full h-full',
                     dropdownMenuSizes[size]
                 )}
             >
