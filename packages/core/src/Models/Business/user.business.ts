@@ -1,16 +1,16 @@
 import { CURRENT_BUSINESS, SET_CURRENT_BUSINESS, USER } from '../../Constants';
 import { API_CONSTANTS } from '../../Constants/env.constant';
 import { AutoBind } from '../../Decorators/autobind.decorator';
-import { ObjectDto } from '../../backend/Dtos';
 import { IsEmptyObject } from '../../Utils/common.utils';
 import { GetItem, SetItem } from '../../Utils/localStorage.utils';
 import { StoreEvent, SubscribeToEvent } from '../../Utils/stateManager.utils';
+import { ObjectDto } from '../../backend/Dtos';
 import { USER_DATA, user } from '../User';
 import { AddAddressDto } from '../dto/add.address.dto';
 
 type ID = number | string;
 
-const BUSINESS_API_URL = 'BUSINESS_API_URL';
+export const BUSINESS_API_URL = 'BUSINESS_API_URL';
 const META_BUSINESS_API_URL = 'META_BUSINESS_API_URL';
 
 interface BUSINESS_INTERFACE {

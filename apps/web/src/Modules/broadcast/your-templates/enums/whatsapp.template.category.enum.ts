@@ -13,3 +13,10 @@ export enum WhatsappTemplateStatusEnum {
     PAUSED = 105,
     DISABLED = 106,
 }
+
+export enum BUTTON_CONFIG_TYPE {
+    COPY_CODE = 'COPY_CODE',
+    QUICK_REPLY = 'QUICK_REPLY',
+    PHONE_NUMBER = 'PHONE_NUMBER',
+    URL = 'URL',
+}

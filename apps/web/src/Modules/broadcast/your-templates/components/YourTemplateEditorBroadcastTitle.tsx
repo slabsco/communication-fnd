@@ -39,9 +39,9 @@ const YourTemplateEditorBroadcast = ({
                     options={[
                         { label: 'None', value: 0 },
                         { label: 'Text', value: 'text' },
-                        // { label: 'Image', value: 'image' },
-                        // { label: 'Video', value: 'video' },
-                        // { label: 'Document', value: 'document' },
+                        { label: 'Image', value: 'image' },
+                        { label: 'Video', value: 'video' },
+                        { label: 'Document', value: 'document' },
                     ]}
                 />
                 <RenderTitleField

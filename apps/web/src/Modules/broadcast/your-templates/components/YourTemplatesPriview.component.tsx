@@ -16,6 +16,7 @@ import {
 import { cn } from '@finnoto/design-system';
 import { PdfViewer } from '@finnoto/design-system/src/Components/Data-display/ResourceViewer/Components/pdfViewer.component';
 
+import { BUTTON_CONFIG_TYPE } from '../enums/whatsapp.template.category.enum';
 import { YOUR_TEMPLATE_SUPPORTED_CONFIG } from './YourTemplateEditor.button.component';
 
 export const YourTemplatesPreview = ({
@@ -147,12 +148,23 @@ export const MessageSectionPreview = ({
                 (val) => val?.type === key
             );
 
+            if (getValues?.type === BUTTON_CONFIG_TYPE?.COPY_CODE) {
+                return (
+                    <div
+                        key={key}
+                        className='flex gap-2 justify-center items-center w-full text-xs text-center text-info'
+                    >
+                        {getValues?.icon} {getValues?.name}
+                    </div>
+                );
+            }
+
             if (IsArray(val)) {
                 return val?.map((data: any, index) => {
                     return (
                         <div
                             key={index}
-                            className='flex gap-2 justify-center items-center w-full text-xs font-medium text-center text-info'
+                            className='flex gap-2 justify-center items-center w-full text-xs text-center text-info'
                         >
                             {getValues?.icon} {data}
                         </div>
@@ -163,7 +175,7 @@ export const MessageSectionPreview = ({
             return (
                 <div
                     key={key}
-                    className='flex gap-2 justify-center items-center w-full text-xs font-medium text-center text-info'
+                    className='flex gap-2 justify-center items-center w-full text-xs text-center text-info'
                 >
                     {getValues?.icon} {val?.name}
                 </div>

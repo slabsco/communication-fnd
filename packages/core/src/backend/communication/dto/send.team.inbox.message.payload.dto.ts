@@ -23,4 +23,8 @@ export class SendTeamInboxSimpleMessagePayloadDto {
     @IsNotEmpty()
     @IsString()
     data: string;
+
+    @Expose()
+    @IsOptional()
+    attachment?: any;
 }

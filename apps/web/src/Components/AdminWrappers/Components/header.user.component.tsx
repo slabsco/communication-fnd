@@ -219,9 +219,9 @@ export const ArcHeaderPopover = ({ children }: any) => {
     const { basePath } = useApp();
     // const { businesses } = useAppBusinesses();
     const { user } = useUserHook();
-    const [enabledDebug] = useOpenProperties('enable.debug.mode', {
-        convertBoolean: true,
-    });
+    // const [enabledDebug] = useOpenProperties('enable.debug.mode', {
+    //     convertBoolean: true,
+    // });
 
     const isOwner = useMemo(() => {
         return AccessManager.isAuthUser(currentBusiness?.owner_id);
@@ -277,14 +277,14 @@ export const ArcHeaderPopover = ({ children }: any) => {
         //     visible: isOwner,
         //     iconSize: 16,
         // },
-        // {
-        //     name: 'Debug Form',
-        //     icon: CodeSvgIcon,
-        //     isSvg: true,
-        //     action: openDebugForm,
-        //     visible: !!enabledDebug,
-        //     iconSize: 16,
-        // },
+        {
+            name: 'Debug Form',
+            icon: CodeSvgIcon,
+            isSvg: true,
+            action: openDebugForm,
+            visible: true,
+            iconSize: 16,
+        },
         // {
         //     name: 'Enable Developer Mode',
         //     icon: LockSvgIcon,

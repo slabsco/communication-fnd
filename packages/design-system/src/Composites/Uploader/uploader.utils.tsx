@@ -85,7 +85,6 @@ export const openResourceViewerModal = (files: any[], current_file: any) => {
         modalSize: 'full',
         className: 'bg-black/60',
         closeClassName: 'text-white',
-
         props: {
             images: showFiles,
             zoomIn: true,

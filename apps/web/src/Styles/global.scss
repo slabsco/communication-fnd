@@ -140,7 +140,7 @@ html {
     --sidebar-expand-width: 240px;
     --dashboard-bg-color: #f1f1f1;
 
-    .btn-primary {
+    .btn-primary:not(.btn-outline) {
         @apply bg-polaris-bg-fill-brand border-0 text-polaris-text-brand-on-bg-fill hover:bg-polaris-bg-fill-brand hover:text-polaris-text-brand-on-bg-fill-hover;
 
         &[disabled] {

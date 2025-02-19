@@ -1,4 +1,3 @@
-import { MinusCircleIcon, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -14,20 +13,16 @@ import {
     useUserHook,
 } from '@finnoto/core';
 
-import { Slot } from '@radix-ui/react-slot';
-
 import { handleDocumentIcon } from '../../../Composites';
 import { ConfirmUtil } from '../../../Utils';
 import { cn, Debounce } from '../../../Utils/common.ui.utils';
 import { FormatDisplayDateStyled } from '../../../Utils/component.utils';
-import { IconButton } from '../../Inputs/Icon-Button/iconButton.component';
 import { Swipper } from '../../Navigation/Swipper/swipper.component';
 import { SwipperPropsSetting } from '../../Navigation/Swipper/swipper.types';
 import { Ellipsis } from '../Ellipsis/ellipsis.component';
 import { Icon } from '../Icon/icon.component';
 
 import {
-    AddSvgIcon,
     ArrowRightSvgIcon,
     DeleteSvgIcon,
     FileDownloadSvgIcon,
@@ -146,7 +141,7 @@ export const ImageViewer = ({
     const fileDetails = GetFileDetails(activeImageDetail.document_url || '');
 
     return (
-        <div className='justify-between h-full p-4 col-flex text-primary-content'>
+        <div className='justify-between p-4 h-full col-flex text-primary-content'>
             <div className='w-10/12 text-sm min-h-[50px] '>
                 <Ellipsis lines={3} withShowMore>
                     {AccessValueOnNestedObjectByKey(
@@ -158,7 +153,7 @@ export const ImageViewer = ({
             <Swipper
                 ref={ref}
                 settings={swipperSettings}
-                className='w-full overflow-hidden'
+                className='overflow-hidden w-full'
             >
                 {images?.map((img) => {
                     return (
@@ -175,8 +170,8 @@ export const ImageViewer = ({
                     );
                 })}
             </Swipper>
-            <div className='items-center justify-center col-flex'>
-                <div className='flex items-center justify-center gap-3 py-2 '>
+            <div className='justify-center items-center col-flex'>
+                <div className='flex gap-3 justify-center items-center py-2'>
                     {hasMultipleImages && (
                         <div
                             onClick={handlePrev}
@@ -273,7 +268,7 @@ export const ImageViewer = ({
                         {activeImageDetail?.attributes?.name}
                     </Ellipsis>
 
-                    <div className='flex items-center justify-center gap-2 text-xs'>
+                    <div className='flex gap-2 justify-center items-center text-xs'>
                         {addedBy && (
                             <div className='flex items-center text-xs gap-1.5'>
                                 <span>{addedBy}</span>
@@ -320,13 +315,13 @@ const ImageViewerContent = ({
     if (fileDetails.mimeType?.includes('pdf')) {
         return (
             <div
-                className='justify-start max-h-full overflow-y-auto col-flex'
+                className='overflow-y-auto justify-start max-h-full col-flex'
                 style={{ height: height - 150 }}
             >
                 <Document
                     file={data.document_url}
                     renderMode='svg'
-                    className={cn('items-center gap-4 col-flex', pdfClassName)}
+                    className={cn('gap-4 items-center col-flex', pdfClassName)}
                     onLoadSuccess={({ numPages: nextNumPages }) => {
                         setNumPages(nextNumPages);
                     }}
@@ -350,7 +345,7 @@ const ImageViewerContent = ({
     if (fileDetails.mimeType?.startsWith('image')) {
         return (
             <div
-                className='items-center justify-center overflow-hidden rounded col-flex'
+                className='overflow-hidden justify-center items-center rounded col-flex'
                 style={{
                     height: height - 150,
                 }}
@@ -374,7 +369,7 @@ const ImageViewerContent = ({
                 source={handleDocumentIcon(data.document_url)}
                 isSvg
                 size={64}
-                className='h-full p-6 rounded-lg bg-base-100'
+                className='p-6 h-full rounded-lg bg-base-100'
             />
         </div>
     );

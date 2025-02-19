@@ -1,44 +1,47 @@
-import { Reply } from 'lucide-react';
+import { Copy, Link, PhoneCallIcon, Reply } from 'lucide-react';
 import { useState } from 'react';
 import { useList, useUpdateEffect } from 'react-use';
 
+import { IsEmptyObject } from '@finnoto/core';
 import {
     Button,
     cn,
     InputField,
-    SelectBox,
+    MultiSelectFilter,
     Switch,
 } from '@finnoto/design-system';
 
+import { BUTTON_CONFIG_TYPE } from '../enums/whatsapp.template.category.enum';
+
 export const YOUR_TEMPLATE_SUPPORTED_CONFIG = [
-    // {
-    //     type: 'CALL',
-    //     name: 'Call  Now',
-    //     value: '+977-9823624253',
-    //     icon: <PhoneCallIcon size={14} />,
-    //     limit: 1,
-    // },
-    // {
-    //     type: 'URL',
-    //     name: 'Visit Us',
-    //     value: 'https://finnoto.com',
-    //     icon: <Link size={14} />,
-    //     limit: 2,
-    // },
     {
-        type: 'QUICK_REPLY',
+        type: BUTTON_CONFIG_TYPE.PHONE_NUMBER,
+        name: 'Call  Now',
+        value: '+977-9823624253',
+        icon: <PhoneCallIcon size={14} />,
+        limit: 1,
+    },
+    {
+        type: 'URL',
+        name: 'Visit Us',
+        value: 'https://finnoto.com',
+        icon: <Link size={14} />,
+        limit: 2,
+    },
+    {
+        type: BUTTON_CONFIG_TYPE.QUICK_REPLY,
         name: 'Quick Reply',
         value: 'https://finnoto.com',
         icon: <Reply size={14} />,
         limit: 3,
     },
-    // {
-    //     type: 'PROMO_CODE',
-    //     name: 'Promo Code',
-    //     value: '#23w21321',
-    //     limit: 1,
-    //     icon: <Copy size={14} />,
-    // },
+    {
+        type: BUTTON_CONFIG_TYPE.COPY_CODE,
+        name: 'Copy Offer Code',
+        value: '#23w21321',
+        limit: 1,
+        icon: <Copy size={14} />,
+    },
 ];
 
 const YourTemplateEditorButton = ({
@@ -59,7 +62,7 @@ const YourTemplateEditorButton = ({
     }));
 
     return (
-        <div className='flex flex-col gap-2 min-h-[300px]'>
+        <div className='flex flex-col gap-2'>
             <hr className='my-4 border-t border-gray-300' />
             <div className='flex gap-4 justify-between items-center'>
                 <h3>Buttons (Recommended)</h3>
@@ -74,12 +77,26 @@ const YourTemplateEditorButton = ({
             </div>
 
             <div className={cn('flex flex-col gap-2', { hidden: !isOpen })}>
-                <SelectBox
+                <MultiSelectFilter
+                    side='top'
+                    footerClassName='hidden'
                     placeholder='Select Button'
                     value={buttons}
+                    isSearchable={false}
                     options={options as any}
-                    onChange={(evt) => {
-                        setButtons([evt?.value]);
+                    onChangeFilter={(evt) => {
+                        setButtons(evt);
+
+                        if (IsEmptyObject(configuration)) return;
+                        setConfiguration((prev) => {
+                            const newData = {};
+
+                            evt.forEach((data) => {
+                                newData[data] = prev[data];
+                            });
+
+                            return newData;
+                        });
                     }}
                 />
                 <RenderButtonConfiguration
@@ -105,14 +122,14 @@ const RenderButtonConfiguration = ({
 }) => {
     const render = (data: any) => {
         switch (data) {
-            case 'CALL':
+            case BUTTON_CONFIG_TYPE.PHONE_NUMBER:
                 return (
                     <RenderCallNowButton
                         configuration={configuration}
                         onOptionsChange={(data) => {
                             setConfiguration((prev) => ({
                                 ...prev,
-                                ['CALL']: data,
+                                [BUTTON_CONFIG_TYPE.PHONE_NUMBER]: data,
                             }));
                         }}
                     />
@@ -129,26 +146,26 @@ const RenderButtonConfiguration = ({
                         }}
                     />
                 );
-            case 'QUICK_REPLY':
+            case BUTTON_CONFIG_TYPE.QUICK_REPLY:
                 return (
                     <RenderQuickReplyButton
                         configuration={configuration}
                         onOptionsChange={(data) => {
                             setConfiguration((prev) => ({
                                 ...prev,
-                                ['QUICK_REPLY']: data,
+                                [BUTTON_CONFIG_TYPE.QUICK_REPLY]: data,
                             }));
                         }}
                     />
                 );
-            case 'PROMO_CODE':
+            case BUTTON_CONFIG_TYPE?.COPY_CODE:
                 return (
                     <RenderOfferCodeButton
                         configuration={configuration}
                         onOptionsChange={(data) => {
                             setConfiguration((prev) => ({
                                 ...prev,
-                                ['PROMO_CODE']: data,
+                                [BUTTON_CONFIG_TYPE?.COPY_CODE]: data,
                             }));
                         }}
                     />
@@ -177,8 +194,9 @@ const RenderOfferCodeButton = ({
                 Copy offer code
             </div>
             <InputField
+                value={configuration?.[BUTTON_CONFIG_TYPE?.COPY_CODE]}
                 placeholder='Enter the Coupon Code'
-                defaultValue={configuration?.PROMO_CODE}
+                defaultValue={configuration?.[BUTTON_CONFIG_TYPE?.COPY_CODE]}
                 onChange={(e) => {
                     onOptionsChange(e);
                 }}
@@ -194,7 +212,9 @@ const RenderCallNowButton = ({
     onOptionsChange: any;
     configuration: any;
 }) => {
-    const [call, setCall] = useState<any>(configuration?.['CALL'] || {});
+    const [call, setCall] = useState<any>(
+        configuration?.[BUTTON_CONFIG_TYPE.PHONE_NUMBER] || {}
+    );
 
     useUpdateEffect(() => {
         onOptionsChange(call);
@@ -206,6 +226,7 @@ const RenderCallNowButton = ({
             </div>
             <InputField
                 placeholder='Button Text'
+                value={call?.name}
                 onChange={(e) => {
                     setCall((prev) => ({
                         ...prev,
@@ -215,6 +236,7 @@ const RenderCallNowButton = ({
             />
             <InputField
                 placeholder='Mobile Number'
+                value={call?.value}
                 onChange={(e) => {
                     setCall((prev) => ({ ...prev, value: e }));
                 }}
@@ -230,11 +252,11 @@ const RenderVisitUsButton = ({
     onOptionsChange: any;
     configuration: any;
 }) => {
-    const [value, setValue] = useState<any>(configuration?.['URL'] || {});
+    const [visitUs, setVisitUs] = useState<any>(configuration?.['URL'] || {});
 
     useUpdateEffect(() => {
-        onOptionsChange(value);
-    }, [value]);
+        onOptionsChange(visitUs);
+    }, [visitUs]);
     return (
         <div className='flex gap-2 items-center'>
             <div className='py-1 w-40 text-center text-white bg-gray-400 rounded'>
@@ -242,17 +264,19 @@ const RenderVisitUsButton = ({
             </div>
             <InputField
                 placeholder='Button Text'
+                value={visitUs?.name}
                 onChange={(e) => {
-                    setValue((prev) => ({
+                    setVisitUs((prev) => ({
                         ...prev,
                         name: e,
                     }));
                 }}
             />
             <InputField
-                placeholder='https://finnoto.com'
+                value={visitUs?.value}
+                placeholder='https://example.com'
                 onChange={(e) => {
-                    setValue((prev) => ({ ...prev, value: e }));
+                    setVisitUs((prev) => ({ ...prev, value: e }));
                 }}
             />
         </div>
@@ -266,7 +290,9 @@ const RenderQuickReplyButton = ({
     onOptionsChange: (value: any) => void;
     configuration: any;
 }) => {
-    const values = Object.values(configuration?.QUICK_REPLY || { key: ' ' });
+    const values = Object.values(
+        configuration?.[BUTTON_CONFIG_TYPE.QUICK_REPLY] || { key: ' ' }
+    );
     const [quickReplies, { push, removeAt, updateAt }] = useList<any>(values);
 
     const handleChange = (index: number, newValue: string) => {
@@ -298,7 +324,7 @@ const RenderQuickReplyButton = ({
                         {index !== 0 && (
                             <Button
                                 onClick={() => handleDelete(index)}
-                                appearance={'plain'}
+                                appearance={'errorHover'}
                                 size={'xs'}
                                 color={'error'}
                             >

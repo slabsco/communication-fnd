@@ -1519,11 +1519,11 @@ export const getVariableParamsFromString = (input: string): string[] => {
 };
 
 export const replaceVariablesInString = (
-    template: string,
+    message: string,
     params: Record<string, string>
 ): string => {
     const regex = /{{(.*?)}}/g;
-    return template.replace(regex, (_, variable) => {
+    return message.replace(regex, (_, variable) => {
         const trimmedVariable = variable.trim();
         return trimmedVariable in params ? params[trimmedVariable] : _;
     });
