@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
+import { MetaBusinessController } from '../../backend/meta/controllers/meta.business.controller';
+import { FetchData } from '../useFetchData.hook';
+
 export const useOnBoardBusinessWithMeta = () => {
     const [facebookSDKLoaded, setFacebookSDKLoaded] = useState(false);
 
@@ -53,6 +56,14 @@ export const useOnBoardBusinessWithMeta = () => {
         };
     }, []);
 
+    const sendDataToServer = async () => {
+        const {} = FetchData({
+            className: MetaBusinessController,
+            method: sendMetaCodeDetails,
+            classParams: {},
+        });
+    };
+
     const launchWhatsAppSignup = useCallback(() => {
         if (!facebookSDKLoaded || typeof window.FB === 'undefined') {
             setTimeout(launchWhatsAppSignup, 100);
@@ -67,7 +78,10 @@ export const useOnBoardBusinessWithMeta = () => {
         window.FB.login(
             (response) => {
                 if (response.authResponse) {
+                    console.log({ response });
+
                     const code = response.authResponse.code;
+
                     console.log('Authorization code:', code);
                     // Handle the code (e.g., send to backend)
                 } else {

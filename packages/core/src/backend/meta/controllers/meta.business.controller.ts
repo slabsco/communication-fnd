@@ -19,10 +19,12 @@ export class MetaBusinessController extends BaseModel {
         return this.post();
     }
 
-    async onBoardingUrl() {
-        this.api = `${this.endPoint}/meta-integration-url`;
+    async sendMetaCodeDetails() {
+        this.api = `${this.endPoint}/send-meta-code`;
         this.isMeta = false;
-        return this.get();
+
+        this.bodyDto = MetaBusinessDto;
+        return this.post();
     }
 
     async getProducts(id: number) {
