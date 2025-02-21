@@ -2,18 +2,28 @@ import { Expose } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class SignupDto {
-    @IsNotEmpty()
-    @IsString()
     @Expose()
-    name: string;
+    @IsString()
+    @IsNotEmpty()
+    email: string;
 
-    @IsNotEmpty()
-    @IsString()
     @Expose()
-    username: string;
-
-    @IsNotEmpty()
     @IsString()
-    @Expose()
+    @IsNotEmpty()
     password: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    mobile: number;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    dial_code: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    name: string;
 }

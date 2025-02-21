@@ -9,6 +9,7 @@ import {
     IsFunction,
     IsValidString,
     Navigation,
+    SIGNUP_ROUTE,
     useFetchParams,
     useLogin,
     useOtpLogin,
@@ -26,6 +27,7 @@ import {
 
 import GoogleLoginButton from './Components/googleLoginButton.component';
 import LoginPageFrame, {
+    AuthenticationUIFooter,
     AuthenticationUIWrapper,
 } from './Components/loginPageFrame.component';
 
@@ -104,11 +106,11 @@ const LoginScreen = () => {
                 )}
             </div>
             {/* <SocialLoginSection /> */}
-            {/* <AuthenticationUIFooter
+            <AuthenticationUIFooter
                 link={'Sign Up'}
                 text="Don't  have an Account?"
                 route={SIGNUP_ROUTE}
-            /> */}
+            />
         </AuthenticationUIWrapper>
     );
 };

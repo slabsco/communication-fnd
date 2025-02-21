@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { VERIFY_EMAIL_ROUTE } from '../../Constants';
+import { LOGIN_ROUTE, VERIFY_EMAIL_ROUTE } from '../../Constants';
 import { StoreUserToken } from '../../Models';
 import { AuthUser } from '../../Models/User/auth.user';
 import { FormBuilderSubmitType } from '../../Types/formBuilder.types';
@@ -28,7 +28,7 @@ export const useSignup = () => {
         const { success, response } = await FetchData({
             className: AuthUser,
             method: 'signup',
-            classParams: values,
+            classParams: { ...values, dial_code: '91' },
         });
         if (!success) {
             if (response.columns) {
@@ -42,10 +42,19 @@ export const useSignup = () => {
             return;
         }
 
-        setUsername(values.username);
-        setSeed(response.totp_seed);
-        setCredential(response.credential);
-        setIsTotp(true);
+        // setUsername(values.username);
+        // setSeed(response.totp_seed);
+        // setCredential(response.credential);
+        // setIsTotp(true);
+
+        Navigation.navigate({
+            url: LOGIN_ROUTE,
+            queryParam: { email: values?.email },
+        });
+        Toast.success({
+            description:
+                'Please Login Via the credentials that you have set before.',
+        });
     };
 
     const handleTotp = async (next = () => {}, totp?: string) => {
