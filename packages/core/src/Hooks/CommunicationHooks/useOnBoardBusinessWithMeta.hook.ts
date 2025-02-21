@@ -65,7 +65,7 @@ export const useOnBoardBusinessWithMeta = () => {
                     // your code goes here
                 }
             } catch {
-                console.log('message event: ', event.data); // remove after testing
+                console.log('message event error: ', event.data); // remove after testing
                 // your code goes here
             }
         });
