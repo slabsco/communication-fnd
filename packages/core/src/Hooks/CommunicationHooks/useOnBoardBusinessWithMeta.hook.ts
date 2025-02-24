@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { MetaBusinessController } from '../../backend/meta/controllers/meta.business.controller';
+import { toastBackendError } from '../../Utils/common.utils';
 import { FetchData } from '../useFetchData.hook';
 
 export const useOnBoardBusinessWithMeta = () => {
@@ -61,8 +62,7 @@ export const useOnBoardBusinessWithMeta = () => {
             try {
                 const data = JSON.parse(event.data);
                 if (data.type === 'WA_EMBEDDED_SIGNUP') {
-                    console.log('message event: ', data); // remove after testing
-                    // your code goes here
+                    sendDataToServer(data?.data);
                 }
             } catch {
                 console.log('message event error: ', event.data); // remove after testing
@@ -75,12 +75,22 @@ export const useOnBoardBusinessWithMeta = () => {
         };
     }, []);
 
-    const sendDataToServer = async () => {
-        const {} = FetchData({
+    const sendDataToServer = async (data: any) => {
+        const { response, success } = await FetchData({
             className: MetaBusinessController,
-            method: sendMetaCodeDetails,
-            classParams: {},
+            method: 'sendMetaCodeDetails',
+            classParams: {
+                data,
+                ignore_dto_all: true,
+            },
         });
+
+        if (!success) {
+            toastBackendError(response);
+            return;
+        }
+
+        window.location.href = '/';
     };
 
     const launchWhatsAppSignup = useCallback(() => {

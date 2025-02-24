@@ -30,7 +30,6 @@ import {
 import ProductSwitchSelector from '@Modules/AuthPage/Components/productSwitchSelector.component';
 
 import { ArcHeaderPopover } from './header.user.component';
-import HeaderNotification from './headerNotification.component';
 
 import {
     ApProductSvgIcon,
@@ -87,17 +86,17 @@ const ArcHeader = () => {
                     />
                 </div>
                 {!user?.business?.internal_access_token && (
-                    <div className='flex gap-4 items-center px-3 py-1 mx-3 rounded animate-pulse bg-error text-error-content'>
+                    <div className='flex gap-4 items-center px-3 py-1 mx-3 rounded animate-pulse bg-warning text-warning-content'>
                         <p className='text-xs'>
                             Please, onboard with the meta to create and use the
                             whatsapp feature
                         </p>
                         <Button
                             onClick={launchWhatsAppSignup}
-                            appearance='success'
+                            appearance='info'
                             size='xs'
                         >
-                            On Board With Meta
+                            Login With Facebook
                         </Button>
                     </div>
                 )}
