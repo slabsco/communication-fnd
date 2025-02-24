@@ -94,6 +94,8 @@ export const useOnBoardBusinessWithMeta = () => {
         Toast.success({
             description: 'Whatsapp Business Id and number is set',
         });
+
+        window.location.href = '/';
     };
 
     const sendCode = async (access_code: any) => {
