@@ -43,6 +43,7 @@ const SignupScreen = ({ handleSignup }: any) => {
             autoFocus: true,
             required: true,
             addonEnd: <Icon source={UserSvgIcon} isSvg />,
+            colSpan: 2,
             // size: width > 1600 ? 'lg' : 'md',
         },
         email: {
@@ -51,13 +52,21 @@ const SignupScreen = ({ handleSignup }: any) => {
             placeholder: 'Email',
             required: true,
             addonEnd: <Icon source={InputEmailIcon} isSvg />,
+            colSpan: 2,
             // size: width > 1600 ? 'lg' : 'md',
+        },
+        dial_code: {
+            type: 'number',
+            placeholder: 'Enter Dial Code',
+            label: 'Dialling Code',
+            prefix: <div>+</div>,
+            required: true,
+            maxLength: 3,
         },
         mobile: {
             type: 'text',
             placeholder: 'Enter Mobile',
             label: 'Mobile',
-            prefix: <div>+91</div>,
             required: true,
             maxLength: 10,
         },
@@ -69,15 +78,15 @@ const SignupScreen = ({ handleSignup }: any) => {
             required: true,
             // size: width > 1600 ? 'lg' : 'md',
         },
-        // confirmPassword: {
-        //     type: 'password',
-        //     label: 'Confirm Password',
-        //     placeholder: 'Confirm Password',
-        //     refKey: 'password',
-        //     required: true,
-        //     hidePasswordToggle: true,
-        //     // size: width > 1600 ? 'lg' : 'md',
-        // },
+        confirmPassword: {
+            type: 'password',
+            label: 'Confirm Password',
+            placeholder: 'Confirm Password',
+            refKey: 'password',
+            required: true,
+            hidePasswordToggle: true,
+            // size: width > 1600 ? 'lg' : 'md',
+        },
     };
     return (
         <AuthenticationUIWrapper
@@ -85,6 +94,7 @@ const SignupScreen = ({ handleSignup }: any) => {
             subTitle='Enter your credentials and start your journey with us !'
         >
             <FormBuilder
+                layout='two-column'
                 className='flex-1 gap-8 justify-between h-full'
                 formSchema={schema}
                 onSubmit={handleSignup}

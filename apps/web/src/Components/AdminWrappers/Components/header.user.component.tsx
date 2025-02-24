@@ -1,11 +1,9 @@
-import { UserCog2Icon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useUnmount } from 'react-use';
 
 import {
     AccessManager,
     authenticateBusiness,
-    enableDeveloperMode,
     groupBusiness,
     Navigation,
     PRODUCT_IDENTIFIER,
@@ -21,6 +19,9 @@ import {
     DropdownMenu,
     DropdownMenuActionProps,
     Icon,
+    Modal,
+    ModalBody,
+    ModalContainer,
     Popover,
 } from '@finnoto/design-system';
 
@@ -32,9 +33,8 @@ import {
 } from '@Utils/functions.utils';
 
 import {
+    ArcInfoSvgIcon,
     CodeSvgIcon,
-    EyeSvgIcon,
-    LockSvgIcon,
     LogoutSvgIcon,
     RenameOrgSvgImage,
     RepeatSvgIcon,
@@ -301,6 +301,15 @@ export const ArcHeaderPopover = ({ children }: any) => {
         //     iconSize: 16,
         // },
         {
+            name: 'Business Info',
+            icon: ArcInfoSvgIcon,
+            isSvg: true,
+            action: () => {
+                Modal.open({ component: BusinessInfoModal, modalSize: 'sm' });
+            },
+            iconSize: 16,
+        },
+        {
             name: 'Logout',
             icon: LogoutSvgIcon,
             isSvg: true,
@@ -368,3 +377,28 @@ const ActionCard = ({
 };
 
 export default HeaderUser;
+
+const BusinessInfoModal = () => {
+    const { user } = useUserHook();
+
+    return (
+        <ModalContainer title='Business Info'>
+            <ModalBody className='grid grid-cols-2 gap-2 items-center'>
+                <div className='p-3 bg-white shadow'>
+                    <p>Business Mobile</p>
+                    <span className='font-medium'>
+                        {user.business?.internal_number ||
+                            'No set, please connect with facebook'}
+                    </span>
+                </div>
+                <div className='p-3 bg-white shadow'>
+                    <p>Whatsapp Business Id</p>
+                    <span className='font-medium'>
+                        {user.business?.internal_id ||
+                            'No set, please connect with facebook'}
+                    </span>
+                </div>
+            </ModalBody>
+        </ModalContainer>
+    );
+};

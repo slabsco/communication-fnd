@@ -28,7 +28,7 @@ export const useSignup = () => {
         const { success, response } = await FetchData({
             className: AuthUser,
             method: 'signup',
-            classParams: { ...values, dial_code: '91' },
+            classParams: values,
         });
         if (!success) {
             if (response.columns) {
