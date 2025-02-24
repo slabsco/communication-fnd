@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { MetaBusinessController } from '../../backend/meta/controllers/meta.business.controller';
 import { toastBackendError } from '../../Utils/common.utils';
+import { Toast } from '../../Utils/toast.utils';
 import { FetchData } from '../useFetchData.hook';
 
 export const useOnBoardBusinessWithMeta = () => {
@@ -62,7 +63,7 @@ export const useOnBoardBusinessWithMeta = () => {
             try {
                 const data = JSON.parse(event.data);
                 if (data.type === 'WA_EMBEDDED_SIGNUP') {
-                    sendDataToServer(data?.data);
+                    sendEventData(data?.data);
                 }
             } catch {
                 console.log('message event error: ', event.data); // remove after testing
@@ -75,10 +76,10 @@ export const useOnBoardBusinessWithMeta = () => {
         };
     }, []);
 
-    const sendDataToServer = async (data: any) => {
+    const sendEventData = async (data: any) => {
         const { response, success } = await FetchData({
             className: MetaBusinessController,
-            method: 'sendMetaCodeDetails',
+            method: 'setBusinessWaId',
             classParams: {
                 data,
                 ignore_dto_all: true,
@@ -90,7 +91,29 @@ export const useOnBoardBusinessWithMeta = () => {
             return;
         }
 
-        window.location.href = '/';
+        Toast.success({
+            description: 'Whatsapp Business Id and number is set',
+        });
+    };
+
+    const sendCode = async (access_code: any) => {
+        const { response, success } = await FetchData({
+            className: MetaBusinessController,
+            method: 'sendMetaCodeDetails',
+            classParams: {
+                data: { code: access_code },
+                ignore_dto_all: true,
+            },
+        });
+
+        if (!success) {
+            toastBackendError(response);
+            return;
+        }
+
+        Toast.success({
+            description: 'Business Authentication is done',
+        });
     };
 
     const launchWhatsAppSignup = useCallback(() => {
@@ -110,6 +133,7 @@ export const useOnBoardBusinessWithMeta = () => {
                     console.log({ response });
 
                     const code = response.authResponse.code;
+                    sendCode(code);
 
                     console.log('Authorization code:', code);
                     // Handle the code (e.g., send to backend)

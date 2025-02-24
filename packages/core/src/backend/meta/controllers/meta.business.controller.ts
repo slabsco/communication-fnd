@@ -20,7 +20,15 @@ export class MetaBusinessController extends BaseModel {
     }
 
     async sendMetaCodeDetails() {
-        this.api = `${this.endPoint}/send-meta-code`;
+        this.api = `${this.endPoint}/set-access-token`;
+        this.isMeta = false;
+
+        this.bodyDto = MetaBusinessDto;
+        return this.post();
+    }
+
+    async setBusinessWaId() {
+        this.api = `${this.endPoint}/set-internal-id`;
         this.isMeta = false;
 
         this.bodyDto = MetaBusinessDto;
