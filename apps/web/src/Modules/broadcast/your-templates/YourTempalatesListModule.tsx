@@ -29,6 +29,10 @@ const YourTemplatesListModule = () => {
                 url: (item) => `${WHATSAPP_TEMPLATE_LIST_ROUTE}/${item.id}`,
             },
             {
+                name: 'Identifier',
+                key: 'identifier',
+            },
+            {
                 name: 'category',
                 key: 'category',
             },

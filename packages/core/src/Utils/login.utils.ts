@@ -32,11 +32,10 @@ import { GetSessionItem } from './sessionStorage.utils';
 import { StoreEvent } from './stateManager.utils';
 import { Functions } from './ui.utils';
 
-export const handleLoginNextScreen = async (data: ObjectDto) => {
+const initializeUser = (data: any) => {
     const { user: userObj, businesses = [], invitations } = data;
 
     StoreUserToken(userObj, true);
-
     SetItem('user_email', userObj.email);
 
     if (userObj?.attributes?.reset_password) {
@@ -61,14 +60,22 @@ export const handleLoginNextScreen = async (data: ObjectDto) => {
 
     storeProductPathState(1, '');
 
-    UserBusiness.setBusinessAPIURLToLocalStorage(
-        'https://sndebug.finnoto.cloud/'
-    );
-
-    const pathState = getProductPathState(1);
+    UserBusiness.setBusinessAPIURLToLocalStorage(userObj?.api_url);
     window.location.replace(WHATSAPP_TEMPLATE_LIST_ROUTE);
 
     return businesses?.[0];
+};
+
+export const handleLoginNextScreen = async (data: ObjectDto) => {
+    const { user: userObj, businesses = [], invitations } = data;
+
+    if (!businesses.length) {
+        return Functions.openOnboarding((data) => {
+            initializeUser(data);
+        }, data);
+    }
+
+    return initializeUser(data);
 
     // if (IsEmptyArray(businesses)) {
     //     if (!userObj.email_verified_at) {
@@ -80,10 +87,10 @@ export const handleLoginNextScreen = async (data: ObjectDto) => {
     //     }
     // }
 
-    if (!IsEmptyArray(invitations)) {
-        Functions.openBusinessInvitation(invitations, authenticateBusiness);
-        return;
-    }
+    // if (!IsEmptyArray(invitations)) {
+    //     Functions.openBusinessInvitation(invitations, authenticateBusiness);
+    //     return;
+    // }
 
     // if (IsEmptyArray(businesses)) {
     //     const isOnboardingEnabled = await GetOpenPropertyValue(

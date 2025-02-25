@@ -10,7 +10,6 @@ import {
     LOGIN_ROUTE,
     Navigation,
     ObjectDto,
-    VENDOR_REGISTER_ROUTE,
 } from '@finnoto/core';
 import { MetaBusinessController } from '@finnoto/core/src/backend/meta/controllers/meta.business.controller';
 import {
@@ -26,76 +25,43 @@ import { OnBoardingImgSvg } from 'assets';
 
 const BusinessOnboarding = ({
     callback = () => {},
-    data = {},
+    data: userData = {},
 }: {
     callback: (business: ObjectDto) => void;
     data?: ObjectDto;
 }) => {
+    const {
+        user: { access_token, api_url },
+    } = userData;
     const [loading, setLoading] = useState(false);
-
     const [orgName, setOrgName] = useState('');
-    let syncTimeout: any;
-
-    useEffect(() => {
-        return () => {
-            clearTimeout(syncTimeout);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [syncTimeout]);
 
     const handleSubmit: FormBuilderSubmitType = async () => {
-        const { success, response } = await FetchData({
-            className: MetaBusinessController,
-            method: 'onboarding',
-            classParams: {
-                name: orgName,
-            },
-        });
+        setLoading(true);
+        try {
+            const response = await fetch(`${api_url}api/business/on-board`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify({ name: orgName }),
+            });
 
-        if (!success) {
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Something Went Wrong!!');
+            }
+
+            setLoading(false);
+            callback(data);
+        } catch (error) {
+            setLoading(false);
             Toast.error({
-                description: response.message || 'Something Went Wrong!!',
+                description: error.message || 'Something Went Wrong!!',
             });
         }
-
-        if (success) {
-            setLoading(true);
-            startSync(response.id);
-        }
-    };
-
-    const startSync = async (business_id: number) => {
-        let count = 0;
-        const delta = 2000;
-
-        const start = async () => {
-            count++;
-            const { success, response } = await FetchData({
-                className: MetaBusinessController,
-                method: 'list',
-            });
-
-            if (success && !IsEmptyArray(response)) {
-                const business = GetObjectFromArray(
-                    response,
-                    'id',
-                    business_id
-                );
-
-                if (business) {
-                    setLoading(false);
-                    return callback(business);
-                }
-            }
-
-            if (count < 5) {
-                syncTimeout = setTimeout(() => {
-                    start();
-                }, delta);
-            }
-        };
-
-        syncTimeout = setTimeout(start, delta);
     };
 
     return (
@@ -104,7 +70,7 @@ const BusinessOnboarding = ({
                 <PageLoader />
             ) : (
                 <>
-                    <div className='flex items-center justify-center w-full'>
+                    <div className='flex justify-center items-center w-full'>
                         <div className='flex items-center  justify-center h-36 w-36 rounded-full bg-[#4CC3C733] '>
                             <Icon
                                 iconClass='flex items-center justify-center'
@@ -132,7 +98,7 @@ const BusinessOnboarding = ({
                                 name='organization_name'
                             />
                         </div>
-                        <div className='grid grid-cols-2 gap-4 '>
+                        <div className='grid grid-cols-2 gap-4'>
                             <Button
                                 className='mt-auto normal-case'
                                 block
@@ -151,7 +117,7 @@ const BusinessOnboarding = ({
                                 Continue
                             </Button>
                         </div>
-                        <div className='items-center justify-between w-full mt-2 text-center row-flex'>
+                        <div className='justify-between items-center mt-2 w-full text-center row-flex'>
                             <a
                                 onClick={() => {
                                     Modal.close();
@@ -160,17 +126,6 @@ const BusinessOnboarding = ({
                                 className='text-sm cursor-pointer link link-hover'
                             >
                                 Login with different user
-                            </a>
-                            <a
-                                onClick={() => {
-                                    Modal.close();
-                                    Navigation.navigate({
-                                        url: VENDOR_REGISTER_ROUTE,
-                                    });
-                                }}
-                                className='text-sm cursor-pointer link link-hover'
-                            >
-                                Login as vendor
                             </a>
                         </div>
                     </form>

@@ -1,9 +1,10 @@
 import { useCallback, useMemo } from 'react';
-import { GenericListingType } from '../../Types';
-import { useCustomQueryList } from '../useCustomQueryList.hook';
+
 import { LISTING_CONTROLLER_ROUTER } from '../../Constants';
-import { FetchData } from '../useFetchData.hook';
+import { GenericListingType } from '../../Types';
 import { Toast } from '../../Utils/toast.utils';
+import { useCustomQueryList } from '../useCustomQueryList.hook';
+import { FetchData } from '../useFetchData.hook';
 
 export const useContactPersons = ({
     sourceId,

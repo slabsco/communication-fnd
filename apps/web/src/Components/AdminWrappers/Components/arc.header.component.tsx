@@ -11,11 +11,13 @@ import {
     useApp,
     useAppProducts,
     useCurrentBusiness,
+    useOnBoardBusinessWithMeta,
     useOperatingSystem,
     useUserHook,
 } from '@finnoto/core';
 import {
     Avatar,
+    Button,
     DropdownMenu,
     DropdownMenuActionProps,
     Icon,
@@ -28,7 +30,6 @@ import {
 import ProductSwitchSelector from '@Modules/AuthPage/Components/productSwitchSelector.component';
 
 import { ArcHeaderPopover } from './header.user.component';
-import HeaderNotification from './headerNotification.component';
 
 import {
     ApProductSvgIcon,
@@ -50,6 +51,10 @@ export const ProductIcons = {
 const ArcHeader = () => {
     const { isProductAvailable, isArc } = useApp();
     const { products } = useAppProducts();
+
+    const { launchWhatsAppSignup } = useOnBoardBusinessWithMeta();
+
+    const { user } = useUserHook();
 
     const { type: osType } = useOperatingSystem();
     const checkAvailableProduct = isProductAvailable && products?.length > 1;
@@ -80,6 +85,22 @@ const ArcHeader = () => {
                         size='sm'
                     />
                 </div>
+                {!user?.business?.internal_access_token && (
+                    <div className='flex gap-4 items-center px-3 py-1 mx-3 rounded animate-pulse bg-warning text-warning-content'>
+                        <p className='text-xs'>
+                            Please, onboard with the meta to create and use the
+                            whatsapp feature
+                        </p>
+                        <Button
+                            onClick={launchWhatsAppSignup}
+                            appearance='info'
+                            size='xs'
+                        >
+                            Login With Facebook
+                        </Button>
+                    </div>
+                )}
+
                 <div className='gap-4 items-center row-flex'>
                     {/* <HeaderNotification /> */}
                     {checkAvailableProduct && !isArc ? (

@@ -1,14 +1,8 @@
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class MetaBusinessDto {
+    @Expose()
     @IsNotEmpty()
-    @IsString()
-    @Expose()
-    name: string;
-
-    @IsOptional()
-    @Expose()
-    @IsNumber()
-    product_id?: number;
+    data?: any;
 }

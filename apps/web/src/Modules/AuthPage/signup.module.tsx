@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
 import {
@@ -8,7 +7,7 @@ import {
     useSignup,
     useUserLoggedInHandler,
 } from '@finnoto/core';
-import { Button, CheckBox, FormBuilder, Icon } from '@finnoto/design-system';
+import { Button, FormBuilder, Icon } from '@finnoto/design-system';
 
 import GoogleLoginButton from './Components/googleLoginButton.component';
 import LoginPageFrame, {
@@ -44,15 +43,32 @@ const SignupScreen = ({ handleSignup }: any) => {
             autoFocus: true,
             required: true,
             addonEnd: <Icon source={UserSvgIcon} isSvg />,
+            colSpan: 2,
             // size: width > 1600 ? 'lg' : 'md',
         },
-        username: {
+        email: {
             type: 'email',
             label: 'Email',
             placeholder: 'Email',
             required: true,
             addonEnd: <Icon source={InputEmailIcon} isSvg />,
+            colSpan: 2,
             // size: width > 1600 ? 'lg' : 'md',
+        },
+        dial_code: {
+            type: 'number',
+            placeholder: 'Enter Dial Code',
+            label: 'Dialling Code',
+            prefix: <div>+</div>,
+            required: true,
+            maxLength: 3,
+        },
+        mobile: {
+            type: 'text',
+            placeholder: 'Enter Mobile',
+            label: 'Mobile',
+            required: true,
+            maxLength: 10,
         },
         password: {
             type: 'password',
@@ -78,14 +94,15 @@ const SignupScreen = ({ handleSignup }: any) => {
             subTitle='Enter your credentials and start your journey with us !'
         >
             <FormBuilder
-                className='justify-between flex-1 h-full gap-8'
+                layout='two-column'
+                className='flex-1 gap-8 justify-between h-full'
                 formSchema={schema}
                 onSubmit={handleSignup}
             >
                 {({ isSubmitting, handleSubmit, disableSubmit }) => (
                     <>
                         <div className='pt-4 border-t-2 bg-base-100 border-base-300'>
-                            <CheckBox
+                            {/* <CheckBox
                                 checked={agreeTerms}
                                 onChange={(data) => setAgreeTerms(data)}
                                 rightLabel={
@@ -109,8 +126,8 @@ const SignupScreen = ({ handleSignup }: any) => {
                                         .
                                     </div>
                                 }
-                            />
-                            <div className='justify-end h-full gap-4 mt-4 col-flex'>
+                            /> */}
+                            <div className='gap-4 justify-end mt-4 h-full col-flex'>
                                 <Button
                                     className='normal-case'
                                     size='lg'
@@ -122,7 +139,7 @@ const SignupScreen = ({ handleSignup }: any) => {
                                 >
                                     Next &rarr;
                                 </Button>
-                                <SocialLoginSection />
+                                {/* <SocialLoginSection /> */}
                                 <AuthenticationUIFooter
                                     link={'Sign In'}
                                     text='Already having an account?'

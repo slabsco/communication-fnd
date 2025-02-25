@@ -24,6 +24,7 @@ export default function YourTemplateCreationModule() {
 
     const isDisabled = useMemo(() => {
         return ref?.current?.disableSubmit;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ref?.current?.disableSubmit]);
 
     if (isLoading) return <PageLoader />;

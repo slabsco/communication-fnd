@@ -2,6 +2,7 @@ import { BusinessReportController } from '../backend/ap/business/controllers/bus
 import { ListingPreferenceController } from '../backend/ap/business/controllers/listing.preference.controller';
 import { LoggedUtilityController } from '../backend/ap/utility/controllers/logged.utility.controller';
 import { ViolationDefinitionController } from '../backend/ap/utility/controllers/violation.definition.controller';
+import { BusinessWebhookController } from '../backend/common/controllers/business.webhook.controller';
 import { EmailMessageController } from '../backend/common/controllers/email.message.controller';
 import JournalEntryController from '../backend/common/controllers/journal.entry.controller';
 import { LookupController } from '../backend/common/controllers/lookup.controller';
@@ -66,6 +67,7 @@ export const LISTING_CONTROLLER_ROUTER = {
     contact: ContactController,
     teamInbox: TeamInboxController,
     quickReply: QuickReplyController,
+    business_webhook: BusinessWebhookController,
 } as const;
 
 export const SPOTLIGHT_QUERY_CONTROLLER_ROUTE = {

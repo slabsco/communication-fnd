@@ -9,6 +9,7 @@ import {
     IsFunction,
     IsValidString,
     Navigation,
+    SIGNUP_ROUTE,
     useFetchParams,
     useLogin,
     useOtpLogin,
@@ -26,10 +27,11 @@ import {
 
 import GoogleLoginButton from './Components/googleLoginButton.component';
 import LoginPageFrame, {
+    AuthenticationUIFooter,
     AuthenticationUIWrapper,
 } from './Components/loginPageFrame.component';
 
-import { EditSvgIcon, EmailMobileSvgIcon } from 'assets';
+import { ArcEmailSvgIcon, EditSvgIcon } from 'assets';
 
 const LoginModule = () => {
     useUserLoggedInHandler();
@@ -104,11 +106,11 @@ const LoginScreen = () => {
                 )}
             </div>
             {/* <SocialLoginSection /> */}
-            {/* <AuthenticationUIFooter
+            <AuthenticationUIFooter
                 link={'Sign Up'}
                 text="Don't  have an Account?"
                 route={SIGNUP_ROUTE}
-            /> */}
+            />
         </AuthenticationUIWrapper>
     );
 };
@@ -199,13 +201,14 @@ const LoginMainSection = ({ data, onMobile, onEmail }: any) => {
             className='flex-1 gap-6 justify-between col-flex'
         >
             <InputField
-                label='Email/Mobile number'
+                label='Email'
+                required
                 name='username'
-                placeholder='Enter Email/Mobile number'
+                placeholder='john@example.com'
                 value={username}
                 maxLength={isMobile ? 10 : undefined}
                 error={error.username}
-                addonEnd={<Icon source={EmailMobileSvgIcon} isSvg />}
+                addonEnd={<Icon source={ArcEmailSvgIcon} isSvg />}
                 onChange={setUsername}
                 autoComplete
             />

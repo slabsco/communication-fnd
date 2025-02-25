@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 
-import { useApp } from '@finnoto/core';
-
 import { cn, IsValidString } from '../../../Utils/common.ui.utils';
 import { Icon } from '../../Data-display/Icon/icon.component';
 import { Button } from '../../Inputs/Button/button.component';
@@ -44,7 +42,7 @@ export const CommentConfirmModal = ({
     iconAppearance?: 'primary' | 'success' | 'error' | 'warning' | 'hold';
     required?: boolean;
 }) => {
-    const { isArc } = useApp();
+    const isArc = true;
     const [comments, setComments] = useState('');
 
     const iconAppearances = {
@@ -58,15 +56,15 @@ export const CommentConfirmModal = ({
     return (
         <ModalContainer className='modal-title-background arc-confirm-modal'>
             <ModalBody
-                className={cn('w-full px-4 mx-auto bg-base-100', {
-                    'w-full p-6': isArc,
+                className={cn('px-4 mx-auto w-full bg-base-100', {
+                    'p-6 w-full': isArc,
                 })}
             >
                 {!!icon && (
-                    <div className='flex items-center justify-center mb-4'>
+                    <div className='flex justify-center items-center mb-4'>
                         <div
                             className={cn(
-                                'h-12 w-12 rounded-full flex items-center justify-center',
+                                'flex justify-center items-center w-12 h-12 rounded-full',
                                 iconAppearances[iconAppearance]
                             )}
                         >
@@ -80,7 +78,7 @@ export const CommentConfirmModal = ({
                 ) : (
                     <div
                         className={cn('text-xl font-medium text-center', {
-                            'text-start font-semibold': isArc,
+                            'font-semibold text-start': isArc,
                         })}
                     >
                         {isArc ? title || 'Sure you want to accept?' : title}
@@ -111,7 +109,7 @@ export const CommentConfirmModal = ({
                 </div>
                 <div
                     className={cn('grid grid-cols-2 gap-4 mt-6', {
-                        'flex justify-end gap-2': isArc,
+                        'flex gap-2 justify-end': isArc,
                     })}
                 >
                     {actions.map((item, index) => {

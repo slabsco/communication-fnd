@@ -42,6 +42,8 @@ export class AuthUser extends BaseModel {
     async signup() {
         this.api = 'auth/signup';
         this.bodyDto = SignupDto;
+
+        this.isMeta = false;
         return this.post();
     }
 

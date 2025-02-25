@@ -11,7 +11,6 @@ import {
     ArcBreadcrumbs,
     ArcPagination,
     cn,
-    Container,
     IndexFilter,
     IsFunction,
     NoDataFound,
@@ -122,9 +121,7 @@ const ArcGenericSplitDetail = (props: ArcGenericSplitDetailProps) => {
         });
     }, [breadcrumbData.route, breadcrumbKey, customBreadCrumbData, details]);
     return (
-        <Container
-            className={cn('overflow-hidden px-5 col-flex h-content-screen')}
-        >
+        <div className={cn('overflow-hidden px-5 col-flex h-content-screen')}>
             <ArcBreadcrumbs
                 mainClassName='rounded py-4 rounded-none pb-2'
                 title={title}
@@ -285,7 +282,7 @@ const ArcGenericSplitDetail = (props: ArcGenericSplitDetailProps) => {
                     }}
                 </TwinPanel>
             </div>
-        </Container>
+        </div>
     );
 };
 

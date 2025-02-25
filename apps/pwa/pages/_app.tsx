@@ -110,6 +110,12 @@ export default function App({ Component, pageProps }: AppProps) {
                     name='viewport'
                     content='width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'
                 />
+                {/* <script
+                    async
+                    defer
+                    crossOrigin='anonymous'
+                    src='https://connect.facebook.net/en_US/sdk.js'
+                ></script> */}
             </Head>
             <RootApp component={Component} pageProp={pageProps} />
         </div>

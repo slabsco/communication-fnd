@@ -42,11 +42,18 @@ const AddContactForm = ({
             label: 'Name',
             required: true,
         },
+        dialing_code: {
+            type: 'number',
+            placeholder: 'Enter Dial Code',
+            label: 'Dialling Code',
+            prefix: <div>+</div>,
+            required: true,
+            maxLength: 3,
+        },
         mobile: {
             type: 'text',
             placeholder: 'Enter Mobile',
-            label: 'Mobile',
-            prefix: <div>+91</div>,
+            label: 'Mobile Number',
             required: true,
             maxLength: 10,
         },
@@ -59,7 +66,6 @@ const AddContactForm = ({
             classParams: {
                 id: initial_data?.id,
                 ...values,
-                dialing_code: 91,
                 custom_attributes: attributes?.map((obj) => {
                     if (obj?.key) return obj;
                 }),
@@ -79,8 +85,9 @@ const AddContactForm = ({
     const { renderFormFields, handleSubmit } = useFormBuilder({
         formSchema: schema,
         initValues: {
-            name: initial_data?.name,
+            name: initial_data?.display_name || initial_data?.name,
             mobile: initial_data?.mobile,
+            dialing_code: initial_data?.dialing_code,
         },
         onSubmit,
     });
@@ -93,7 +100,10 @@ const AddContactForm = ({
         <ModalContainer title='Add Contact'>
             <ModalBody className='flex-1 gap-2 col-flex'>
                 {renderFormFields('name')}
+
+                {renderFormFields('dialing_code')}
                 {renderFormFields('mobile')}
+
                 <div className='gap-2 mt-2 col-flex'>
                     <div className='max-h-[200px] col-flex gap-2 overflow-y-auto '>
                         {attributes.map((att, index) => {
