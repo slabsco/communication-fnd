@@ -92,7 +92,7 @@ export const handleLoginNextScreen = async (data: ObjectDto) => {
 
 export const authenticateBusiness = async (
     business: ObjectDto,
-    userData: any
+    userData?: any
 ) => {
     const businessApiUrl = UserBusiness.getBusinessAPIUrl();
     const { user } = userData;
