@@ -577,15 +577,7 @@ export function GetArrayFromObjArray<T>(arr: T[], key: string) {
  * returns current environment
  */
 export function IsProduction() {
-    return (
-        process.env['NODE_ENV'] !== 'development' &&
-        !(
-            process.env['NEXT_PUBLIC_VERCEL_ENV'] &&
-            ['preview', 'development'].includes(
-                process.env['NEXT_PUBLIC_VERCEL_ENV']
-            )
-        )
-    );
+    return process.env['NODE_ENV_MODE'] === 'production';
 }
 
 /*
