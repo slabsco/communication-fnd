@@ -1,6 +1,6 @@
 import { useDropzone } from 'react-dropzone';
 
-import { GetItem } from '@finnoto/core';
+import { GetItem, UserBusiness } from '@finnoto/core';
 import { Button } from '@finnoto/design-system';
 
 const FileUploaderComponent = ({
@@ -21,20 +21,16 @@ const FileUploaderComponent = ({
         const file = acceptedFiles[0]; // Only upload the first file
         formData.append('file', file);
 
+        const url = UserBusiness.getBusinessAPIUrl();
+
         try {
-            const response = await fetch(
-                'https://sndebug.finnoto.cloud/api/b/upload-files',
-                {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Bearer ${GetItem(
-                            'ACCESS_TOKEN',
-                            false
-                        )}`,
-                    },
-                    body: formData,
-                }
-            );
+            const response = await fetch(`${url}api/b/upload-files`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${GetItem('ACCESS_TOKEN', false)}`,
+                },
+                body: formData,
+            });
 
             if (!response.ok) {
                 throw new Error('File upload failed');
