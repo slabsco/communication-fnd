@@ -5,6 +5,7 @@ import { CommunicationTemplateController } from '@finnoto/core/src/backend/commu
 import {
     Button,
     ConfirmUtil,
+    Loading,
     Modal,
     ModalBody,
     ModalContainer,
@@ -67,7 +68,7 @@ const ImportYourTemplateModal = ({ callback }: { callback: () => {} }) => {
     return (
         <ModalContainer title='Your Other Template'>
             <ModalBody>
-                {IsEmptyArray(data) && <NoDataFound />}
+                {!isLoading && IsEmptyArray(data) && <NoDataFound />}
                 {!IsEmptyArray(data) && (
                     <div>
                         {!IsEmptyArray(handleSelectedData) && (
@@ -113,6 +114,11 @@ const ImportYourTemplateModal = ({ callback }: { callback: () => {} }) => {
                                 pagination={{ display: false }}
                             />
                         </div>
+                    </div>
+                )}
+                {isLoading && (
+                    <div className='w-full h-full centralize'>
+                        <Loading size='xl' color='primary' />
                     </div>
                 )}
             </ModalBody>
