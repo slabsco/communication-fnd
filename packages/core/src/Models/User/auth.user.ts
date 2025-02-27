@@ -37,6 +37,9 @@ export class AuthUser extends BaseModel {
     async login2fa() {
         this.api = 'auth/login-2fa';
         this.bodyDto = Login2faDto;
+
+        this.isMeta = true;
+
         return this.post();
     }
 
