@@ -251,7 +251,7 @@ class userBusiness {
             return meta_url || API_CONSTANTS.ROUTE_URL;
         }
 
-        return this.api_url || 'https://api.finnoto.dev'; // TO-DO: remove it in future
+        return this.api_url || 'https://wapi.dartinbox.in/'; // TO-DO: remove it in future
     }
 
     /**
