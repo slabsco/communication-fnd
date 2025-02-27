@@ -577,6 +577,12 @@ export function GetArrayFromObjArray<T>(arr: T[], key: string) {
  * returns current environment
  */
 export function IsProduction() {
+    if (
+        typeof window !== 'undefined' &&
+        window.location.href.includes('dartinbox.com')
+    ) {
+        return true;
+    }
     return process.env['NODE_ENV_MODE'] === 'production';
 }
 
