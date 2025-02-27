@@ -1,6 +1,5 @@
 import { IdPayloadDto } from '../../backend/common/dtos/id.payload.dto';
 import { BaseModel } from '../base.models';
-import { AuthBusinessToken } from '../dto/auth.business.token.dto';
 import { ForgotPasswordPayloadDto } from '../dto/forgot.password.dto';
 import { LoginDto } from '../dto/login.dto';
 import { Login2faDto } from '../dto/login2fa.dto';
@@ -47,7 +46,7 @@ export class AuthUser extends BaseModel {
         this.api = 'auth/signup';
         this.bodyDto = SignupDto;
 
-        this.isMeta = false;
+        this.isMeta = true;
         return this.post();
     }
 
