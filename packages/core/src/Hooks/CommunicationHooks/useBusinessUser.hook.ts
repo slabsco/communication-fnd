@@ -29,6 +29,23 @@ export const useBusinessUserHook = ({
         },
     });
 
+    const { mutate: removeBusinessUser } = useMutation({
+        mutationKey: ['business_user_removal'],
+
+        mutationFn: async (id) => {
+            const { response, success } = await FetchData({
+                className: BusinessUserController,
+                methodParams: id,
+                method: 'remove',
+            });
+
+            if (!success) return toastBackendError(response);
+            Toast.success({ description: 'User Removed' });
+
+            refetch?.(response);
+        },
+    });
+
     const { mutate: inviteUser } = useMutation({
         mutationKey: ['invite_business_user'],
         mutationFn: async (values) => {
@@ -44,5 +61,5 @@ export const useBusinessUserHook = ({
         },
     });
 
-    return { removeUser, inviteUser };
+    return { removeUser, inviteUser, removeBusinessUser };
 };

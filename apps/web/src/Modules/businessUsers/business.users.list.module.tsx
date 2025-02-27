@@ -12,7 +12,7 @@ import { openBusinessUserInviteModal } from './business.user.invite.modal';
 import { DeleteSvgIcon } from 'assets';
 
 const BusinessUsersListModule = () => {
-    const { removeUser } = useBusinessUserHook({
+    const { removeUser, removeBusinessUser } = useBusinessUserHook({
         refetch: () => {
             RefetchGenericListing();
         },
@@ -72,7 +72,7 @@ const BusinessUsersListModule = () => {
                         message:
                             'Are you sure you want to remove this user? This action cannot be undone and will permanently remove the user from the system.',
                         isReverseAction: true,
-                        onConfirmPress: () => removeUser(data?.id),
+                        onConfirmPress: () => removeBusinessUser(data?.id),
                     });
                 },
             },
