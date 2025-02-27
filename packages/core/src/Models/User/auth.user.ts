@@ -49,7 +49,7 @@ export class AuthUser extends BaseModel {
 
         this.isMeta = true;
 
-        this.baseURL = IsProduction()
+        this.baseURL = true
             ? `https://wapi.dartinbox.in/`
             : 'https://sndebug.finnoto.cloud/';
 
