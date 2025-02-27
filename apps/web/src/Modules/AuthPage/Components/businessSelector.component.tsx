@@ -27,7 +27,7 @@ const BusinessSelector = ({
 }) => {
     return (
         <div className='p-6 gap-4 col-flex w-[544px] max-h-[70vh] modal-bg dark:bg-base-200'>
-            <div className='flex items-center justify-center w-full'>
+            <div className='flex justify-center items-center w-full'>
                 <div className='flex items-center justify-center h-36 w-36 rounded-full bg-[#4CC3C733] '>
                     <Icon
                         iconClass='flex items-center justify-center'
@@ -48,7 +48,7 @@ const BusinessSelector = ({
                     </p>
                 </div>
             </div>
-            <div className='h-full px-2 py-4 overflow-y-auto hide-scrollbar-business'>
+            <div className='overflow-y-auto px-2 py-4 h-full hide-scrollbar-business'>
                 <RenderBusinessSelector {...{ businesses, callback }} />
             </div>
             <div className='flex justify-between px-2'>
@@ -60,15 +60,6 @@ const BusinessSelector = ({
                     }}
                 >
                     Login with different user
-                </Link>
-                <Link
-                    href={VENDOR_REGISTER_ROUTE}
-                    className='text-sm text-info link-hover'
-                    onClick={() => {
-                        Modal.close();
-                    }}
-                >
-                    Login as vendor
                 </Link>
             </div>
         </div>
@@ -100,15 +91,15 @@ export const RenderBusinessSelector = ({
                         <div
                             key={business.id}
                             id={'org-' + (index + 1)}
-                            className='items-center justify-between gap-3 px-4 py-3 transition-all border rounded cursor-pointer select-none border-base-300 group bg-base-100 row-flex hover:border-accent'
+                            className='gap-3 justify-between items-center px-4 py-3 rounded border transition-all cursor-pointer select-none border-base-300 group bg-base-100 row-flex hover:border-accent'
                             onClick={() => {
                                 // setActiveBusiness(business?.id);
                                 callback(business, () => setLoading(false));
                                 setLoading(true);
                             }}
                         >
-                            <div className='items-center gap-3 row-flex'>
-                                <div className='w-8 h-8 overflow-hidden rounded centralize bg-accent/20 text-accent'>
+                            <div className='gap-3 items-center row-flex'>
+                                <div className='overflow-hidden w-8 h-8 rounded centralize bg-accent/20 text-accent'>
                                     <Icon
                                         source={OnBoardingSolidImgSvg}
                                         isSvg
@@ -117,7 +108,8 @@ export const RenderBusinessSelector = ({
                                 </div>
                                 <div className='col-flex'>
                                     <span className='text-base font-medium text-base-primary group-hover:text-accent'>
-                                        {business.name}
+                                        {business.business_name ||
+                                            business?.business?.name}
                                     </span>
                                 </div>
                             </div>

@@ -6,6 +6,7 @@ import {
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../../Components/GenericDocumentListing/genericDocumentListing.types';
+import { openImportYourTemplateModal } from './ImportYourTemplateModal';
 
 const YourTemplatesListModule = () => {
     const props: GenericDocumentListingProps = {
@@ -15,11 +16,22 @@ const YourTemplatesListModule = () => {
             {
                 name: 'Create Template',
                 type: 'create',
+                outline: true,
                 action: () => {
                     Navigation.navigate({
                         url: WHATSAPP_TEMPLATE_CREATION_ROUTE,
                     });
                 },
+            },
+            {
+                name: 'Import Template',
+                type: 'action_btn',
+                buttonActions: [
+                    {
+                        name: 'Import Templates',
+                        action: openImportYourTemplateModal,
+                    },
+                ],
             },
         ],
         table: [

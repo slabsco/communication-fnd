@@ -115,7 +115,7 @@ const BusinessInvitation = ({
 
     return (
         <div className=' px-8 py-6 gap-4 col-flex max-h-[70vh] modal-bg'>
-            <div className='flex items-center justify-center w-full'>
+            <div className='flex justify-center items-center w-full'>
                 <div className='flex items-center  justify-center h-36 w-36 rounded-full bg-[#4CC3C733] '>
                     <Icon
                         iconClass='flex items-center justify-center'
@@ -136,19 +136,19 @@ const BusinessInvitation = ({
                     </p>
                 </div>
             </div>
-            <div className='h-full overflow-y-auto hide-scrollbar-business '>
+            <div className='overflow-y-auto h-full hide-scrollbar-business'>
                 {!IsEmptyArray(invitations) ? (
                     <div className='gap-3 col-flex'>
                         {invitations.map((business, index) => (
                             <div
                                 key={business.id}
-                                className='transition-all border-2 border-transparent rounded-lg shadow-sm cursor-pointer select-none col-flex hover:border-accent'
+                                className='rounded-lg border-2 border-transparent shadow-sm transition-all cursor-pointer select-none col-flex hover:border-accent'
                             >
                                 <div
-                                    className='items-center gap-3 px-4 py-3 row-flex'
+                                    className='gap-3 items-center px-4 py-3 row-flex'
                                     onClick={() => setExpanded(index)}
                                 >
-                                    <div className='w-8 h-8 overflow-hidden rounded centralize bg-accent/20 text-accent'>
+                                    <div className='overflow-hidden w-8 h-8 rounded centralize bg-accent/20 text-accent'>
                                         <Icon
                                             source={OnBoardingSolidImgSvg}
                                             isSvg
@@ -157,7 +157,7 @@ const BusinessInvitation = ({
                                     </div>
                                     <div className='col-flex'>
                                         <span className='text-base font-medium text-base-primary'>
-                                            {business.name}
+                                            {business.business?.name}
                                         </span>
                                     </div>
                                 </div>
@@ -165,7 +165,7 @@ const BusinessInvitation = ({
                                     <AnimateHeight
                                         height={expanded === index ? 'auto' : 0}
                                     >
-                                        <div className='items-center justify-end gap-4 px-4 pb-3 row-flex'>
+                                        <div className='gap-4 justify-end items-center px-4 pb-3 row-flex'>
                                             <Button
                                                 appearance='error'
                                                 size='sm'
@@ -179,7 +179,7 @@ const BusinessInvitation = ({
                                                     )
                                                 }
                                             >
-                                                <div className='flex items-center justify-center gap-1'>
+                                                <div className='flex gap-1 justify-center items-center'>
                                                     <Icon
                                                         source={RejectSvgIcon}
                                                         isSvg
@@ -200,7 +200,7 @@ const BusinessInvitation = ({
                                                     )
                                                 }
                                             >
-                                                <div className='flex items-center justify-center gap-2'>
+                                                <div className='flex gap-2 justify-center items-center'>
                                                     <Icon
                                                         source={
                                                             'check_circle_outline'
@@ -241,7 +241,7 @@ const BusinessInvitation = ({
                 ) : null}
             </div>
 
-            <div className='flex items-center justify-between mt-4'>
+            <div className='flex justify-between items-center mt-4'>
                 <Link
                     href={LOGIN_ROUTE}
                     className='text-sm cursor-pointer text-info link-hover'

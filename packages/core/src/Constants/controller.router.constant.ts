@@ -2,6 +2,7 @@ import { BusinessReportController } from '../backend/ap/business/controllers/bus
 import { ListingPreferenceController } from '../backend/ap/business/controllers/listing.preference.controller';
 import { LoggedUtilityController } from '../backend/ap/utility/controllers/logged.utility.controller';
 import { ViolationDefinitionController } from '../backend/ap/utility/controllers/violation.definition.controller';
+import { BusinessUserController } from '../backend/common/controllers/business.user.controller';
 import { BusinessWebhookController } from '../backend/common/controllers/business.webhook.controller';
 import { EmailMessageController } from '../backend/common/controllers/email.message.controller';
 import JournalEntryController from '../backend/common/controllers/journal.entry.controller';
@@ -9,6 +10,7 @@ import { LookupController } from '../backend/common/controllers/lookup.controlle
 import { SourceMapController } from '../backend/common/controllers/source.map.controller';
 import TallyGroupController from '../backend/common/controllers/tally.group.controller';
 import UserNotificationController from '../backend/common/controllers/user.notification.controller';
+import { BusinessUserInvitationController } from '../backend/communication/controller/business.user.invitation.controller';
 import { CommunicationTemplateController } from '../backend/communication/controller/commuinication.templates.controller';
 import { ContactController } from '../backend/communication/controller/contact.controller';
 import { QuickReplyController } from '../backend/communication/controller/quick.reply.controller';
@@ -68,6 +70,8 @@ export const LISTING_CONTROLLER_ROUTER = {
     teamInbox: TeamInboxController,
     quickReply: QuickReplyController,
     business_webhook: BusinessWebhookController,
+    business_users: BusinessUserController,
+    invite_users: BusinessUserInvitationController,
 } as const;
 
 export const SPOTLIGHT_QUERY_CONTROLLER_ROUTE = {

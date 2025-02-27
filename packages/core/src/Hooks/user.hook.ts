@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
 import { USER } from '../Constants';
 import { USER_DATA } from '../Models';
 import {
@@ -14,6 +15,10 @@ interface ParamsDto {
 
 export const useUserHook = ({ delay }: ParamsDto = {}) => {
     const [user, setUser] = useState<USER_DATA>({} as USER_DATA);
+
+    const isOwner = (user_id: number) => {
+        return user_id === user.business?.owner_id;
+    };
 
     useEffect(() => {
         SubscribeToEvent({ eventName: USER, callback: setUserData });
@@ -35,5 +40,5 @@ export const useUserHook = ({ delay }: ParamsDto = {}) => {
         }
     };
 
-    return { user };
+    return { user, isOwner };
 };

@@ -3,7 +3,6 @@ import { ObjectDto } from '../backend/Dtos';
 import {
     CHANGE_PASSWORD_ROUTE,
     CLIENT_INVITATION_DATA,
-    LAST_LOGIN_INFORMATION,
     LOGIN_ROUTE,
     PRODUCT_IDENTIFIER,
     PRODUCT_PATH_STATE,
@@ -16,13 +15,11 @@ import { FetchData } from '../Hooks/useFetchData.hook';
 import { UserBusiness } from '../Models/Business/user.business';
 import { StoreUserToken, user } from '../Models/User';
 import { AuthUser } from '../Models/User/auth.user';
-import { ProductPayload } from '../Types';
 import {
     groupBy,
     IsEmptyArray,
     IsObjectHaveKeys,
     IsValidString,
-    SortArrayObjectBy,
     toastBackendError,
 } from './common.utils';
 import { ExpenseRouteUtils } from './expenseRoute.utils';
@@ -60,7 +57,6 @@ const initializeUser = (data: any) => {
 
     storeProductPathState(1, '');
 
-    UserBusiness.setBusinessAPIURLToLocalStorage(userObj?.api_url);
     window.location.replace(WHATSAPP_TEMPLATE_LIST_ROUTE);
 
     return businesses?.[0];
@@ -69,196 +65,52 @@ const initializeUser = (data: any) => {
 export const handleLoginNextScreen = async (data: ObjectDto) => {
     const { user: userObj, businesses = [], invitations } = data;
 
+    UserBusiness.setBusinessAPIURLToLocalStorage(userObj?.api_url);
+    StoreUserToken({ access_token: userObj?.access_token }, true);
+
+    if (!IsEmptyArray(invitations)) {
+        Functions.openBusinessInvitation(invitations, (bu) =>
+            authenticateBusiness(bu, data)
+        );
+        return;
+    }
+
     if (!businesses.length) {
         return Functions.openOnboarding((data) => {
             initializeUser(data);
         }, data);
     }
 
-    return initializeUser(data);
+    const groupedBusiness = groupBusiness(businesses);
+    if (groupedBusiness.length === 1)
+        return authenticateBusiness(businesses[0], data);
 
-    // if (IsEmptyArray(businesses)) {
-    //     if (!userObj.email_verified_at) {
-    //         return Navigation.navigate({
-    //             url: VERIFY_EMAIL_ROUTE,
-    //             queryParam: { email: userObj.email },
-    //             method: 'replace',
-    //         });
-    //     }
-    // }
-
-    // if (!IsEmptyArray(invitations)) {
-    //     Functions.openBusinessInvitation(invitations, authenticateBusiness);
-    //     return;
-    // }
-
-    // if (IsEmptyArray(businesses)) {
-    //     const isOnboardingEnabled = await GetOpenPropertyValue(
-    //         'self-business-onboarding',
-    //         { convertBoolean: true }
-    //     );
-
-    //     if (isOnboardingEnabled)
-    //         return Functions.openOnboarding(authenticateBusiness);
-
-    //     Navigation.navigate({
-    //         url: LOGIN_ROUTE,
-    //         queryParam: { no_business: true },
-    //         method: 'replace',
-    //     });
-
-    //     return;
-    // }
-
-    // const groupedBusiness = groupBusiness(businesses);
-    // if (groupedBusiness.length === 1)
-    // return authenticateBusiness(businesses[0]);
-
-    // Functions.openBusinessSelector(businesses, authenticateBusiness);
+    Functions.openBusinessSelector(businesses, (bu) =>
+        authenticateBusiness(bu, data)
+    );
 };
 
 export const authenticateBusiness = async (
     business: ObjectDto,
-    options?: {
-        handleStopLoading?: any;
-        product?: ProductPayload;
-        referrer?: string;
-        noNavigate?: boolean;
-    }
+    userData: any
 ) => {
-    const { handleStopLoading, product, noNavigate } = options || {};
-    let { referrer }: any =
-        Navigation.getUrlParams()?.queryString || ({} as ObjectDto);
+    const businessApiUrl = UserBusiness.getBusinessAPIUrl();
+    const { user } = userData;
 
-    let selectedProduct = product || { id: business.product_id };
-
-    const user_email = GetItem('user_email');
-
-    const lastLoginInformation = GetItem(
-        LAST_LOGIN_INFORMATION + user_email + business?.id,
-        true
-    );
-
-    if (!product?.id && !IsEmptyArray(business.products)) {
-        if (business.products.length > 1) {
-            if (lastLoginInformation) {
-                const { product_id, business_id } = lastLoginInformation;
-                if (
-                    business_id === business?.id &&
-                    business?.products?.some((p) => p.id === product_id)
-                ) {
-                    return authenticateBusiness(business, {
-                        product: { id: product_id },
-                        noNavigate,
-                    });
-                }
-            }
-
-            handleStopLoading?.();
-            setTimeout(() => {
-                Functions.openProductSelector(
-                    SortArrayObjectBy(business.products || [], 'id'),
-                    (product: ProductPayload) =>
-                        authenticateBusiness(business, {
-                            product,
-                            noNavigate,
-                        })
-                );
-            }, 50);
-            return false;
-        }
-
-        selectedProduct = business.products[0];
-    }
-
-    StoreEvent({
-        eventName: 'login_loading',
-        data: true,
-        isTemp: true,
-        isMemoryStore: false,
+    const response = await fetch(`${businessApiUrl}auth/validate-token`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user?.access_token}`,
+        },
+        body: JSON.stringify({ id: business.business_id }),
     });
 
-    const { hide: hideLoading = () => {} } = Functions.toastLoading({
-        description: 'Please wait. Processing Business authorization...',
-    });
+    const data = await response.json();
+    const success = response.ok;
 
-    // const { success, response } = await FetchData({
-    //     className: AuthUser,
-    //     method: 'authBusinessToken',
-    //     methodParams: business.meta_server_id || business.id,
-    //     classParams: { product_id: selectedProduct?.id },
-    // });
-
-    let result: ObjectDto | false = false;
-    result = business;
-
-    // if (success) {
-    //     const { token, api_url } = response;
-
-    //     //for ownership transfer
-    //     const ownerShipReferralLocalStore = GetItem(OWNER_TRANSFER_REFERER);
-
-    //     let ownership_referrer = '';
-    //     if ([OWNER_TRANSFER].includes(ownerShipReferralLocalStore?.url)) {
-    //         const searchParams = new URLSearchParams(
-    //             ownerShipReferralLocalStore?.params || {}
-    //         );
-    //         ownership_referrer = `${
-    //             ownerShipReferralLocalStore?.url
-    //         }?${searchParams.toString()}`;
-    //     }
-
-    //     let frontendPath = '';
-
-    //     const pathState = getProductPathState(selectedProduct?.id);
-
-    //     if (pathState) {
-    //         frontendPath = pathState;
-    //     } else {
-    //         frontendPath = ExpenseRouteUtils.GetFrontendPath(
-    //             selectedProduct?.id
-    //         );
-    //     }
-
-    //     if (referrer) {
-    //         referrer = handleProductPathMismatch(referrer, frontendPath);
-    //     }
-
-    //     const validateResult = await validateBusinessToken({
-    //         token,
-    //         backend: api_url,
-    //         referrer: (options?.referrer ||
-    //             ownership_referrer ||
-    //             referrer) as string,
-    //         frontend: frontendPath,
-    //         noNavigate,
-    //     });
-
-    //     if (validateResult) {
-    //         result = business;
-    //     }
-    // } else {
-    //     const { message } = response;
-    //     Toast.error({ description: message });
-    //     StoreEvent({
-    //         eventName: 'login_loading',
-    //         data: false,
-    //         isTemp: true,
-    //         isMemoryStore: false,
-    //     });
-    //     if (!noNavigate) {
-    //         Navigation.navigate({
-    //             url: LOGIN_ROUTE,
-    //             queryParam: { referrer: options?.referrer || referrer },
-    //             method: 'replace',
-    //         });
-    //     }
-    // }
-
-    handleStopLoading?.();
-    hideLoading();
-
-    return result;
+    if (success) return initializeUser(data);
+    return response;
 };
 
 export const validateBusinessToken = async ({

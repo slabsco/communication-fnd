@@ -1,3 +1,4 @@
+import { IdPayloadDto } from '../../backend/common/dtos/id.payload.dto';
 import { BaseModel } from '../base.models';
 import { AuthBusinessToken } from '../dto/auth.business.token.dto';
 import { ForgotPasswordPayloadDto } from '../dto/forgot.password.dto';
@@ -89,9 +90,9 @@ export class AuthUser extends BaseModel {
         return this.post();
     }
 
-    async authBusinessToken(id: number) {
-        this.api = `api/business/${id}/token`;
-        this.bodyDto = AuthBusinessToken;
+    async authBusinessToken() {
+        this.api = `auth/validate-token`;
+        this.bodyDto = IdPayloadDto;
         return this.post();
     }
 
