@@ -25,8 +25,6 @@ export const useClientConfig = () => {
             refetch();
         },
         mutationFn: async (options: { id: number; name: string }) => {
-            console.log({ options });
-
             const { response, success } = await FetchData({
                 className: ClientConfigController,
                 method: 'create',
