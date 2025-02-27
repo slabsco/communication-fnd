@@ -1,5 +1,6 @@
 import { BaseModel } from '../../../Models/base.models';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
+import { IdsPayloadDto } from '../../common/dtos/ids.payload.dto';
 import { StringSearchDto } from '../../common/dtos/string.search.dto';
 import { WhatsappTemplateCreationDto } from '../dto/whatsapp.template.dto';
 
@@ -13,6 +14,11 @@ export class CommunicationTemplateController extends BaseModel {
         return this.post();
     }
 
+    async getBusinessTemplates() {
+        this.api = `${this.endPoint}/business-template`;
+        return this.get();
+    }
+
     async show(id: number) {
         this.api = `${this.endPoint}/${id}`;
 
@@ -21,6 +27,13 @@ export class CommunicationTemplateController extends BaseModel {
     async create() {
         this.api = `${this.endPoint}`;
         this.bodyDto = WhatsappTemplateCreationDto;
+
+        return this.post();
+    }
+
+    async importTemplates() {
+        this.api = `${this.endPoint}/import-template`;
+        this.bodyDto = IdsPayloadDto;
 
         return this.post();
     }

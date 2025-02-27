@@ -56,7 +56,7 @@ const SignupScreen = ({ handleSignup }: any) => {
             // size: width > 1600 ? 'lg' : 'md',
         },
         dial_code: {
-            type: 'number',
+            type: 'text',
             placeholder: 'Enter Dial Code',
             label: 'Dialling Code',
             prefix: <div>+</div>,

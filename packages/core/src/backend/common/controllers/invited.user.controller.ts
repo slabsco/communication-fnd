@@ -1,5 +1,5 @@
-import { user } from '../../../Models/User';
 import { UserBusiness } from '../../../Models/Business/user.business';
+import { user } from '../../../Models/User';
 import { InvitedUserCreationDto } from '../dtos/invited.user.creation.dto';
 import { CommonController } from './common.controller';
 

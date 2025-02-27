@@ -26,6 +26,16 @@ export class BusinessUserController extends CommonController {
         return this.post();
     }
 
+    async activate(id: number) {
+        this.api = `${this.endPoint}/${id}/activate`;
+        return this.post();
+    }
+
+    async deactivate(id: number) {
+        this.api = `${this.endPoint}/${id}/deactivate`;
+        return this.post();
+    }
+
     async show(id: number) {
         this.api = `${this.endPoint}/${id}`;
         return this.get();

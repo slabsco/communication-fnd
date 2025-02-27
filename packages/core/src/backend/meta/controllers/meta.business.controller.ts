@@ -8,7 +8,6 @@ export class MetaBusinessController extends BaseModel {
 
     async list() {
         this.api = this.endPoint;
-        this.isMeta = true;
         return this.get();
     }
 
