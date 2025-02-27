@@ -68,7 +68,12 @@ const ImportYourTemplateModal = ({ callback }: { callback: () => {} }) => {
     return (
         <ModalContainer title='Your Other Template'>
             <ModalBody>
-                {!isLoading && IsEmptyArray(data) && <NoDataFound />}
+                {!isLoading && IsEmptyArray(data) && (
+                    <NoDataFound
+                        title='No Existing templates'
+                        description='there are no any existing template in your business'
+                    />
+                )}
                 {!IsEmptyArray(data) && (
                     <div>
                         {!IsEmptyArray(handleSelectedData) && (
@@ -141,38 +146,18 @@ export const openImportYourTemplateModal = (options?: { callback: any }) => {
     });
 };
 
-const ImportTemplatePreview = (data: any) => {
-    const components = data?.data?.components;
-
-    const body = components?.filter((com) => com?.type === 'BODY');
-    const title = components?.filter((com) => com?.type === 'HEADER');
-    const footer = components?.filter((com) => com?.type === 'FOOTER');
-    const button = components?.filter((com) => com?.type === 'BUTTONS');
-
-    const configuration = useMemo(() => {
-        const quickReply = button?.[0]?.buttons?.filter(
-            (qr) => qr.type === 'QUICK_REPLY'
-        );
-
-        const config = {};
-
-        if (!IsEmptyArray(quickReply)) {
-            config['QUICK_REPLY'] = quickReply?.map((val) => val?.text);
-        }
-
-        return config;
-    }, [button]);
+const ImportTemplatePreview = (propsData: any) => {
+    const {
+        data: { viewer },
+    } = propsData;
 
     return (
         <YourTemplatesPreview
-            sampleContent={{}}
-            body={body?.[0]?.text}
-            configuration={configuration}
-            title={{
-                type: title?.[0]?.format,
-                value: title?.[0]?.text,
-            }}
-            footer={footer?.[0]?.text}
+            sampleContent={viewer?.sample_contents}
+            body={viewer?.body?.script}
+            configuration={viewer?.button_configurations}
+            title={viewer?.title}
+            footer={viewer?.footer?.script}
         />
     );
 };
