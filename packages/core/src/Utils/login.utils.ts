@@ -3,13 +3,13 @@ import { ObjectDto } from '../backend/Dtos';
 import {
     CHANGE_PASSWORD_ROUTE,
     CLIENT_INVITATION_DATA,
+    HOME_ROUTE,
     LOGIN_ROUTE,
     PRODUCT_IDENTIFIER,
     PRODUCT_PATH_STATE,
     REFERRER_STORE,
     VENDOR_CLIENT_ROUTE,
     VENDOR_REGISTER_ROUTE,
-    WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '../Constants';
 import { FetchData } from '../Hooks/useFetchData.hook';
 import { UserBusiness } from '../Models/Business/user.business';
@@ -57,7 +57,7 @@ const initializeUser = (data: any) => {
 
     storeProductPathState(1, '');
 
-    window.location.replace(WHATSAPP_TEMPLATE_LIST_ROUTE);
+    window.location.replace(HOME_ROUTE);
 
     return businesses?.[0];
 };

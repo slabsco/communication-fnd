@@ -20,7 +20,8 @@ export interface UploadInterfaceProps {
         | 'vendor'
         | 'document'
         | 'analysable_document'
-        | 'public_vendor';
+        | 'public_vendor'
+        | 'waUpload';
     sourceId?: number;
     endpoint?: string;
     headers?: { [x: string]: string };
@@ -41,6 +42,7 @@ export async function UploadImagesToServer({
     const endpoint = {
         common: 'api/upload-files',
         business: 'api/b/upload-files',
+        waUpload: 'api/b/business-details/upload-file',
         vendor: 'api/v/upload-files',
         document: 'api/b/document-upload',
         analysable_document: 'api/b/document-upload/analyse',
@@ -80,6 +82,8 @@ export async function UploadImagesToServer({
         onProgressComplete,
         signal,
     });
+
+    console.log({ result });
 
     const uploadedImages: any = [];
     if (!IsEmptyObject(result) && !IsEmptyArray(result.data)) {

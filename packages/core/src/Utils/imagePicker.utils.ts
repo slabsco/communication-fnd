@@ -11,7 +11,8 @@ export type FileUploadSource =
     | 'vendor'
     | 'document'
     | 'analysable_document'
-    | 'public_vendor';
+    | 'public_vendor'
+    | 'waUpload';
 
 export interface ProcessUploadDataType
     extends Pick<
@@ -80,6 +81,8 @@ export async function ProcessUploadData({
         if (typeof resolve == 'function') return resolve([]);
         return [];
     }
+
+    console.log({ result });
 
     // attach serverUrl property to each image object
     result.forEach((imageUrl, index) => {
