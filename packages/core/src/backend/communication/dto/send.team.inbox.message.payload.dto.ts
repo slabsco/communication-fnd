@@ -28,3 +28,9 @@ export class SendTeamInboxSimpleMessagePayloadDto {
     @IsOptional()
     attachment?: any;
 }
+
+export class WaUpdateDto {
+    @Expose()
+    @IsNotEmpty()
+    data: any;
+}

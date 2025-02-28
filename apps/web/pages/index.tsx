@@ -1,3 +1,3 @@
-import MainDashboard from '../src/Modules/dashboards/main.dashboard';
+import LandingModule from '../src/Modules/landing/landing.module';
 
-export default MainDashboard;
+export default LandingModule;

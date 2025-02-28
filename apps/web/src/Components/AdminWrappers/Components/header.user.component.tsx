@@ -4,9 +4,11 @@ import { useUnmount } from 'react-use';
 import {
     AccessManager,
     authenticateBusiness,
+    BUSINESS_PROFILE_ROUTE,
     groupBusiness,
     Navigation,
     PRODUCT_IDENTIFIER,
+    REFUND_LIST_ROUTE,
     useApp,
     useAppBusinesses,
     useCurrentBusiness,
@@ -34,6 +36,7 @@ import {
 
 import {
     ArcInfoSvgIcon,
+    ArcSettingsSvgIcon,
     CodeSvgIcon,
     LogoutSvgIcon,
     RenameOrgSvgImage,
@@ -301,11 +304,11 @@ export const ArcHeaderPopover = ({ children }: any) => {
         //     iconSize: 16,
         // },
         {
-            name: 'Business Info',
-            icon: ArcInfoSvgIcon,
+            name: 'Business Settings',
+            icon: ArcSettingsSvgIcon,
             isSvg: true,
             action: () => {
-                Modal.open({ component: BusinessInfoModal, modalSize: 'sm' });
+                Navigation.navigate({ url: BUSINESS_PROFILE_ROUTE });
             },
             iconSize: 16,
         },
@@ -377,28 +380,3 @@ const ActionCard = ({
 };
 
 export default HeaderUser;
-
-const BusinessInfoModal = () => {
-    const { user } = useUserHook();
-
-    return (
-        <ModalContainer title='Business Info'>
-            <ModalBody className='grid grid-cols-2 gap-2 items-center'>
-                <div className='p-3 bg-white shadow'>
-                    <p>Business Mobile</p>
-                    <span className='font-medium'>
-                        {user.business?.internal_number ||
-                            'No set, please connect with facebook'}
-                    </span>
-                </div>
-                <div className='p-3 bg-white shadow'>
-                    <p>Whatsapp Business Id</p>
-                    <span className='font-medium'>
-                        {user.business?.internal_id ||
-                            'No set, please connect with facebook'}
-                    </span>
-                </div>
-            </ModalBody>
-        </ModalContainer>
-    );
-};
