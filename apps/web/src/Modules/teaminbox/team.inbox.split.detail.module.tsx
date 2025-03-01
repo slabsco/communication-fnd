@@ -93,7 +93,7 @@ import {
 
 const TeamInboxModuleDetail = () => {
     const [recursiveFetch] = useRecursiveFetch(RefetchGenericListing, {
-        delay: 2000,
+        delay: 800,
         repeat: Infinity,
     });
 
@@ -108,6 +108,7 @@ const TeamInboxModuleDetail = () => {
             title='Team Inbox'
             type='teamInbox'
             breadcrumbKey='contact.display_name'
+            cacheTime={Infinity}
             // renderTopBar={() => {
             //     return <></>;
             // }}
@@ -186,19 +187,12 @@ const DetailSection = ({
     return (
         <div className='grid overflow-hidden grid-cols-3 gap-2 items-center h-full'>
             <div className='overflow-y-auto col-span-2 h-full rounded border bg-polaris-bg-surface'>
-                {isLoading && (
-                    <div className='flex justify-center items-center h-full'>
-                        <Loading color='primary' size='xl' />
+                <div className='relative gap-1 p-2 h-full col-flex'>
+                    <div className='overflow-hidden flex-1 border'>
+                        <RenderMessageDetail key={data?.id} data={data} />
                     </div>
-                )}
-                {!isLoading && (
-                    <div className='relative gap-1 p-2 h-full col-flex'>
-                        <div className='overflow-hidden flex-1 border'>
-                            <RenderMessageDetail data={data} />
-                        </div>
-                        <MessageChat data={data} />
-                    </div>
-                )}
+                    <MessageChat data={data} />
+                </div>
             </div>
             <RightSection data={data} isLoading={isLoading} />
         </div>
@@ -305,7 +299,6 @@ const RightSection = ({
 };
 
 const RenderMessageDetail = ({ data }: { data: { id: string } }) => {
-    const mainRef = useRef(null);
     const { data: response, isLoading } = useQuery({
         refetchInterval: 5000,
         cacheTime: Infinity,
@@ -325,15 +318,10 @@ const RenderMessageDetail = ({ data }: { data: { id: string } }) => {
         },
     });
 
-    useEffect(() => {
-        if (!mainRef?.current) return;
-        mainRef.current.scrollTop = mainRef.current.scrollHeight;
-    }, [mainRef, response]);
-
     return (
         <div
+            key={data?.id}
             className='flex overflow-y-auto flex-col-reverse gap-2 p-4 h-full'
-            ref={mainRef}
         >
             {isLoading && <Loading />}
             {response?.records.map((message: any) => (
