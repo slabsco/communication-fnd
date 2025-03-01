@@ -2,7 +2,14 @@
 
 import axios from 'axios';
 import EmojiPicker from 'emoji-picker-react';
-import { Check, CheckCheck, Contact, FileIcon, Info } from 'lucide-react';
+import {
+    Check,
+    CheckCheck,
+    Clock1,
+    Contact,
+    FileIcon,
+    Info,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, {
@@ -144,7 +151,15 @@ const Card = ({ data, isActive }: { data: any; isActive: boolean }) => {
             <div className='flex-1'>
                 <div className='flex gap-2 items-center'>
                     <span className='font-medium'>{data?.contact_name}</span>
-                    {/* <span className='text-sm text-gray-500'>Bot</span> */}
+                    {data?.attributes?.unread_count > 0 && (
+                        <Badge
+                            className='animate-pulse'
+                            label={`${data?.attributes?.unread_count} Unread`}
+                            size='xs'
+                            solid
+                            appearance='info'
+                        />
+                    )}
                 </div>
                 <div className='mt-0'>
                     <span className='text-sm'>
@@ -618,6 +633,10 @@ const MessageChat = ({ data }) => {
     const [files, { removeAt, set: setFiles, push: addFiles }] =
         useList<any[]>();
 
+    const isSendButtonDisabled = useMemo(() => {
+        return input.length <= 0;
+    }, [input.length]);
+
     const invalidateMessage = useCallback(() => {
         queryClient.invalidateQueries({
             queryKey: ['team_inbox_messages'],
@@ -626,6 +645,8 @@ const MessageChat = ({ data }) => {
 
     const sendMessage = useCallback(async () => {
         const doc: any = files?.[0];
+
+        if (isSendButtonDisabled) return;
 
         const { success, response } = await FetchData({
             className: TeamInboxController,
@@ -647,16 +668,24 @@ const MessageChat = ({ data }) => {
         setInput('');
         setFiles([]);
         invalidateMessage();
-    }, [data?.id, files, input, invalidateMessage, setFiles]);
+    }, [
+        data?.id,
+        files,
+        input,
+        invalidateMessage,
+        isSendButtonDisabled,
+        setFiles,
+    ]);
 
     const handleKeyPress = useCallback(
         (e: KeyboardEvent) => {
-            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-            const hasPressed = isMac ? e.metaKey : e.ctrlKey;
-
-            // For Windows/Linux: Ctrl+Enter
-            // For Mac: Cmd+Enter
-            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            if (
+                e.key === 'Enter' &&
+                !e.shiftKey &&
+                !e.ctrlKey &&
+                !e.metaKey &&
+                !e.altKey
+            ) {
                 e.preventDefault();
                 sendMessage();
             }
@@ -725,32 +754,35 @@ const MessageChat = ({ data }) => {
     };
 
     return (
-        <div className='sticky right-0 bottom-0 left-0 gap-2 col-flex'>
+        <div className='sticky right-0 bottom-0 left-0 gap-1 col-flex'>
             <ChatTextareaComponent
                 input={input}
                 setInput={setInput}
                 onSelect={setQuickReplyData}
             />
-            <div className='gap-2 w-full col-flex'>
-                {files?.map((file: any, index): any => {
-                    return (
-                        <UploadedFileCard
-                            key={`${file?.serverUrl}-${index}`}
-                            file={file}
-                            handleRemoveFile={() => {
-                                removeAt(index);
-                            }}
-                            hideDelete={false}
-                            imageViwer={() =>
-                                openResourceViewerModal([], {
-                                    document_url: file?.serverUrl,
-                                    ...file,
-                                })
-                            }
-                        />
-                    );
-                })}
-            </div>
+            {!IsEmptyArray(files) && (
+                <div className='gap-2 w-full col-flex'>
+                    {files?.map((file: any, index): any => {
+                        return (
+                            <UploadedFileCard
+                                key={`${file?.serverUrl}-${index}`}
+                                file={file}
+                                handleRemoveFile={() => {
+                                    removeAt(index);
+                                }}
+                                hideDelete={false}
+                                imageViwer={() =>
+                                    openResourceViewerModal([], {
+                                        document_url: file?.serverUrl,
+                                        ...file,
+                                    })
+                                }
+                            />
+                        );
+                    })}
+                </div>
+            )}
+
             <div className='flex gap-2 items-center'>
                 <div className='flex flex-1 items-center'>
                     <IconButton
@@ -812,7 +844,7 @@ const MessageChat = ({ data }) => {
                         />
                     </Popover>
                 </div>
-                <Button onClick={sendMessage} disabled={input.length <= 0}>
+                <Button onClick={sendMessage} disabled={isSendButtonDisabled}>
                     Send
                 </Button>
             </div>
@@ -997,6 +1029,21 @@ const RenderUserMessageBubble = ({ message }) => {
         },
     });
 
+    const setMessageRead = async (broadcastMessageid: number) => {
+        const { success, response } = await FetchData({
+            className: TeamInboxController,
+            method: 'markAsRead',
+            methodParams: broadcastMessageid,
+        });
+
+        if (success) RefetchGenericListing();
+    };
+
+    useEffect(() => {
+        if (message?.read_at || !message?.is_replied) return;
+        setMessageRead(message.id);
+    });
+
     const repliedContent = useMemo(() => {
         const content = {};
 
@@ -1168,13 +1215,15 @@ const ChatTextareaComponent = ({
             }
         >
             <TextareaField
+                inputClassName='leading-5 py-2'
+                rows={5}
                 value={input}
                 onChange={(val) => setInput(val)}
                 placeholder={
                     'Type your message here or press (⌘ + /) for the quick replies.'
                 }
                 className='w-full'
-                size='sm'
+                size='lg'
             />
         </Popover>
     );
@@ -1266,7 +1315,9 @@ const RenderSeenUnseen = ({ message }: any) => {
                 <CheckCheck size={10} />
             ) : message?.sent_at ? (
                 <Check size={10} />
-            ) : null}
+            ) : (
+                <Clock1 size={10} />
+            )}
         </div>
     );
 };

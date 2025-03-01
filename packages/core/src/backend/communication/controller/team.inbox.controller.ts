@@ -22,6 +22,11 @@ export class TeamInboxController extends BaseModel {
         return this.post();
     }
 
+    async markAsRead(id: number) {
+        this.api = `${this.endPoint}/${id}/mark-as-read`;
+        return this.post();
+    }
+
     async show(id: number) {
         this.api = `${this.endPoint}/${id}`;
         return this.get();

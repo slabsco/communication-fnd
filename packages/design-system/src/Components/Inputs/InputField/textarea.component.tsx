@@ -38,7 +38,7 @@ import {
  * @param {string} [label] - The label of the textarea field.
  * @param {string} [placeholder] - The placeholder of the textarea field.
  * @param {number} [min] - The minimum value for number type textarea field.
- * @param {number} [max] - The maximum value for number type textarea field.
+ * @param {number} [max] = 255 - The maximum value for number type textarea field.
  * @param {string} [message] - The message shown below the textarea field.
  * @param {React.ReactNode} [messageComponent] - The message component shown below the textarea field.
  * @param {string} [error] - The error message shown below the textarea field.
@@ -55,6 +55,7 @@ import {
  * @param {function} [onChange=EmptyFunction] - The onChange function for the textarea field.
  * @param {function} [onDebounceChange] - The onDebounceChange function for the textarea field.
  * @param {function} [onBlur=EmptyFunction] - The onBlur function for the textarea field.
+ * @param {function} [onKeyDown] - The onKeyDown function for handling key events.
  * @return {JSX.Element} A textarea field component.
  */
 export const TextareaField = forwardRef(
@@ -85,6 +86,7 @@ export const TextareaField = forwardRef(
             enableCount = true,
             labelClassName,
             onFocus,
+            onKeyDown,
             ...props
         }: TextAreaInterface,
         ref: any
@@ -104,7 +106,27 @@ export const TextareaField = forwardRef(
             }
         }, [propsValue]);
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        const handleKeyDown = useCallback(
+            (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                if (
+                    (e.metaKey || e.ctrlKey) &&
+                    e.shiftKey &&
+                    e.key === 'Enter'
+                ) {
+                    const target = e.target as HTMLTextAreaElement;
+                    const start = target.selectionStart;
+                    const end = target.selectionEnd;
+                    const newValue =
+                        value.substring(0, start) + '\n' + value.substring(end);
+                    setValue(newValue);
+                    onChange(newValue);
+                    e.preventDefault();
+                }
+                onKeyDown?.(e);
+            },
+            [onChange, onKeyDown, value]
+        );
+
         const textAreaInputclasses = cn(
             textAreaVariants({
                 size,
@@ -174,6 +196,7 @@ export const TextareaField = forwardRef(
                     onChange={(e) => handleChange(e)}
                     onBlur={(e) => onBlur(getValue(e))}
                     onFocus={(e) => onFocus?.(getValue(e))}
+                    onKeyDown={handleKeyDown}
                 />
             );
         }, [
@@ -195,6 +218,7 @@ export const TextareaField = forwardRef(
             onBlur,
             getValue,
             onFocus,
+            handleKeyDown,
         ]);
 
         const containerClass = cn(

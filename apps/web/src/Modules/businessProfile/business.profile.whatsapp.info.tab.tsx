@@ -3,6 +3,8 @@ import Link from 'next/link';
 
 import {
     FormatDisplayDate,
+    getBusinessErrors,
+    IsEmptyArray,
     useBusinessPreference,
     UserBusiness,
 } from '@finnoto/core';
@@ -36,8 +38,9 @@ const BusinessProfileWhatsappInfoTab = () => {
 
     return (
         <div className='gap-3 w-full h-full col-flex'>
+            <RenderBusinessError businessInfo={businessInfo} />
             {!businessInfo?.verified_at && (
-                <div className='flex gap-2 items-center p-1 mb-3 rounded animate-pulse bg-error-dark text-error-content'>
+                <div className='flex gap-2 items-center p-1 mb-3 rounded bg-error-dark text-error-content'>
                     <Icon source={InfoCircleSvgIcon} isSvg />
                     <p className='flex-1 text-sm'>
                         Your business is not verified. Please verify your
@@ -297,5 +300,51 @@ const EditForm = ({
                 />
             </ModalBody>
         </ModalContainer>
+    );
+};
+
+export const RenderBusinessError = ({ businessInfo }: any) => {
+    const errors = getBusinessErrors(businessInfo);
+
+    if (IsEmptyArray(errors)) return <></>;
+    return (
+        <div className='gap-1 p-3 rounded shadow col-flex bg-base-100'>
+            <h3 className='px-2 py-1 rounded text-warning bg-warning/20'>
+                (Note* This is the official message from the whatsapp!!)
+            </h3>
+            <div className='flex gap-2'>
+                {getBusinessErrors(businessInfo)?.map((err) => {
+                    return (
+                        <div
+                            key={err.id}
+                            className='flex-1 gap-2 items-center p-2 mb-3 rounded col-flex bg-error-dark/30 text-error'
+                        >
+                            <Icon source={InfoCircleSvgIcon} isSvg />
+                            <p>Entity Type: {err?.entity_type}</p>
+
+                            <ol className='list-item gap-1 col-flex'>
+                                {err?.errors.map((val) => {
+                                    return (
+                                        <li
+                                            key={val?.error_code}
+                                            className='flex-1 gap-1 p-1 text-sm bg-white rounded col-flex text-base-content'
+                                        >
+                                            <p className='p-1 rounded bg-error/90 text-error-content'>
+                                                PROBLEM:{' '}
+                                                {val?.error_description}
+                                            </p>
+                                            <p className='p-1 rounded bg-success/90 text-success-content'>
+                                                POSSIBLE SOLUTION:{' '}
+                                                {val?.possible_solution}
+                                            </p>
+                                        </li>
+                                    );
+                                })}
+                            </ol>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
     );
 };

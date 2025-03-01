@@ -1,5 +1,3 @@
-import { id } from 'date-fns/locale';
-
 import { BaseModel } from '../../../Models/base.models';
 import { WaUpdateDto } from '../dto/send.team.inbox.message.payload.dto';
 

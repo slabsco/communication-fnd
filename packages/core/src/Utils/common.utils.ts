@@ -1531,3 +1531,13 @@ export function ChangeRecordToData(route: string) {
     if (!IsValidString(route)) return null;
     return route.replace('record', 'data');
 }
+
+export const getBusinessErrors = (businessDetails: any) => {
+    const health =
+        businessDetails?.last_health_status?.health_status?.entities?.filter?.(
+            (err) => !IsEmptyArray(err?.errors)
+        );
+
+    if (!health) return [];
+    return health;
+};

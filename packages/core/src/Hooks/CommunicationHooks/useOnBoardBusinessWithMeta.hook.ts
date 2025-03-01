@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import { useCallback, useEffect, useState } from 'react';
+import { useUpdateEffect } from 'react-use';
 
 import { MetaBusinessController } from '../../backend/meta/controllers/meta.business.controller';
 import { toastBackendError } from '../../Utils/common.utils';
@@ -9,6 +10,17 @@ import { FetchData } from '../useFetchData.hook';
 
 export const useOnBoardBusinessWithMeta = () => {
     const [facebookSDKLoaded, setFacebookSDKLoaded] = useState(false);
+
+    const [sentAccessToken, setSentAccessToken] = useState(false);
+    const [sentWaBaId, setSentWaBaId] = useState(false);
+
+    useUpdateEffect(() => {
+        if (sentAccessToken && sentWaBaId) {
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        }
+    }, [sentAccessToken, sentWaBaId]);
 
     useEffect(() => {
         // Initialize Facebook Pixel
@@ -91,6 +103,7 @@ export const useOnBoardBusinessWithMeta = () => {
             return;
         }
 
+        setSentWaBaId(true);
         Toast.success({
             description: 'Whatsapp Business Id and number is set',
         });
@@ -110,6 +123,8 @@ export const useOnBoardBusinessWithMeta = () => {
             toastBackendError(response);
             return;
         }
+
+        setSentAccessToken(true);
 
         Toast.success({
             description: 'Business Authentication is done',

@@ -6,7 +6,9 @@ import { BusinessController } from '../../backend/communication/controller/busin
 import { toastBackendError } from '../../Utils/common.utils';
 import { FetchData } from '../useFetchData.hook';
 
-export const useBusinessPreference = () => {
+export const useBusinessPreference = (options?: {
+    enableWhatsappProfileInfo: boolean;
+}) => {
     const {
         data: businessInfo,
         isLoading: isBusinessInfoLoading,
@@ -55,6 +57,7 @@ export const useBusinessPreference = () => {
 
     const { data: whatsappProfileInfo, refetch: getWaProfileData } = useQuery({
         queryKey: ['wa-profile'],
+        enabled: options?.enableWhatsappProfileInfo || true,
         queryFn: async () => {
             const { response, success } = await FetchData({
                 className: BusinessController,
