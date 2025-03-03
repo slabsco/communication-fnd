@@ -1,28 +1,28 @@
 'use client';
 
+import { useRouter } from 'next/router';
 import React, { useCallback, useMemo } from 'react';
 
 import {
     authenticateBusiness,
     Navigation,
-    OpenSpotlight,
     PRODUCT_IDENTIFIER,
     storeProductPathState,
+    TEAM_INBOX_SPLIT_LIST,
     useApp,
     useAppProducts,
     useCurrentBusiness,
-    useOnBoardBusinessWithMeta,
     useOperatingSystem,
     useUserHook,
 } from '@finnoto/core';
 import {
     Avatar,
     Button,
+    cn,
     DropdownMenu,
     DropdownMenuActionProps,
     Icon,
     IconButton,
-    InputField,
     Popover,
     SidebarBanner,
 } from '@finnoto/design-system';
@@ -34,6 +34,7 @@ import { ArcHeaderPopover } from './header.user.component';
 import {
     ApProductSvgIcon,
     AppsSvgIcon,
+    ArcChatSvgIcon,
     ArcProductSvgIcon,
     ArProductSvgIcon,
     EmployeeProductSvgIcon,
@@ -51,15 +52,30 @@ export const ProductIcons = {
 const ArcHeader = () => {
     const { isProductAvailable, isArc } = useApp();
     const { products } = useAppProducts();
+    const { pathname } = useRouter();
 
     const { type: osType } = useOperatingSystem();
     const checkAvailableProduct = isProductAvailable && products?.length > 1;
 
     return (
         <nav className='sticky top-0 justify-between py-4 pr-8 pl-0 navbar bg-polaris-bg-inverse text-polaris-text-inverse'>
-            <SidebarBanner className='w-[var(--sidebar-expand-width)] pl-4' />
+            <SidebarBanner className='pl-4' />
             <div className='flex flex-1 justify-between'>
-                <div className='flex flex-1 justify-center'>
+                <div className='flex flex-1 gap-3 items-center'>
+                    <Button
+                        className={cn({
+                            hidden: pathname.includes(TEAM_INBOX_SPLIT_LIST),
+                        })}
+                        onClick={() => {
+                            Navigation.navigate({ url: TEAM_INBOX_SPLIT_LIST });
+                        }}
+                        defaultMinWidth
+                        appearance='info'
+                    >
+                        <Icon source={ArcChatSvgIcon} isSvg /> Go to Inbox
+                    </Button>
+                </div>
+                {/* <div className='flex flex-1 justify-center'>
                     <InputField
                         className='rounded-lg bg-polaris-bg-surface-inverse hover:bg-polaris-bg-surface-hover text-polaris-text-inverse'
                         inputClassName='bg-polaris-bg-fill-inverse header-search text-polaris-text-inverse'
@@ -80,7 +96,7 @@ const ArcHeader = () => {
                         onClick={() => OpenSpotlight()}
                         size='sm'
                     />
-                </div>
+                </div> */}
 
                 <div className='gap-4 items-center row-flex'>
                     {/* <HeaderNotification /> */}

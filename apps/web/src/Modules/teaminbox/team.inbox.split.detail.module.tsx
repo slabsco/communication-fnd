@@ -147,15 +147,26 @@ const Card = ({ data, isActive }: { data: any; isActive: boolean }) => {
                 }
             )}
         >
-            <Avatar color='primary' size='sm' shape='circle' alt='M' />
+            <Avatar
+                color='polaris'
+                size='sm'
+                shape='circle'
+                alt={data?.contact_name}
+            />
 
             <div className='flex-1'>
                 <div className='flex gap-2 items-center'>
-                    <span className='font-medium'>{data?.contact_name}</span>
+                    <span
+                        className={cn('font-normal', {
+                            'font-medium': data?.attributes?.unread_count,
+                        })}
+                    >
+                        {data?.contact_name}
+                    </span>
                     {data?.attributes?.unread_count > 0 && (
                         <Badge
-                            className='animate-pulse'
-                            label={`${data?.attributes?.unread_count} Unread`}
+                            className='ml-auto animate-pulse'
+                            label={data?.attributes?.unread_count}
                             size='xs'
                             solid
                             appearance='info'
@@ -163,7 +174,11 @@ const Card = ({ data, isActive }: { data: any; isActive: boolean }) => {
                     )}
                 </div>
                 <div className='mt-0'>
-                    <span className='text-sm'>
+                    <span
+                        className={cn('text-sm', {
+                            'font-medium': data?.attributes?.unread_count,
+                        })}
+                    >
                         {FormatDisplayDateStyled({
                             value: data?.last_activity_at,
                         })}
@@ -303,6 +318,7 @@ const RenderMessageDetail = ({ data }: { data: { id: string } }) => {
         refetchInterval: 5000,
         cacheTime: Infinity,
         queryKey: ['team_inbox_messages', data?.id],
+        enabled: !IsUndefinedOrNull(data?.id),
         queryFn: async () => {
             const { success, response } = await FetchData({
                 className: TeamInboxController,
@@ -617,13 +633,15 @@ const MessageChat = ({ data }) => {
 
     const emojiRef = useRef(null);
 
-    const [input, setInput] = useState('');
+    const [input, setInput] = useState(undefined);
     const [files, { removeAt, set: setFiles, push: addFiles }] =
         useList<any[]>();
 
     const isSendButtonDisabled = useMemo(() => {
-        return input.length <= 0;
-    }, [input.length]);
+        if (!IsEmptyArray(files)) return false;
+        if (IsUndefinedOrNull(input)) return true;
+        return input?.length <= 0;
+    }, [files, input]);
 
     const invalidateMessage = useCallback(() => {
         queryClient.invalidateQueries({
@@ -653,7 +671,7 @@ const MessageChat = ({ data }) => {
 
         if (!success) return toastBackendError(response);
 
-        setInput('');
+        setInput(undefined);
         setFiles([]);
         invalidateMessage();
     }, [

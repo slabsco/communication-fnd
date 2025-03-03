@@ -68,8 +68,8 @@ export const Sidebar = ({
             <div className='sidebar-items'>
                 <RenderMenus menus={menus} showIcon resolveUrl />
                 <div className='mt-auto'></div>
-                {!isArc && <ThemeModeSwitch />}
                 <RenderMenus menus={bottomMenus} showIcon resolveUrl />
+                {!isArc && <ThemeModeSwitch />}
 
                 <Profilecomponent {...{ isSidebarExpand }} />
                 {isArc && !isSidebarExpand && (
@@ -101,15 +101,15 @@ export const SidebarBanner = (props: { className?: string }) => {
             href={HOME_ROUTE}
             className='flex items-center text-xl normal-case'
         >
-            <div className={cn(' w-[180px]', props.className)}>
+            <div className={cn('', props.className)}>
                 <Image
                     src={'/logo.png'}
                     alt='Brand Logo'
                     height={isArc ? ARC_LOGO_HEIGHT : 32}
-                    width={149}
+                    width={70}
                     style={{
                         maxHeight: isArc ? ARC_LOGO_HEIGHT : 32,
-                        maxWidth: 279,
+                        // maxWidth: 279,
                         objectFit: 'contain',
                         objectPosition: 'left',
                     }}

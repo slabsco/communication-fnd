@@ -3,7 +3,7 @@ import { AddWebhookDto } from '../dtos/add.webhook.dto';
 import { StringSearchDto } from '../dtos/string.search.dto';
 
 export class BusinessWebhookController extends BaseModel {
-    protected endPoint = 'api/b/webhook';
+    protected endPoint = 'api/b/communication-webhook';
 
     async list() {
         this.api = `${this.endPoint}/list`;

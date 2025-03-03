@@ -1,6 +1,6 @@
 'use client';
 
-import { HOME_ROUTE, useClientConfig } from '@finnoto/core';
+import { CopyToClipBoard, HOME_ROUTE, useClientConfig } from '@finnoto/core';
 import {
     ArcBreadcrumbs,
     Button,
@@ -16,10 +16,14 @@ import {
     Modal,
     ModalBody,
     ModalContainer,
-    Toast,
 } from '@finnoto/design-system';
 
-import { InfoCircleSvgIcon, MoreIcon, WarningErrorSvgIcon } from 'assets';
+import {
+    CopyPaperSvgIcon,
+    InfoCircleSvgIcon,
+    MoreIcon,
+    WarningErrorSvgIcon,
+} from 'assets';
 
 const ClientConfigModule = () => {
     const {
@@ -130,6 +134,19 @@ const ClientConfigModule = () => {
                                             label='Client ID'
                                             disabled
                                             value={val?.identifier}
+                                            suffix={
+                                                <IconButton
+                                                    name='Copy Client Id'
+                                                    icon={CopyPaperSvgIcon}
+                                                    size='md'
+                                                    appearance='base'
+                                                    onClick={() => {
+                                                        CopyToClipBoard(
+                                                            val?.identifier
+                                                        );
+                                                    }}
+                                                />
+                                            }
                                         />
                                         <InputField
                                             label='Client Secret'
@@ -196,11 +213,7 @@ const GenerateSecret = ({
             cancelAppearance: 'errorHover',
             cancelText: 'Close',
             onConfirmPress: () => {
-                navigator.clipboard.writeText(credentials);
-                Toast.success({
-                    position: 'top-right',
-                    description: 'The client secret is Copied Successfully!!',
-                });
+                CopyToClipBoard(credentials);
             },
         });
     };
