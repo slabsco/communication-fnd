@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { BusinessWebhookController } from '../../backend/common/controllers/business.webhook.controller';
+import { toastBackendError } from '../../Utils/common.utils';
 import { Toast } from '../../Utils/toast.utils';
 import { FetchData } from '../useFetchData.hook';
 
@@ -35,7 +36,8 @@ export const useBusinessWebhook = ({
                 classParams: values,
             });
 
-            if (success) return response;
+            if (!success) return toastBackendError(response);
+            Toast.success({ description: 'New Webhook Added' });
         },
     });
 
@@ -51,7 +53,7 @@ export const useBusinessWebhook = ({
                 method: options.currentStatus ? 'deactivate' : 'activate',
             });
 
-            if (!success) return Promise.reject('Error');
+            if (!success) return toastBackendError(response);
             Toast.success({ description: 'Status Changed' });
         },
     });
@@ -68,7 +70,7 @@ export const useBusinessWebhook = ({
                 method: 'remove',
             });
 
-            if (!success) return Promise.reject('Error');
+            if (!success) return toastBackendError(response);
             Toast.success({ description: 'Webhook Deleted' });
         },
     });

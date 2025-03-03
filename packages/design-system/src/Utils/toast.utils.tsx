@@ -123,7 +123,6 @@ export class Toast {
         autoClose,
         withProgress = false,
         withBorder = false,
-        position,
         ...rest
     }: ToastParams) {
         const autoCloseInMs = autoClose ? autoClose * 1000 : autoClose;
@@ -158,7 +157,6 @@ export class Toast {
         description,
         templateClassName,
         autoClose,
-        position,
         withProgress = false,
         withBorder = false,
         ...rest
@@ -195,7 +193,6 @@ export class Toast {
         description,
         templateClassName,
         autoClose,
-        position,
         withProgress = false,
         withBorder = false,
         ...rest
@@ -271,7 +268,6 @@ export class Toast {
         title,
         description,
         templateClassName,
-        position,
         withProgress = false,
         withBorder = false,
         ...rest
@@ -318,7 +314,7 @@ const template = ({ data, toastProps }: ToastContentProps<ToastDataProps>) => {
     return (
         <div
             className={cn(
-                'toast-content text-base-primary text-sm font-rubik flex flex-col gap-2',
+                'flex flex-col gap-2 text-sm toast-content text-base-primary font-rubik',
                 templateClassName
             )}
         >

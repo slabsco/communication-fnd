@@ -1,9 +1,14 @@
 import { useMemo } from 'react';
 import { useUpdateEffect } from 'react-use';
 
-import { FetchData, IsEmptyObject, IsFunction } from '@finnoto/core';
+import {
+    FetchData,
+    IsEmptyObject,
+    IsFunction,
+    IsUndefinedOrNull,
+} from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
-import { Loading, Modal, PageLoader } from '@finnoto/design-system';
+import { Loading, Modal } from '@finnoto/design-system';
 
 import { useQuery } from '@tanstack/react-query';
 
@@ -21,6 +26,7 @@ export const AsyncTemplateViewer = ({
 }) => {
     const { data, isLoading } = useQuery({
         queryKey: ['template_detail', id],
+        enabled: !IsUndefinedOrNull(id),
         queryFn: async () => {
             const { response, success } = await FetchData({
                 className: CommunicationTemplateController,

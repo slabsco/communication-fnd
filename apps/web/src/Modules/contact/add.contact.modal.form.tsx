@@ -79,7 +79,7 @@ const AddContactForm = ({
         }
 
         if (response?.columns) setError(response?.columns);
-        else toastBackendError(response?.columns);
+        else toastBackendError(response);
     };
 
     const { renderFormFields, handleSubmit } = useFormBuilder({

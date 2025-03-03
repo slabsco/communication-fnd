@@ -1541,3 +1541,11 @@ export const getBusinessErrors = (businessDetails: any) => {
     if (!health) return [];
     return health;
 };
+
+export const CopyToClipBoard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    Toast.success({
+        position: 'top-center',
+        description: 'Successfully Copied!!',
+    });
+};

@@ -1,12 +1,30 @@
-import { IsEmptyArray } from '@finnoto/core';
+import {
+    FetchData,
+    IsEmptyArray,
+    RefetchGenericListing,
+    toastBackendError,
+} from '@finnoto/core';
+import { ContactController } from '@finnoto/core/src/backend/communication/controller/contact.controller';
+import { ConfirmUtil } from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../Components/GenericDocumentListing/genericDocumentListing.types';
 import { openAddContactForm } from './add.contact.modal.form';
 
-import { EditSvgIcon } from 'assets';
+import { DeleteSvgIcon, EditSvgIcon } from 'assets';
 
 const ContactListModule = () => {
+    const deleteContact = async (id: number) => {
+        const { success, response } = await FetchData({
+            className: ContactController,
+            method: 'remove',
+            methodParams: id,
+        });
+
+        if (!success) return toastBackendError(response);
+        RefetchGenericListing();
+    };
+
     const props: GenericDocumentListingProps = {
         name: 'Contacts',
         type: 'contact',
@@ -54,6 +72,23 @@ const ContactListModule = () => {
                 type: 'outer',
                 action: (data) => {
                     openAddContactForm(data);
+                },
+            },
+            {
+                name: 'Delete',
+                type: 'inner',
+                icon: DeleteSvgIcon,
+                isCancel: true,
+                action: (rowData) => {
+                    ConfirmUtil({
+                        isArc: true,
+                        appearance: 'error',
+                        title: 'Delete Contact',
+                        message:
+                            'Are you sure you want to delete this contact? This action cannot be undone and will permanently remove the contact.',
+                        isReverseAction: true,
+                        onConfirmPress: () => deleteContact(rowData.id),
+                    });
                 },
             },
         ],

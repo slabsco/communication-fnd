@@ -20,9 +20,9 @@ export class SendTeamInboxMessagePayloadDto {
 
 export class SendTeamInboxSimpleMessagePayloadDto {
     @Expose()
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
-    data: string;
+    data?: string;
 
     @Expose()
     @IsOptional()
