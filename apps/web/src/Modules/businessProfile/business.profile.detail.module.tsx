@@ -89,8 +89,10 @@ const BusinessProfileDetailModule = () => {
                 </div>
 
                 <AnimatedTabs
-                    containerClassName='flex-1 col-span-4 rounded gap-4 bg-transparent'
+                    containerClassName='flex-1 col-span-4 rounded gap-4 bg-transparent overflow-hidden'
+                    contentContainerClass='flex-1 overflow-hidden p-0'
                     appreance='primary'
+                    active='whatsapp_info'
                     tabs={[
                         {
                             key: 'whatsapp_info',

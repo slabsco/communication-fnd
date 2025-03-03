@@ -1223,7 +1223,7 @@ const ChatTextareaComponent = ({
             <TextareaField
                 inputClassName='leading-5 py-2'
                 rows={3}
-                value={input}
+                value={IsUndefinedOrNull(input) ? '' : input}
                 onChange={(val) => setInput(val)}
                 placeholder={
                     'Type your message here or press (⌘ + /) for the quick replies.'
