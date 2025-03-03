@@ -37,7 +37,7 @@ const BusinessProfileWhatsappInfoTab = () => {
     const businessUrl = UserBusiness.getBusinessAPIUrl();
 
     return (
-        <div className='gap-3 w-full h-full col-flex'>
+        <div className='overflow-y-auto gap-3 px-3 py-5 w-full h-full col-flex'>
             <RenderBusinessError businessInfo={businessInfo} />
             {!businessInfo?.verified_at && (
                 <div className='flex gap-2 items-center p-1 mb-3 rounded bg-error-dark text-error-content'>
