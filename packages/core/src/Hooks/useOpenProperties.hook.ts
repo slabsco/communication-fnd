@@ -30,10 +30,7 @@ export const useOpenProperties = <TValue extends string | boolean | number>(
 
     const fetchProperties = async (keys: string | string[]) => {
         const setPropertyValues = async () => {
-            let properties = await FetchPropertyFromCache(
-                undefined,
-                options?.isBusiness
-            );
+            let properties = await FetchPropertyFromCache(undefined, true);
 
             if (properties) {
                 const values = returnPropertyValues(keys, properties);
@@ -46,7 +43,7 @@ export const useOpenProperties = <TValue extends string | boolean | number>(
 
         if (await setPropertyValues()) return;
 
-        await new OpenProperty({ isBusiness: options?.isBusiness }).process();
+        await new OpenProperty({ isBusiness: true }).process();
         await setPropertyValues();
     };
 

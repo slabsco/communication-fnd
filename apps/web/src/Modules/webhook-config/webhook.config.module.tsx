@@ -1,21 +1,28 @@
+import { ColorMode } from 'react-terminal-ui';
+
 import {
     FormBuilderFormSchema,
     HOME_ROUTE,
     useBusinessWebhook,
     useFormBuilder,
+    useLogs,
 } from '@finnoto/core';
+import { BusinessWebhookController } from '@finnoto/core/src/backend/common/controllers/business.webhook.controller';
 import {
     ArcBreadcrumbs,
     Badge,
     Button,
     ConfirmUtil,
     Container,
+    Loading,
     Modal,
     ModalBody,
     ModalContainer,
     ModalFooter,
     Table,
 } from '@finnoto/design-system';
+
+import LogTerminal from '../../Components/LogTerminal/logTerminal.component';
 
 import { DeleteSvgIcon, EditSvgIcon } from 'assets';
 
@@ -46,7 +53,9 @@ const WebhookConfigModule = () => {
                         </p>
                     </div>
                     <div className='flex gap-3 items-center'>
-                        <Button outline>Logs</Button>
+                        <Button outline onClick={() => openLogModal()}>
+                            Logs
+                        </Button>
                         <Button
                             onClick={() => {
                                 openAddWebhook();
@@ -188,4 +197,54 @@ const AddWebhookModal = ({ initValues }: { initValues: any }) => {
             </ModalFooter>
         </ModalContainer>
     );
+};
+
+const LogModal = () => {
+    const { logs, isLoading } = useLogs({
+        controller: BusinessWebhookController,
+    });
+    if (isLoading)
+        return (
+            <div className='min-h-[500px] min-w-[500px] centralize'>
+                <Loading color='primary' />;
+            </div>
+        );
+
+    const items = logs?.map((val) => {
+        return {
+            type: 'log',
+            time: new Date(val?.created_at),
+            message: `${val?.response_code} /${val?.event?.identifier} / ${val?.attributes?.webhook_state?.url}  `,
+            dropdownComponent: (
+                <div className='mt-2'>
+                    <h2 className='text-info'>Payload:</h2>
+                    <p>URL: {val?.attributes?.webhook_state?.url}</p>
+
+                    <ul className='list-item list-disc'>
+                        {Object.entries(val?.payload || {}).map(
+                            ([key, value]) => {
+                                return (
+                                    <div key={key} className='flex'>
+                                        {key}:{' '}
+                                        <p className='whitespace-pre-line'>
+                                            {JSON.stringify(value)}
+                                        </p>
+                                    </div>
+                                );
+                            }
+                        )}
+                    </ul>
+                    <h2 className='mt-2 text-success'>Response</h2>
+                    <ul className='list-item list-disc'>
+                        {JSON.stringify(val?.response_body)}
+                    </ul>
+                </div>
+            ),
+        };
+    });
+    return <LogTerminal theme={ColorMode.Dark} items={items} />;
+};
+
+const openLogModal = () => {
+    Modal.open({ component: LogModal, modalSize: 'lg' });
 };

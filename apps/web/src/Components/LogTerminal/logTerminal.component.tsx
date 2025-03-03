@@ -1,10 +1,11 @@
-import { IsEmptyArray } from '@finnoto/core';
-import { Tooltip, Button, Icon } from '@finnoto/design-system';
 import clsx from 'clsx';
 import { format } from 'date-fns';
 import { useRef } from 'react';
-import { useToggle, useFullscreen } from 'react-use';
 import Terminal, { ColorMode, TerminalOutput } from 'react-terminal-ui';
+import { useFullscreen, useToggle } from 'react-use';
+
+import { IsEmptyArray } from '@finnoto/core';
+import { Accordion, Button, Icon, Tooltip } from '@finnoto/design-system';
 
 interface LogTerminalProps {
     items?: LogItem[];
@@ -17,6 +18,7 @@ export interface LogItem {
     message: string;
     time?: Date;
     filter?: string | null;
+    dropdownComponent?: any;
 }
 
 const LogTerminal = ({
@@ -43,10 +45,14 @@ const LogTerminal = ({
             className='log-terminal'
             data-terminal-theme={theme === ColorMode.Dark ? 'dark' : 'light'}
         >
-            <div className='justify-end row-flex'>
+            <div className='justify-between items-center row-flex'>
+                <h3 className='mx-3 font-semibold'>
+                    This will show the last Last 50 Logs
+                </h3>
                 <Tooltip message='Fullscreen'>
                     <Button
                         className='!text-current no-animation'
+                        appearance='polaris-warning'
                         onClick={() => toggleFullscreen()}
                     >
                         <Icon
@@ -91,16 +97,38 @@ const LogMessage = ({ data, index }: { data: LogItem; index: number }) => {
 
     return (
         <TerminalOutput key={index + data.type + data.time}>
-            <div className='terminal-output-wrapper' data-type={data.type}>
-                {data.time ? (
-                    <span className='terminal-output-time'>
-                        {format(data.time, 'MM/dd/yyyy, hh:mm:ss aa')}
-                    </span>
-                ) : null}
-                {'-'}
-                <span className='terminal-output-type'>[{data.type}] :</span>
-                <span className='terminal-output-message'>{data.message}</span>
-            </div>
+            <Accordion
+                type='single'
+                accordions={[
+                    {
+                        className: 'p-0 border-b-0 m-0',
+                        triggerClassName: 'p-0',
+                        title: (
+                            <div
+                                className='text-base leading-3 terminal-output-wrapper'
+                                data-type={data.type}
+                            >
+                                {data.time ? (
+                                    <span className='terminal-output-time'>
+                                        {format(
+                                            data.time,
+                                            'MM/dd/yyyy, hh:mm:ss aa'
+                                        )}
+                                    </span>
+                                ) : null}
+                                {'-'}
+                                <span className='terminal-output-type'>
+                                    [{data.type}] :
+                                </span>
+                                <span className='terminal-output-message'>
+                                    {data.message}
+                                </span>
+                            </div>
+                        ),
+                        content: data?.dropdownComponent,
+                    },
+                ]}
+            />
         </TerminalOutput>
     );
 };
