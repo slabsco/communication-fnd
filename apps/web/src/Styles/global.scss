@@ -942,3 +942,6 @@ html {
         @apply absolute inset-0 right-2/4 top-0 bottom-0 bg-primary;
     }
 }
+.react-terminal-line {
+    @apply leading-3;
+}

@@ -9,6 +9,11 @@ export class ClientConfigController extends BaseModel {
         return this.get();
     }
 
+    async logs() {
+        this.api = `${this.endPoint}/logs`;
+        return this.get();
+    }
+
     async create() {
         this.api = this.endPoint;
         this.bodyDto = AddApiAccountDto;

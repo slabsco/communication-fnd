@@ -10,6 +10,11 @@ export class BusinessWebhookController extends BaseModel {
         return this.get();
     }
 
+    async logs() {
+        this.api = `${this.endPoint}/logs`;
+        return this.get();
+    }
+
     async find() {
         this.api = `${this.endPoint}/find-event`;
         this.bodyDto = StringSearchDto;

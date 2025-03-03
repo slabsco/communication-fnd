@@ -1,6 +1,16 @@
 'use client';
 
-import { CopyToClipBoard, HOME_ROUTE, useClientConfig } from '@finnoto/core';
+import Link from 'next/link';
+import { ColorMode } from 'react-terminal-ui';
+
+import {
+    CopyToClipBoard,
+    HOME_ROUTE,
+    useClientConfig,
+    useLogs,
+    useOpenProperties,
+} from '@finnoto/core';
+import { ClientConfigController } from '@finnoto/core/src/backend/communication/controller/client.config.controller';
 import {
     ArcBreadcrumbs,
     Button,
@@ -18,6 +28,8 @@ import {
     ModalContainer,
 } from '@finnoto/design-system';
 
+import LogTerminal from '../../Components/LogTerminal/logTerminal.component';
+
 import {
     CopyPaperSvgIcon,
     InfoCircleSvgIcon,
@@ -32,6 +44,8 @@ const ClientConfigModule = () => {
         clientSecretsLoading,
         generateSecret,
     } = useClientConfig();
+
+    const [fileUrl] = useOpenProperties('external.api.collection.url');
 
     const openConfirmModal = (initialData: any) => {
         Modal.open({
@@ -52,16 +66,34 @@ const ClientConfigModule = () => {
             />
             <div className='flex-1 gap-4 p-4 rounded col-flex bg-polaris-bg-surface'>
                 <div>
-                    <h2 className='text-2xl font-medium'>App Credentials</h2>
+                    <div className='flex gap-3 justify-between items-center'>
+                        <h2 className='text-2xl font-medium'>
+                            App Credentials
+                        </h2>
+                        <Button
+                            appearance='primary'
+                            outline
+                            onClick={() => openLogModal()}
+                        >
+                            View Api Log
+                        </Button>
+                    </div>
                     <p className='text-base-secondary'>
                         These credentials allow your app to access the system
                         API. They are secret. Please do not share your app
                         credentials with anyone, include them in public code
                         repositories, or store them in insecure ways.
                     </p>
-                    <Button className='mt-2' onClick={openConfirmModal}>
-                        Generate Secret
-                    </Button>
+                    <div className='flex gap-2 items-center'>
+                        <Button className='mt-2' onClick={openConfirmModal}>
+                            Generate Secret
+                        </Button>
+                        <Link href={(fileUrl as string) || '#'} target='_blank'>
+                            <Button className='mt-2' outline>
+                                Download API Collection
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
 
                 {clientSecretsLoading ? (
@@ -240,4 +272,58 @@ const GenerateSecret = ({
             </ModalBody>
         </ModalContainer>
     );
+};
+
+const LogModal = () => {
+    const { logs, isLoading } = useLogs({ controller: ClientConfigController });
+
+    if (isLoading)
+        return (
+            <div className='min-h-[500px] min-w-[500px] centralize'>
+                <Loading color='primary' />;
+            </div>
+        );
+
+    const items = logs.map((val) => {
+        return {
+            type: 'log',
+            time: new Date(val?.created_at),
+            message: `${val?.request?.url} /${val?.request?.method}`,
+            dropdownComponent: (
+                <div className='mt-2'>
+                    <h2 className='text-info'>Request:</h2>
+                    <ul className='list-item list-disc'>
+                        {Object.entries(val?.request).map(([key, value]) => {
+                            return (
+                                <div key={key} className='flex'>
+                                    {key}:{' '}
+                                    <p className='whitespace-pre-line'>
+                                        {JSON.stringify(value)}
+                                    </p>
+                                </div>
+                            );
+                        })}
+                    </ul>
+                    <h2 className='mt-2 text-success'>Response</h2>
+                    <ul className='list-item list-disc'>
+                        {Object.entries(val?.response).map(([key, value]) => {
+                            return (
+                                <div key={key} className='flex'>
+                                    {key}:{' '}
+                                    <p className='whitespace-pre-line'>
+                                        {JSON.stringify(value)}
+                                    </p>
+                                </div>
+                            );
+                        })}
+                    </ul>
+                </div>
+            ),
+        };
+    });
+    return <LogTerminal theme={ColorMode.Dark} items={items} />;
+};
+
+const openLogModal = () => {
+    Modal.open({ component: LogModal, modalSize: 'lg' });
 };
