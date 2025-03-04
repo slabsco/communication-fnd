@@ -123,8 +123,8 @@ const TeamInboxModuleDetail = () => {
             ]}
             actions={[
                 {
-                    name: 'Add Assignee',
-                    type: 'action_btn',
+                    name: 'Send New Message',
+                    type: 'create',
                     action: openAddInbox,
                 },
             ]}
