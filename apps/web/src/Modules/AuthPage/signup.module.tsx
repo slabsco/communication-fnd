@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { useUpdateEffect } from 'react-use';
 
 import {
     FormBuilderFormSchema,
     LOGIN_ROUTE,
     OTP_LENGTH,
+    useFetchParams,
     useSignup,
     useUserLoggedInHandler,
 } from '@finnoto/core';
@@ -34,6 +36,9 @@ const SignupModule = () => {
 };
 
 const SignupScreen = ({ handleSignup }: any) => {
+    const { email } = useFetchParams();
+    const formRef = useRef(null);
+
     const [agreeTerms, setAgreeTerms] = useState(true);
     const schema: FormBuilderFormSchema = {
         name: {
@@ -88,16 +93,24 @@ const SignupScreen = ({ handleSignup }: any) => {
             // size: width > 1600 ? 'lg' : 'md',
         },
     };
+
+    useUpdateEffect(() => {
+        if (!email) return;
+        formRef?.current?.handleFormData?.('email', email);
+    }, [email]);
+
     return (
         <AuthenticationUIWrapper
             title='Sign Up'
             subTitle='Enter your credentials and start your journey with us !'
         >
             <FormBuilder
+                ref={formRef}
                 layout='two-column'
                 className='flex-1 gap-8 justify-between h-full'
                 formSchema={schema}
                 onSubmit={handleSignup}
+                initValues={{}}
             >
                 {({ isSubmitting, handleSubmit, disableSubmit }) => (
                     <>
