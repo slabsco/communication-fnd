@@ -1,5 +1,6 @@
 import { user } from '../../../Models/User';
 import { BusinessUserListFilterDto } from '../dtos/business.user.list.filter.dto';
+import { StringSearchDto } from '../dtos/string.search.dto';
 import { UserRoleAssignmentDto } from '../dtos/user.role.assignment.dto';
 import { CommonController } from './common.controller';
 
@@ -23,6 +24,12 @@ export class BusinessUserController extends CommonController {
         const product_id = user.getProductId();
         this.body = { ...this.body, product_id };
 
+        return this.post();
+    }
+
+    async find() {
+        this.api = `${this.endPoint}/find`;
+        this.bodyDto = StringSearchDto;
         return this.post();
     }
 

@@ -13,7 +13,6 @@ import { DateFilterDto } from '../../../Models/dto/date.filter.dto';
 import { ListResponseFormatDto } from '../../../Models/dto/list.response.format.dto';
 import { NumberRangeFilterDto } from '../../../Models/dto/number.range.filter.dto';
 
-
 export class CommonListFilterDto {
     @IsOptional()
     @IsString()
@@ -94,4 +93,9 @@ export class CommonListFilterDto {
     @IsBoolean()
     @Expose()
     active?: boolean;
+
+    @IsOptional()
+    @IsBoolean()
+    @Expose()
+    assign_me?: boolean;
 }
