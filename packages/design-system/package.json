@@ -50,6 +50,7 @@
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.0.0",
         "cmdk": "^0.2.0",
+        "emoji-picker-react": "^4.12.0",
         "escape-html": "^1.0.3",
         "highlight-words-core": "^1.2.2",
         "react-ace": "^11.0.1",

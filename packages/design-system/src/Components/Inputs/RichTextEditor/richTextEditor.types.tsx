@@ -44,6 +44,7 @@ export interface RichTextEditorToolbarProps extends CommonRichTextEditorType {
     features?: EditorFeature[];
     onVariableClick?: () => void;
     enablePreview?: boolean;
+    addEmoji?: (emoji: string) => void;
 }
 
 export interface RichTextAreaProps extends CommonRichTextEditorType {

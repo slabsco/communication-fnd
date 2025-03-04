@@ -3,12 +3,7 @@ import { createEditor, Editor, Transforms } from 'slate';
 import { withHistory } from 'slate-history';
 import { withReact } from 'slate-react';
 
-import {
-    FetchData,
-    IsEmptyArray,
-    IsUndefinedOrNull,
-    useQuery,
-} from '@finnoto/core';
+import { IsEmptyArray, IsUndefinedOrNull, useQuery } from '@finnoto/core';
 
 import { cn } from '../../../Utils/common.ui.utils';
 import { InputErrorMessage } from '../InputField/inputMessage.component';
@@ -106,13 +101,17 @@ export const RichTextEditor = ({
         editor.insertNodes(deserializeHtml);
     }, [html, readOnly, deserializeHtml, editor]);
 
+    const addEmoji = async (emoji) => {
+        editor.insertText(emoji);
+    };
+
     return (
         <div className='col-flex'>
             <Label {...labelProps} />
 
             <div
                 className={cn('col-flex', {
-                    'border rounded': showBorder,
+                    'rounded border': showBorder,
                     'bg-polaris-bg-surface': !readOnly,
                 })}
             >
@@ -123,6 +122,7 @@ export const RichTextEditor = ({
                         dispatch={dispatch}
                         features={features}
                         enablePreview={enablePreview}
+                        addEmoji={addEmoji}
                         onVariableClick={
                             !IsEmptyArray(mentions)
                                 ? () =>

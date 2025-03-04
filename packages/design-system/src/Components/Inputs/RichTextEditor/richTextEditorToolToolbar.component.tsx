@@ -1,3 +1,4 @@
+import EmojiPicker from 'emoji-picker-react';
 import {
     BoldIcon,
     ItalicIcon,
@@ -6,14 +7,18 @@ import {
     Undo2,
 } from 'lucide-react';
 
-import { IsFunction, useApp } from '@finnoto/core';
+import { useApp } from '@finnoto/core';
 
 import { Modal } from '../../../Utils';
 import { cn } from '../../../Utils/common.ui.utils';
+import { Popover } from '../../Surfaces/Popover/popover.component';
 import { Button } from '../Button/button.component';
+import { IconButton } from '../Icon-Button/iconButton.component';
 import { RichTextEditorToolbarProps } from './richTextEditor.types';
 import { serializeRichText } from './richTextEditorRenderElement.utils';
 import RichTextPreviewModal from './richTextPreview.modal';
+
+import { EmojiSvgIcon } from 'assets';
 
 export const RichTextEditorToolbar = ({
     state,
@@ -22,6 +27,7 @@ export const RichTextEditorToolbar = ({
     features,
     onVariableClick,
     enablePreview = false,
+    addEmoji,
 }: RichTextEditorToolbarProps) => {
     const { isArc } = useApp();
 
@@ -34,10 +40,10 @@ export const RichTextEditorToolbar = ({
     return (
         <div
             className={cn(
-                'flex items-center justify-between gap-4 p-2 border-b'
+                'flex gap-4 justify-between items-center p-2 border-b'
             )}
         >
-            <div className='flex items-center gap-2'>
+            <div className='flex gap-2 items-center'>
                 {features?.map((val) => (
                     <RichTextButton
                         key={val}
@@ -48,8 +54,25 @@ export const RichTextEditorToolbar = ({
                         }
                     />
                 ))}
+                <Popover
+                    element={
+                        <EmojiPicker
+                            className='absolute'
+                            allowExpandReactions
+                            onEmojiClick={({ emoji }) => {
+                                addEmoji(emoji);
+                            }}
+                        />
+                    }
+                >
+                    <IconButton
+                        name='Add Emoji'
+                        icon={EmojiSvgIcon}
+                        appearance='plain'
+                    />
+                </Popover>
             </div>
-            <div className='flex items-center gap-2'>
+            <div className='flex gap-2 items-center'>
                 <Button
                     onClick={() => {
                         editor.undo();
@@ -72,6 +95,7 @@ export const RichTextEditorToolbar = ({
                 >
                     <Redo2 size={16} />
                 </Button>
+
                 {/* {IsFunction(onVariableClick) && (
                     <Button
                         onClick={onVariableClick}
