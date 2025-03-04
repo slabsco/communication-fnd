@@ -1,5 +1,4 @@
 import { IdPayloadDto } from '../../backend/common/dtos/id.payload.dto';
-import { IsProduction } from '../../Utils/common.utils';
 import { BaseModel } from '../base.models';
 import { ForgotPasswordPayloadDto } from '../dto/forgot.password.dto';
 import { LoginDto } from '../dto/login.dto';
@@ -46,12 +45,7 @@ export class AuthUser extends BaseModel {
     async signup() {
         this.api = 'auth/signup';
         this.bodyDto = SignupDto;
-
         this.isMeta = true;
-
-        this.baseURL = true
-            ? `https://wapi.dartinbox.in/`
-            : 'https://sndebug.finnoto.cloud/';
 
         return this.post();
     }
