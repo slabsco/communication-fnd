@@ -9,6 +9,7 @@ import {
     Contact,
     FileIcon,
     Info,
+    User,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -40,6 +41,7 @@ import {
     replaceVariablesInString,
     TEAM_INBOX_SPLIT_LIST,
     toastBackendError,
+    useFetchParams,
     useFormBuilder,
     useOperatingSystem,
     UserBusiness,
@@ -80,6 +82,7 @@ import { AsyncTemplateViewer } from '../broadcast/your-templates/components/Temp
 import { MessageSectionPreview } from '../broadcast/your-templates/components/YourTemplatesPriview.component';
 import { openAddContactForm } from '../contact/add.contact.modal.form';
 import { openQuickReplySelect } from '../quickreply/quick.reply.select.list';
+import { addAssignee } from './add.assignee.form.util';
 
 import {
     ArcMessageSvgIcon,
@@ -109,13 +112,19 @@ const TeamInboxModuleDetail = () => {
             type='teamInbox'
             breadcrumbKey='contact.display_name'
             cacheTime={Infinity}
-            // renderTopBar={() => {
-            //     return <></>;
-            // }}
+            tabs={[
+                {
+                    title: 'Assign To Me',
+                    key: 'assign_me',
+                    customFilterValue: {
+                        assign_me: true,
+                    },
+                },
+            ]}
             actions={[
                 {
-                    name: 'Send New Message',
-                    type: 'create',
+                    name: 'Add Assignee',
+                    type: 'action_btn',
                     action: openAddInbox,
                 },
             ]}
@@ -131,15 +140,17 @@ const TeamInboxModuleDetail = () => {
 
 export default TeamInboxModuleDetail;
 
-export const navigateToTeamInboxDetail = (id: number) => {
+export const navigateToTeamInboxDetail = (id: number, query?: any) => {
     Navigation.navigate({
         url: `${TEAM_INBOX_SPLIT_LIST}/${id}`,
+        queryParam: query,
     });
 };
 const Card = ({ data, isActive }: { data: any; isActive: boolean }) => {
+    const { tab } = useFetchParams();
     return (
         <div
-            onClick={() => navigateToTeamInboxDetail(data.id)}
+            onClick={() => navigateToTeamInboxDetail(data.id, { tab: tab })}
             className={cn(
                 'flex gap-3 items-start p-2 rounded border transition-all cursor-pointer hover:shadow',
                 {
@@ -241,6 +252,45 @@ const RightSection = ({
                         <span className='font-medium'>
                             {data.contact?.display_name}
                         </span>
+                    </div>
+
+                    {/* assignee  */}
+                    <div>
+                        <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
+                            <h3 className='flex gap-2 items-center font-medium'>
+                                <User size={18} />
+                                Assignee info
+                            </h3>
+                        </div>
+                        <div className='mt-2'>
+                            {data?.assignee?.id ? (
+                                <div className='col-flex'>
+                                    <p className='flex gap-2 items-center'>
+                                        {data?.assignee?.user?.name}{' '}
+                                        <Button
+                                            size='xs'
+                                            outline
+                                            onClick={() =>
+                                                addAssignee(data?.id, data)
+                                            }
+                                        >
+                                            Change Assignee
+                                        </Button>
+                                    </p>
+                                    <p className='text-sm text-base-secondary'>
+                                        {data?.assignee?.user?.email}
+                                    </p>
+                                </div>
+                            ) : (
+                                <Button
+                                    size='xs'
+                                    outline
+                                    onClick={() => addAssignee(data?.id, data)}
+                                >
+                                    Add Assignee
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Contact Info Section */}

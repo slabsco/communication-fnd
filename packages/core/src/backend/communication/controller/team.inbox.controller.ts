@@ -1,5 +1,7 @@
 import { BaseModel } from '../../../Models/base.models';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
+import { IdPayloadDto } from '../../common/dtos/id.payload.dto';
+import { AddAssigneePayloadDto } from '../dto/add.assignee.payload.dto';
 import {
     SendTeamInboxMessagePayloadDto,
     SendTeamInboxSimpleMessagePayloadDto,
@@ -24,6 +26,13 @@ export class TeamInboxController extends BaseModel {
 
     async markAsRead(id: number) {
         this.api = `${this.endPoint}/${id}/mark-as-read`;
+        return this.post();
+    }
+
+    async addAssignee(id: number) {
+        this.api = `${this.endPoint}/${id}/add-assignee`;
+        this.bodyDto = AddAssigneePayloadDto;
+
         return this.post();
     }
 
