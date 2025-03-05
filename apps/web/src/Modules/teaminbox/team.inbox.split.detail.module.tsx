@@ -1360,7 +1360,10 @@ const MessageBubbleTimePopper = ({ message }: { message: any }) => {
 
 const RenderSeenUnseen = ({ message }: any) => {
     return message?.is_error ? (
-        <Tooltip message={'Error Sending the message'}>
+        <Tooltip
+            messageClassName='max-w-[400px]'
+            message={getErrorMessage(message)}
+        >
             <Info size={14} color='red' />
         </Tooltip>
     ) : (
@@ -1376,4 +1379,14 @@ const RenderSeenUnseen = ({ message }: any) => {
             )}
         </div>
     );
+};
+
+const getErrorMessage = (message: any) => {
+    if (message?.response?.error?.message) {
+        return message?.response?.error?.message;
+    }
+    if (message?.attributes?.errors?.[0]?.error_data?.details) {
+        return message.attributes.errors[0].error_data.details;
+    }
+    return 'An unknown error occurred';
 };
