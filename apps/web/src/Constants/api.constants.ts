@@ -23,11 +23,11 @@ export function ReturnEnvironmentVariables(env = currentEnvironment) {
         SOCKET_URL: `${END_POINT[env]}`,
         VERSION_ID: '1.0.0',
         PLATFORM_ID: PlatformTypeEnum.DESKTOP,
-        SITE_NAME: 'Slab Communication',
-        SITE_HOST: 'https://dartinbox.com',
+        SITE_NAME: 'Dart Inbox',
+        SITE_HOST: 'https://app.dartinbox.com',
         SITE_DESCRIPTION: 'Some Description',
         GOOGLE_API:
-            '186930609499-3r6m6qe2b42q3mssebll9gesg6hbl4ki.apps.googleusercontent.com',
+            '314013640717-k8k0gre5um9k786ppgn5m1im2kf8c8du.apps.googleusercontent.com',
     };
 }
 

@@ -70,7 +70,7 @@ const GoogleCustomButton = ({ processGoogleLogin, context }: any) => {
             onClick={login}
             appearance='primary'
             outline
-            className='gap-2 font-normal capitalize h-11 row-flex dark:text-base-content'
+            className='gap-2 h-11 font-normal capitalize row-flex dark:text-base-content'
             size='lg'
         >
             <span>{context} with Google</span>

@@ -33,6 +33,7 @@ import {
     GetItem,
     IsEmptyArray,
     IsEmptyObject,
+    IsEmptyString,
     IsUndefinedOrNull,
     Navigation,
     ObjectDto,
@@ -683,13 +684,16 @@ const MessageChat = ({ data }) => {
 
     const emojiRef = useRef(null);
 
-    const [input, setInput] = useState(undefined);
+    const [input, setInput] = useState('');
     const [files, { removeAt, set: setFiles, push: addFiles }] =
         useList<any[]>();
 
     const isSendButtonDisabled = useMemo(() => {
         if (!IsEmptyArray(files)) return false;
+
         if (IsUndefinedOrNull(input)) return true;
+        if (IsEmptyString(input)) return true;
+
         return input?.length <= 0;
     }, [files, input]);
 
@@ -721,7 +725,7 @@ const MessageChat = ({ data }) => {
 
         if (!success) return toastBackendError(response);
 
-        setInput(undefined);
+        setInput('');
         setFiles([]);
         invalidateMessage();
     }, [
@@ -1360,7 +1364,10 @@ const MessageBubbleTimePopper = ({ message }: { message: any }) => {
 
 const RenderSeenUnseen = ({ message }: any) => {
     return message?.is_error ? (
-        <Tooltip message={'Error Sending the message'}>
+        <Tooltip
+            messageClassName='max-w-[400px]'
+            message={getErrorMessage(message)}
+        >
             <Info size={14} color='red' />
         </Tooltip>
     ) : (
@@ -1376,4 +1383,14 @@ const RenderSeenUnseen = ({ message }: any) => {
             )}
         </div>
     );
+};
+
+const getErrorMessage = (message: any) => {
+    if (message?.response?.error?.message) {
+        return message?.response?.error?.message;
+    }
+    if (message?.attributes?.errors?.[0]?.error_data?.details) {
+        return message.attributes.errors[0].error_data.details;
+    }
+    return 'An unknown error occurred';
 };

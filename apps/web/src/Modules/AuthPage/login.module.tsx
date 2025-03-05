@@ -105,7 +105,7 @@ const LoginScreen = () => {
                     <EmailLoginSection email={email} resetLogin={resetLogin} />
                 )}
             </div>
-            {/* <SocialLoginSection /> */}
+            <SocialLoginSection />
             <AuthenticationUIFooter
                 link={'Sign Up'}
                 text="Don't  have an Account?"

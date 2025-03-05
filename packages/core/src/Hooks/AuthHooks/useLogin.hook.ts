@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { MetaUserController } from '../../backend/meta/controllers/meta.user.controller';
-import {
-    LOGIN_ROUTE,
-    RESET_2FA_SYNC_ROUTE,
-    SIGNUP_ROUTE,
-} from '../../Constants';
+import { LOGIN_ROUTE, RESET_2FA_SYNC_ROUTE } from '../../Constants';
 import { StoreUserToken } from '../../Models';
 import { AuthUser } from '../../Models/User/auth.user';
 import { FormBuilderSubmitType } from '../../Types/formBuilder.types';
@@ -105,37 +101,13 @@ export const useLogin = () => {
             description: 'Please wait. Processing Google Login...',
         });
 
-        const loginFn = is_one_tap
-            ? Authentication.googleOneLogin
-            : Authentication.googleLogin;
+        const loginFn = Authentication.googleLogin;
 
         const response = await loginFn({
             access_token: token,
         });
 
         if (!response) return hideLoading();
-
-        const { email } = data || {};
-        const { is_new_user, two_factor_required, credential, totp_seed } =
-            response;
-
-        if (is_new_user && totp_seed) {
-            Navigation.navigate({
-                url: SIGNUP_ROUTE,
-                queryParam: { token: credential, seed: totp_seed, email },
-            });
-            hideLoading();
-            return;
-        }
-
-        if (two_factor_required) {
-            Navigation.navigate({
-                url: LOGIN_ROUTE,
-                queryParam: { token: credential },
-            });
-            hideLoading();
-            return;
-        }
 
         handleLoginNextScreen(response);
         hideLoading();
