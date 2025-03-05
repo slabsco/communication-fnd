@@ -8,6 +8,7 @@ import AnimateHeight from 'react-animate-height';
 
 import {
     ARC_HOME_ROUTE,
+    BUSINESS_PROFILE_ROUTE,
     DASHBOARD_ROUTE,
     Ellipsis,
     EMPLOYEE_EXPENSE_DASHBOARD_ROUTE,
@@ -742,7 +743,7 @@ const Profilecomponent = ({ isSidebarExpand }: any) => {
                         </div>
                     }
                 >
-                    <Link href={`${basePath}/settings/my-profile`}>
+                    <Link href={BUSINESS_PROFILE_ROUTE}>
                         {user?.image_url ? (
                             <div
                                 className={cn(

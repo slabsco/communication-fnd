@@ -5,6 +5,7 @@ import {
     FormBuilderSubmitType,
     useFormBuilder,
 } from '@finnoto/core';
+import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { RichTextEditor, SelectBox } from '@finnoto/design-system';
 
 import { WhatsappTemplateCategoryEnum } from '../enums/whatsapp.template.category.enum';
@@ -55,9 +56,14 @@ const YourTemplateEditor = forwardRef(
                 label: 'Template Name',
             },
             language_id: {
-                type: 'se',
-                placeholder: 'Template Name',
-                label: 'Template Name',
+                type: 'reference_select',
+                controller: CommunicationTemplateController,
+                label: 'Language',
+                method: 'findLanguage',
+                placeholder: 'Select Language',
+                labelKey: 'name',
+                sublabelKey: 'code',
+                required: true,
             },
         };
 
@@ -128,18 +134,7 @@ const YourTemplateEditor = forwardRef(
                             />
                         </div>
                         <div className='flex flex-col gap-2'>
-                            <SelectBox
-                                label='Language'
-                                isDisabled
-                                isSearchable={false}
-                                defaultValue='english'
-                                options={[
-                                    {
-                                        label: 'English (en)',
-                                        value: 'english',
-                                    },
-                                ]}
-                            />
+                            {renderFormFields('language_id')}
                         </div>
                     </div>
                     <div className='flex flex-col gap-2'>

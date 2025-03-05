@@ -74,7 +74,7 @@ const LoginScreen = () => {
 
     return (
         <AuthenticationUIWrapper
-            title='Dart Inbox'
+            title='Login'
             subTitle='Enter your credentials to access your account'
             containerClassName='gap-4'
         >

@@ -44,4 +44,11 @@ export class CommunicationTemplateController extends BaseModel {
 
         return this.post();
     }
+
+    async findLanguage() {
+        this.api = `${this.endPoint}/find-language`;
+        this.bodyDto = StringSearchDto;
+
+        return this.post();
+    }
 }
