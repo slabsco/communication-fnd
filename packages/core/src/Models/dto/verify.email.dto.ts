@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class VerifyEmailPayloadDto {
     @IsEmail()
@@ -9,5 +9,22 @@ export class VerifyEmailPayloadDto {
 
     @IsNotEmpty()
     @Expose()
+    token: string;
+}
+
+export class EmailVerificationDto {
+    @Expose()
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsNumber()
+    code: number;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
     token: string;
 }
