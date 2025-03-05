@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ReactNode } from 'react';
 
 import { useTheme } from '@finnoto/core';
@@ -95,6 +96,14 @@ export const AuthenticationUIWrapper = ({
             >
                 {children}
             </div>
+            <div className='mt-1 centralize'>
+                <Link
+                    className='link link-hover'
+                    href={'https://dartinbox.com'}
+                >
+                    Go To Website
+                </Link>
+            </div>
         </div>
     );
 };
@@ -111,7 +120,9 @@ export const AuthenticationUIFooter = ({
     return (
         <div className='gap-2 justify-center items-center text-center row-flex'>
             <Typography variant='span'>{text}</Typography>{' '}
-            <Typography link={route}>{link}</Typography>
+            <Link className='link link-hover' href={route}>
+                {link}
+            </Link>
         </div>
     );
 };
