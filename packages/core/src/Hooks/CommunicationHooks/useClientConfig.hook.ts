@@ -1,6 +1,9 @@
+import { Modal } from '@finnoto/design-system';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { ClientConfigController } from '../../backend/communication/controller/client.config.controller';
+import { toastBackendError } from '../../Utils/common.utils';
 import { FetchData } from '../useFetchData.hook';
 
 export const useClientConfig = () => {
@@ -15,7 +18,7 @@ export const useClientConfig = () => {
             });
 
             if (success) return response;
-            return Promise.reject('Error');
+            return toastBackendError(response);
         },
     });
 
@@ -31,8 +34,9 @@ export const useClientConfig = () => {
                 classParams: options,
             });
 
+            Modal.close();
             if (success) return response;
-            return Promise.reject('Error');
+            return toastBackendError(response);
         },
     });
 
@@ -49,7 +53,7 @@ export const useClientConfig = () => {
             });
 
             if (success) return response;
-            return Promise.reject('Error');
+            return toastBackendError(response);
         },
     });
 
