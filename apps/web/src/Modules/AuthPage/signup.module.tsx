@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
 import { useUpdateEffect } from 'react-use';
 
@@ -9,7 +10,7 @@ import {
     useSignup,
     useUserLoggedInHandler,
 } from '@finnoto/core';
-import { Button, FormBuilder, Icon } from '@finnoto/design-system';
+import { Button, CheckBox, FormBuilder, Icon } from '@finnoto/design-system';
 
 import GoogleLoginButton from './Components/googleLoginButton.component';
 import LoginPageFrame, {
@@ -115,14 +116,14 @@ const SignupScreen = ({ handleSignup }: any) => {
                 {({ isSubmitting, handleSubmit, disableSubmit }) => (
                     <>
                         <div className='pt-4 border-t-2 bg-base-100 border-base-300'>
-                            {/* <CheckBox
+                            <CheckBox
                                 checked={agreeTerms}
                                 onChange={(data) => setAgreeTerms(data)}
                                 rightLabel={
                                     <div>
                                         I have read and agreed to the{' '}
                                         <Link
-                                            href='https://finnoto.com/terms-and-condition'
+                                            href='https://app.dartinbox.com/privacy-policy'
                                             target='_blank'
                                             className='link link-hover'
                                         >
@@ -130,7 +131,7 @@ const SignupScreen = ({ handleSignup }: any) => {
                                         </Link>{' '}
                                         and{' '}
                                         <Link
-                                            href='https://finnoto.com/privacy-policy'
+                                            href='https://app.dartinbox.com/privacy-policy'
                                             target='_blank'
                                             className='link link-hover'
                                         >
@@ -139,7 +140,7 @@ const SignupScreen = ({ handleSignup }: any) => {
                                         .
                                     </div>
                                 }
-                            /> */}
+                            />
                             <div className='gap-4 justify-end mt-4 h-full col-flex'>
                                 <Button
                                     className='normal-case'
@@ -152,7 +153,7 @@ const SignupScreen = ({ handleSignup }: any) => {
                                 >
                                     Next &rarr;
                                 </Button>
-                                {/* <SocialLoginSection /> */}
+                                <SocialLoginSection />
                                 <AuthenticationUIFooter
                                     link={'Sign In'}
                                     text='Already having an account?'

@@ -33,6 +33,7 @@ import {
     GetItem,
     IsEmptyArray,
     IsEmptyObject,
+    IsEmptyString,
     IsUndefinedOrNull,
     Navigation,
     ObjectDto,
@@ -683,13 +684,16 @@ const MessageChat = ({ data }) => {
 
     const emojiRef = useRef(null);
 
-    const [input, setInput] = useState(undefined);
+    const [input, setInput] = useState('');
     const [files, { removeAt, set: setFiles, push: addFiles }] =
         useList<any[]>();
 
     const isSendButtonDisabled = useMemo(() => {
         if (!IsEmptyArray(files)) return false;
+
         if (IsUndefinedOrNull(input)) return true;
+        if (IsEmptyString(input)) return true;
+
         return input?.length <= 0;
     }, [files, input]);
 
@@ -721,7 +725,7 @@ const MessageChat = ({ data }) => {
 
         if (!success) return toastBackendError(response);
 
-        setInput(undefined);
+        setInput('');
         setFiles([]);
         invalidateMessage();
     }, [

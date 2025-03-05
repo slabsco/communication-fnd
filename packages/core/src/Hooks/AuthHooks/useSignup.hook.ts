@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { LOGIN_ROUTE, VERIFY_EMAIL_ROUTE } from '../../Constants';
+import { VERIFY_EMAIL_ROUTE } from '../../Constants';
 import { StoreUserToken } from '../../Models';
 import { AuthUser } from '../../Models/User/auth.user';
 import { FormBuilderSubmitType } from '../../Types/formBuilder.types';
@@ -48,13 +48,13 @@ export const useSignup = () => {
         // setIsTotp(true);
 
         Navigation.navigate({
-            url: LOGIN_ROUTE,
-            queryParam: { email: values?.email },
+            url: VERIFY_EMAIL_ROUTE,
+            queryParam: { user: response },
         });
-        Toast.success({
-            description:
-                'Please Login Via the credentials that you have set before.',
-        });
+        // Toast.success({
+        //     description:
+        //         'Please Login Via the credentials that you have set before.',
+        // });
     };
 
     const handleTotp = async (next = () => {}, totp?: string) => {

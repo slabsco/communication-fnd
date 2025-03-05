@@ -1,20 +1,16 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
 
 import {
     authenticateBusiness,
     Authentication,
     FetchData,
     GetOpenPropertyValue,
-    GetSessionItem,
     LOGIN_ROUTE,
     Navigation,
-    REFERRER_STORE,
     useFetchParams,
     useVerifyEmail,
-    VENDOR_REGISTER_ROUTE,
 } from '@finnoto/core';
 import { AuthUser } from '@finnoto/core/src/Models/User/auth.user';
 import {
@@ -38,20 +34,19 @@ import LoginPageFrame, {
 import { VerifyEmailSvgIcon } from 'assets';
 
 const VerifyEmail = () => {
-    const { token, isVerified, email, completeSignup, isRouteReady } =
-        useFetchParams();
+    const { user } = useFetchParams();
 
-    if (!isRouteReady) return null;
+    // if (!isRouteReady) return null;
 
-    if (completeSignup) {
-        return '';
-    }
+    // if (completeSignup) {
+    //     return '';
+    // }
 
     return (
         <LoginPageFrame>
-            {isVerified && email && <EmailVerified />}
-            {!token && !isVerified && <ResendVerifyEmail />}
-            {token && !isVerified && <VerifyEmailToken />}
+            {/* {isVerified && email && <EmailVerified />} */}
+            {/* {!token && !isVerified && <ResendVerifyEmail />} */}
+            <VerifyEmailToken />
         </LoginPageFrame>
     );
 };
@@ -88,7 +83,7 @@ const ResendVerifyEmail = () => {
                 </>
             }
         >
-            <div className='flex-1 gap-6 col-flex '>
+            <div className='flex-1 gap-6 col-flex'>
                 <div className='centralize'>
                     <OTPInput
                         length={6}
@@ -100,7 +95,7 @@ const ResendVerifyEmail = () => {
                         onChangeOTP={(e) => setOtp(e)}
                     />
                 </div>
-                <div className='flex items-center justify-center gap-1 text-sm '>
+                <div className='flex gap-1 justify-center items-center text-sm'>
                     <Typography variant='span' color='text-tertiary'>
                         Didn’t get an OTP?{' '}
                     </Typography>
@@ -121,7 +116,7 @@ const ResendVerifyEmail = () => {
                     >
                         Resend
                     </Typography>{' '}
-                    <span className='flex items-center gap-2 text-base-primary'>
+                    <span className='flex gap-2 items-center text-base-primary'>
                         {!countdownDone ? (
                             <>
                                 in
@@ -154,7 +149,7 @@ const ResendVerifyEmail = () => {
 
                 <div className='grid grid-cols-2 gap-4 mt-auto'>
                     <Button
-                        className='normal-case h-11'
+                        className='h-11 normal-case'
                         appearance='primary'
                         outline
                         block
@@ -163,7 +158,7 @@ const ResendVerifyEmail = () => {
                         Back
                     </Button>
                     <Button
-                        className='normal-case h-11'
+                        className='h-11 normal-case'
                         appearance='primary'
                         block
                         onClick={() => handleOtp(+otp)}
@@ -176,100 +171,100 @@ const ResendVerifyEmail = () => {
     );
 };
 
-const EmailVerified = () => {
-    const { email } = useFetchParams();
-    const [showCountDown, setShowCountDown] = useState(true);
-    const [countDownTime, setCountDownTime] = useState(0);
+// const EmailVerified = () => {
+//     const { email } = useFetchParams();
+//     const [showCountDown, setShowCountDown] = useState(true);
+//     const [countDownTime, setCountDownTime] = useState(0);
 
-    const handleOnBoarding = () => {
-        Authentication.loginCheck(false, true).then(async (data) => {
-            if (!data || !data?.id)
-                return Navigation.navigate({ url: LOGIN_ROUTE });
+//     const handleOnBoarding = () => {
+//         Authentication.loginCheck(false, true).then(async (data) => {
+//             if (!data || !data?.id)
+//                 return Navigation.navigate({ url: LOGIN_ROUTE });
 
-            const referrer = GetSessionItem(REFERRER_STORE);
+//             const referrer = GetSessionItem(REFERRER_STORE);
 
-            if (referrer?.url === VENDOR_REGISTER_ROUTE) {
-                Navigation.navigate({
-                    url: referrer.url,
-                    queryParam: referrer.params,
-                });
-                return;
-            }
-            setShowCountDown(false);
+//             if (referrer?.url === VENDOR_REGISTER_ROUTE) {
+//                 Navigation.navigate({
+//                     url: referrer.url,
+//                     queryParam: referrer.params,
+//                 });
+//                 return;
+//             }
+//             setShowCountDown(false);
 
-            const isOnboardingEnabled = await GetOpenPropertyValue(
-                'self-business-onboarding',
-                { convertBoolean: true }
-            );
+//             const isOnboardingEnabled = await GetOpenPropertyValue(
+//                 'self-business-onboarding',
+//                 { convertBoolean: true }
+//             );
 
-            if (isOnboardingEnabled)
-                return openOnboarding(authenticateBusiness);
+//             if (isOnboardingEnabled)
+//                 return openOnboarding(authenticateBusiness);
 
-            Navigation.search({ completeSignup: true }, { reset: true });
-        });
-    };
+//             Navigation.search({ completeSignup: true }, { reset: true });
+//         });
+//     };
 
-    return (
-        <AuthenticationUIWrapper
-            title='Email Verified'
-            subTitle={
-                <div className='text-base font-normal text-base-secondary'>
-                    Your email address{' '}
-                    <span className='font-semibold text-base-primary'>
-                        {email}
-                    </span>{' '}
-                    <br />
-                    has been successfully verified. Press continue to start your
-                    journey with us!
-                </div>
-            }
-        >
-            <div className='flex-1 gap-4 col-flex'>
-                <div className='flex items-center justify-center my-auto '>
-                    <Icon
-                        iconClass='flex items-center justify-center text-base-100'
-                        source={VerifyEmailSvgIcon}
-                        isSvg
-                        size={400}
-                    />
-                </div>
+//     return (
+//         <AuthenticationUIWrapper
+//             title='Email Verified'
+//             subTitle={
+//                 <div className='text-base font-normal text-base-secondary'>
+//                     Your email address{' '}
+//                     <span className='font-semibold text-base-primary'>
+//                         {email}
+//                     </span>{' '}
+//                     <br />
+//                     has been successfully verified. Press continue to start your
+//                     journey with us!
+//                 </div>
+//             }
+//         >
+//             <div className='flex-1 gap-4 col-flex'>
+//                 <div className='flex justify-center items-center my-auto'>
+//                     <Icon
+//                         iconClass='flex items-center justify-center text-base-100'
+//                         source={VerifyEmailSvgIcon}
+//                         isSvg
+//                         size={400}
+//                     />
+//                 </div>
 
-                <div className='text-center'>
-                    {showCountDown && (
-                        <p className='items-center justify-center gap-2 font-normaltext-center text-base-primary row-flex'>
-                            <span>
-                                <CountDownTimerProgress
-                                    countDownTime={countDownTime}
-                                />
-                            </span>
-                            <span>
-                                <CountdownTimer
-                                    duration={10}
-                                    callback={handleOnBoarding}
-                                    countTime={(time: any) =>
-                                        setCountDownTime((prev) => prev - 10)
-                                    }
-                                />{' '}
-                                Seconds
-                            </span>
-                        </p>
-                    )}
-                </div>
+//                 <div className='text-center'>
+//                     {showCountDown && (
+//                         <p className='gap-2 justify-center items-center font-normaltext-center text-base-primary row-flex'>
+//                             <span>
+//                                 <CountDownTimerProgress
+//                                     countDownTime={countDownTime}
+//                                 />
+//                             </span>
+//                             <span>
+//                                 <CountdownTimer
+//                                     duration={10}
+//                                     callback={handleOnBoarding}
+//                                     countTime={(time: any) =>
+//                                         setCountDownTime((prev) => prev - 10)
+//                                     }
+//                                 />{' '}
+//                                 Seconds
+//                             </span>
+//                         </p>
+//                     )}
+//                 </div>
 
-                <div className='gap-4 mt-auto row-flex'>
-                    <Button
-                        className='normal-case h-11'
-                        appearance='primary'
-                        block
-                        onClick={handleOnBoarding}
-                    >
-                        Continue &rarr;
-                    </Button>
-                </div>
-            </div>
-        </AuthenticationUIWrapper>
-    );
-};
+//                 <div className='gap-4 mt-auto row-flex'>
+//                     <Button
+//                         className='h-11 normal-case'
+//                         appearance='primary'
+//                         block
+//                         onClick={handleOnBoarding}
+//                     >
+//                         Continue &rarr;
+//                     </Button>
+//                 </div>
+//             </div>
+//         </AuthenticationUIWrapper>
+//     );
+// };
 
 const VerifyEmailToken = () => {
     const { email, token } = useFetchParams();
@@ -319,7 +314,7 @@ const VerifyEmailToken = () => {
                     <br />
                     Press login button or redirect login page in 5 second.
                 </div>
-                <div className='flex items-center justify-center '>
+                <div className='flex justify-center items-center'>
                     <Icon
                         iconClass='flex items-center justify-center'
                         source={VerifyEmailSvgIcon}

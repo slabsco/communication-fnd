@@ -217,7 +217,6 @@ const GenerateSecret = ({
     const handleSubmit = async (values: any) => {
         const data = await generateSecret({ ...values, id: initialData?.id });
         const credentials = data?.credential;
-        Modal.close();
 
         ConfirmUtil({
             message: (
