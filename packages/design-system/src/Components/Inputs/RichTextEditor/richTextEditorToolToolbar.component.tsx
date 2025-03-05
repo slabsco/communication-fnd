@@ -55,6 +55,8 @@ export const RichTextEditorToolbar = ({
                     />
                 ))}
                 <Popover
+                    align='start'
+                    side='top'
                     element={
                         <EmojiPicker
                             className='absolute'

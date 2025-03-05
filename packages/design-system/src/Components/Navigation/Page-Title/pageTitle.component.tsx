@@ -16,7 +16,7 @@ import { PageTitleProps } from './pageTitle.types';
 export const PageTitle = ({
     loading,
     title,
-    prefix = 'Communication',
+    prefix = 'Dart Inbox',
 }: PageTitleProps) => {
     return (
         <Head>

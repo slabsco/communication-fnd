@@ -114,7 +114,7 @@ const TeamInboxModuleDetail = () => {
             cacheTime={Infinity}
             tabs={[
                 {
-                    title: 'Assign To Me',
+                    title: 'Assigned To Me',
                     key: 'assign_me',
                     customFilterValue: {
                         assign_me: true,

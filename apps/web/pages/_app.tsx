@@ -109,7 +109,14 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
         <div className={cn('root h-full', rubik.variable, jost.variable)}>
             <Head>
-                <title>Communication</title>
+                <title>
+                    DartInbox - Multi-Agent WhatsApp Inbox & Marketing
+                    Automation
+                </title>
+                <meta
+                    name='description'
+                    content='Boost your business with DartInbox – a powerful multi-agent WhatsApp inbox and marketing tool. Automate messages, manage customer chats efficiently, and drive sales with WhatsApp marketing campaigns. Try it today!'
+                />
             </Head>
             <RootApp component={Component} pageProp={pageProps} />
         </div>

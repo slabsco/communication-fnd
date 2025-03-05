@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { IdPayloadDto } from '../../common/dtos/id.payload.dto';
 
 export class ScheduleBroadcastDto extends IdPayloadDto {
@@ -10,8 +10,8 @@ export class ScheduleBroadcastDto extends IdPayloadDto {
 
     @Expose()
     @IsString()
-    @IsNotEmpty()
-    description: string;
+    @IsOptional()
+    description?: string;
 
     @Expose()
     @IsNumber()

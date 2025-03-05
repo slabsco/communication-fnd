@@ -24,7 +24,6 @@ import {
     Button,
     Container,
     Loading,
-    Modal,
     Switch,
 } from '@finnoto/design-system';
 import { Label } from '@finnoto/design-system/src/Components/Inputs/InputField/label.component';
@@ -80,6 +79,7 @@ const DetailPage = ({ initialData }: any) => {
             required: false,
         },
         template_id: {
+            autoSelectZeroth: true,
             type: 'reference_select',
             controller: CommunicationTemplateController,
             label: 'Template',
@@ -97,6 +97,7 @@ const DetailPage = ({ initialData }: any) => {
             type: 'textarea',
             placeholder: 'Enter the description here',
             label: 'Description',
+            required: false,
         },
     };
 
