@@ -49,7 +49,7 @@ export const useSignup = () => {
 
         Navigation.navigate({
             url: VERIFY_EMAIL_ROUTE,
-            queryParam: { user: response },
+            queryParam: { token: response?.code, email: response?.email },
         });
         // Toast.success({
         //     description:
