@@ -12,15 +12,15 @@ export class SignupDto {
     @IsNotEmpty()
     password: string;
 
-    @Expose()
-    @IsString()
-    @IsNotEmpty()
-    mobile: number;
+    // @Expose()
+    // @IsString()
+    // @IsNotEmpty()
+    // mobile: number;
 
-    @Expose()
-    @IsString()
-    @IsNotEmpty()
-    dial_code: string;
+    // @Expose()
+    // @IsString()
+    // @IsNotEmpty()
+    // dial_code: string;
 
     @Expose()
     @IsString()
