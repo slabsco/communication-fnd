@@ -90,7 +90,7 @@ const ClientConfigModule = () => {
                         </Button>
                         <Link href={(fileUrl as string) || '#'} target='_blank'>
                             <Button className='mt-2' outline>
-                                Download API Collection
+                                See API Collections
                             </Button>
                         </Link>
                     </div>

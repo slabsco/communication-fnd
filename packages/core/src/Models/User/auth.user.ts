@@ -9,7 +9,7 @@ import { ResetPasswordPayloadDto } from '../dto/reset.password.dto';
 import { SignupDto } from '../dto/signup.dto';
 import { ValidateMobileOtpPayloadDto } from '../dto/validate.mobile.otp.payload.dto';
 import { ValidateTokenBusiness } from '../dto/validate.token.business.dto';
-import { VerifyEmailPayloadDto } from '../dto/verify.email.dto';
+import { EmailVerificationDto } from '../dto/verify.email.dto';
 
 export class AuthUser extends BaseModel {
     protected isMeta = true;
@@ -88,7 +88,7 @@ export class AuthUser extends BaseModel {
 
     async verifyEmail() {
         this.api = 'auth/verify-email';
-        this.bodyDto = VerifyEmailPayloadDto;
+        this.bodyDto = EmailVerificationDto;
         return this.post();
     }
 

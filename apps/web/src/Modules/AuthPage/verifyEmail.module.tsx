@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useState } from 'react';
 
 import {
     authenticateBusiness,
@@ -34,7 +35,7 @@ import LoginPageFrame, {
 import { VerifyEmailSvgIcon } from 'assets';
 
 const VerifyEmail = () => {
-    const { user } = useFetchParams();
+    const { isVerified, email, token } = useFetchParams();
 
     // if (!isRouteReady) return null;
 
@@ -44,9 +45,8 @@ const VerifyEmail = () => {
 
     return (
         <LoginPageFrame>
-            {/* {isVerified && email && <EmailVerified />} */}
-            {/* {!token && !isVerified && <ResendVerifyEmail />} */}
-            <VerifyEmailToken />
+            {isVerified && email && <EmailVerified />}
+            {!isVerified && token && <ResendVerifyEmail />}
         </LoginPageFrame>
     );
 };
@@ -171,100 +171,79 @@ const ResendVerifyEmail = () => {
     );
 };
 
-// const EmailVerified = () => {
-//     const { email } = useFetchParams();
-//     const [showCountDown, setShowCountDown] = useState(true);
-//     const [countDownTime, setCountDownTime] = useState(0);
+const EmailVerified = () => {
+    const { email } = useFetchParams();
+    const [showCountDown, setShowCountDown] = useState(true);
+    const [countDownTime, setCountDownTime] = useState(0);
 
-//     const handleOnBoarding = () => {
-//         Authentication.loginCheck(false, true).then(async (data) => {
-//             if (!data || !data?.id)
-//                 return Navigation.navigate({ url: LOGIN_ROUTE });
+    const handleOnBoarding = () => {
+        return Navigation.navigate({
+            url: LOGIN_ROUTE,
+            queryParam: { email },
+        });
+    };
 
-//             const referrer = GetSessionItem(REFERRER_STORE);
+    return (
+        <AuthenticationUIWrapper
+            title='Email Verified'
+            subTitle={
+                <div className='text-base font-normal text-base-secondary'>
+                    Your email address{' '}
+                    <span className='font-semibold text-base-primary'>
+                        {email}
+                    </span>{' '}
+                    <br />
+                    has been successfully verified. Press continue to start your
+                    journey with us!
+                </div>
+            }
+        >
+            <div className='flex-1 gap-4 col-flex'>
+                <div className='flex justify-center items-center my-auto'>
+                    <Icon
+                        iconClass='flex items-center justify-center text-base-100'
+                        source={VerifyEmailSvgIcon}
+                        isSvg
+                        size={400}
+                    />
+                </div>
 
-//             if (referrer?.url === VENDOR_REGISTER_ROUTE) {
-//                 Navigation.navigate({
-//                     url: referrer.url,
-//                     queryParam: referrer.params,
-//                 });
-//                 return;
-//             }
-//             setShowCountDown(false);
+                <div className='text-center'>
+                    {showCountDown && (
+                        <p className='gap-2 justify-center items-center font-normaltext-center text-base-primary row-flex'>
+                            <span>
+                                <CountDownTimerProgress
+                                    countDownTime={countDownTime}
+                                />
+                            </span>
+                            <span>
+                                <CountdownTimer
+                                    duration={10}
+                                    callback={handleOnBoarding}
+                                    countTime={(time: any) =>
+                                        setCountDownTime((prev) => prev - 10)
+                                    }
+                                />{' '}
+                                Seconds
+                            </span>
+                        </p>
+                    )}
+                </div>
 
-//             const isOnboardingEnabled = await GetOpenPropertyValue(
-//                 'self-business-onboarding',
-//                 { convertBoolean: true }
-//             );
-
-//             if (isOnboardingEnabled)
-//                 return openOnboarding(authenticateBusiness);
-
-//             Navigation.search({ completeSignup: true }, { reset: true });
-//         });
-//     };
-
-//     return (
-//         <AuthenticationUIWrapper
-//             title='Email Verified'
-//             subTitle={
-//                 <div className='text-base font-normal text-base-secondary'>
-//                     Your email address{' '}
-//                     <span className='font-semibold text-base-primary'>
-//                         {email}
-//                     </span>{' '}
-//                     <br />
-//                     has been successfully verified. Press continue to start your
-//                     journey with us!
-//                 </div>
-//             }
-//         >
-//             <div className='flex-1 gap-4 col-flex'>
-//                 <div className='flex justify-center items-center my-auto'>
-//                     <Icon
-//                         iconClass='flex items-center justify-center text-base-100'
-//                         source={VerifyEmailSvgIcon}
-//                         isSvg
-//                         size={400}
-//                     />
-//                 </div>
-
-//                 <div className='text-center'>
-//                     {showCountDown && (
-//                         <p className='gap-2 justify-center items-center font-normaltext-center text-base-primary row-flex'>
-//                             <span>
-//                                 <CountDownTimerProgress
-//                                     countDownTime={countDownTime}
-//                                 />
-//                             </span>
-//                             <span>
-//                                 <CountdownTimer
-//                                     duration={10}
-//                                     callback={handleOnBoarding}
-//                                     countTime={(time: any) =>
-//                                         setCountDownTime((prev) => prev - 10)
-//                                     }
-//                                 />{' '}
-//                                 Seconds
-//                             </span>
-//                         </p>
-//                     )}
-//                 </div>
-
-//                 <div className='gap-4 mt-auto row-flex'>
-//                     <Button
-//                         className='h-11 normal-case'
-//                         appearance='primary'
-//                         block
-//                         onClick={handleOnBoarding}
-//                     >
-//                         Continue &rarr;
-//                     </Button>
-//                 </div>
-//             </div>
-//         </AuthenticationUIWrapper>
-//     );
-// };
+                <div className='gap-4 mt-auto row-flex'>
+                    <Button
+                        className='h-11 normal-case'
+                        appearance='primary'
+                        block
+                        onClick={handleOnBoarding}
+                    >
+                        Continue &rarr;
+                    </Button>
+                </div>
+            </div>
+        </AuthenticationUIWrapper>
+    );
+};
 
 const VerifyEmailToken = () => {
     const { email, token } = useFetchParams();

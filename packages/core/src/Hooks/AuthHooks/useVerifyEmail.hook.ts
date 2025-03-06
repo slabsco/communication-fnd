@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import { MetaUserController } from '../../backend/meta/controllers/meta.user.controller';
 import { VERIFY_EMAIL_ROUTE } from '../../Constants';
-import { user } from '../../Models';
 import { AuthUser } from '../../Models/User/auth.user';
 import { Navigation } from '../../Utils/navigation.utils';
 import { Toast } from '../../Utils/toast.utils';
@@ -10,7 +8,7 @@ import { FetchData } from '../useFetchData.hook';
 import { useFetchParams } from '../useFetchParams.hook';
 
 export const useVerifyEmail = () => {
-    const { email } = useFetchParams();
+    const { email, token } = useFetchParams();
     const [otp, setOtp] = useState('');
     const [countdownDone, setCountdownDone] = useState(false);
     const [countDownTime, setCountDownTime] = useState(100);
@@ -34,9 +32,9 @@ export const useVerifyEmail = () => {
 
     const handleOtp = async (otp: number) => {
         const { success, response } = await FetchData({
-            className: MetaUserController,
+            className: AuthUser,
             method: 'verifyEmail',
-            classParams: { otp },
+            classParams: { code: otp, email, token },
         });
 
         if (!success) {
@@ -47,6 +45,8 @@ export const useVerifyEmail = () => {
 
         if (success) {
             // user.updateUserData(response);
+
+            Toast.success({ description: 'Successfully verified email!!!' });
             Navigation.navigate({
                 url: VERIFY_EMAIL_ROUTE,
                 queryParam: {
