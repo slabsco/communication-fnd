@@ -8,11 +8,11 @@ import {
     groupBusiness,
     Navigation,
     PRODUCT_IDENTIFIER,
-    REFUND_LIST_ROUTE,
     useApp,
     useAppBusinesses,
     useCurrentBusiness,
     useOpenProperties,
+    USER_PROFILE_ROUTE,
     useUserHook,
 } from '@finnoto/core';
 import {
@@ -21,9 +21,6 @@ import {
     DropdownMenu,
     DropdownMenuActionProps,
     Icon,
-    Modal,
-    ModalBody,
-    ModalContainer,
     Popover,
 } from '@finnoto/design-system';
 
@@ -35,7 +32,6 @@ import {
 } from '@Utils/functions.utils';
 
 import {
-    ArcInfoSvgIcon,
     ArcSettingsSvgIcon,
     CodeSvgIcon,
     LogoutSvgIcon,
@@ -218,54 +214,59 @@ const HeaderLogoutPopper = ({
 };
 
 export const ArcHeaderPopover = ({ children }: any) => {
-    const { currentBusiness } = useCurrentBusiness();
-    const { basePath } = useApp();
-    // const { businesses } = useAppBusinesses();
-    const { user } = useUserHook();
-    // const [enabledDebug] = useOpenProperties('enable.debug.mode', {
-    //     convertBoolean: true,
-    // });
+    // const { currentBusiness } = useCurrentBusiness();
+    // const { basePath } = useApp();
+    const { businesses } = useAppBusinesses();
 
-    const isOwner = useMemo(() => {
-        return AccessManager.isAuthUser(currentBusiness?.owner_id);
-    }, [currentBusiness.owner_id]);
+    const { user } = useUserHook();
+
+    const [enabledDebug] = useOpenProperties('enable.debug.mode', {
+        convertBoolean: true,
+    });
+
+    // const isOwner = useMemo(() => {
+    //     return AccessManager.isAuthUser(currentBusiness?.owner_id);
+    // }, [currentBusiness.owner_id]);
 
     const navigateToProfile = () => {
-        Navigation.navigate({ url: `${basePath}/settings/my-profile` });
+        Navigation.navigate({ url: USER_PROFILE_ROUTE });
     };
 
-    // const groupedBusinesses = useMemo(() => {
-    //     return groupBusiness(businesses);
-    // }, [businesses]);
+    const groupedBusinesses = useMemo(() => {
+        return businesses?.map((bu) => bu?.business);
+    }, [businesses]);
 
-    // const switchOrgActions = useMemo(() => {
-    //     return groupedBusinesses?.map((val, index) => {
-    //         return {
-    //             name: val?.name,
-    //             action: () => {
-    //                 authenticateBusiness(val);
-    //             },
-    //         };
-    //     });
-    // }, [groupedBusinesses]);
+    const switchOrgActions = useMemo(() => {
+        return groupedBusinesses?.map((val, index) => {
+            return {
+                name: val?.name,
+                action: () => {
+                    authenticateBusiness(
+                        { ...val, business_id: val?.id },
+                        { user }
+                    );
+                },
+            };
+        });
+    }, [groupedBusinesses, user]);
 
     const actions: DropdownMenuActionProps[] = [
-        // {
-        //     name: 'Switch Organisation',
-        //     icon: RepeatSvgIcon,
-        //     isSvg: true,
-        //     expandableActions: switchOrgActions,
-        //     className: 'gap-2',
-        //     iconSize: 16,
-        //     visible: groupedBusinesses?.length > 1,
-        // },
-        // {
-        //     name: 'My Profile',
-        //     action: navigateToProfile,
-        //     isSvg: true,
-        //     icon: UserSvgIcon,
-        //     iconSize: 16,
-        // },
+        {
+            name: 'Switch Organisation',
+            icon: RepeatSvgIcon,
+            isSvg: true,
+            expandableActions: switchOrgActions,
+            className: 'gap-2',
+            iconSize: 16,
+            visible: groupedBusinesses?.length > 1,
+        },
+        {
+            name: 'My Profile',
+            action: navigateToProfile,
+            isSvg: true,
+            icon: UserSvgIcon,
+            iconSize: 16,
+        },
         // {
         //     name: 'Rename Organisation',
         //     icon: RenameOrgSvgImage,
@@ -285,7 +286,7 @@ export const ArcHeaderPopover = ({ children }: any) => {
             icon: CodeSvgIcon,
             isSvg: true,
             action: openDebugForm,
-            visible: true,
+            visible: !!enabledDebug,
             iconSize: 16,
         },
         // {
@@ -304,7 +305,7 @@ export const ArcHeaderPopover = ({ children }: any) => {
         //     iconSize: 16,
         // },
         {
-            name: 'Business Settings',
+            name: 'Business Profile',
             icon: ArcSettingsSvgIcon,
             isSvg: true,
             action: () => {

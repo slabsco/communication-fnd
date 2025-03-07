@@ -11,3 +11,4 @@ export const SCHEDULE_BROADCAST_CREATION_ROUTE =
 export const TEAM_INBOX_SPLIT_LIST = HOME_ROUTE + 'team-inbox';
 
 export const BUSINESS_PROFILE_ROUTE = HOME_ROUTE + 'business-profile';
+export const USER_PROFILE_ROUTE = HOME_ROUTE + 'user-profile';
