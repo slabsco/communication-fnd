@@ -10,9 +10,11 @@ import { LookupController } from '../backend/common/controllers/lookup.controlle
 import { SourceMapController } from '../backend/common/controllers/source.map.controller';
 import TallyGroupController from '../backend/common/controllers/tally.group.controller';
 import UserNotificationController from '../backend/common/controllers/user.notification.controller';
+import { ActionDetailsController } from '../backend/communication/controller/action.details.controller';
 import { BusinessUserInvitationController } from '../backend/communication/controller/business.user.invitation.controller';
 import { CommunicationTemplateController } from '../backend/communication/controller/commuinication.templates.controller';
 import { ContactController } from '../backend/communication/controller/contact.controller';
+import { KeywordDetailsController } from '../backend/communication/controller/keyword.details.controller';
 import { QuickReplyController } from '../backend/communication/controller/quick.reply.controller';
 import { ScheduleBroadcastController } from '../backend/communication/controller/schedule.broadcast.controller';
 import { TeamInboxController } from '../backend/communication/controller/team.inbox.controller';
@@ -72,6 +74,8 @@ export const LISTING_CONTROLLER_ROUTER = {
     business_webhook: BusinessWebhookController,
     business_users: BusinessUserController,
     invite_users: BusinessUserInvitationController,
+    keyword_details: KeywordDetailsController,
+    action_details: ActionDetailsController,
 } as const;
 
 export const SPOTLIGHT_QUERY_CONTROLLER_ROUTE = {
