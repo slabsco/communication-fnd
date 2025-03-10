@@ -1,7 +1,8 @@
 'use client';
 
-import { SubscribeToEvent, UnsubscribeEvent } from '@finnoto/core';
 import { useEffect, useState } from 'react';
+
+import { SubscribeToEvent, UnsubscribeEvent } from '@finnoto/core';
 
 export const useWizardFooter = ({ activeWizardKey, onNext }) => {
     const [data, setData] = useState<any>();
@@ -33,6 +34,7 @@ export const useWizardFooter = ({ activeWizardKey, onNext }) => {
             handleSubmit(e);
             return;
         }
+        onNext();
     };
 
     return {

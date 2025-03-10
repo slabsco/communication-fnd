@@ -1,7 +1,9 @@
 'use client';
 
-import * as HoverCardPrimitive from '@radix-ui/react-hover-card';
 import { useToggle } from 'react-use';
+
+import * as HoverCardPrimitive from '@radix-ui/react-hover-card';
+
 import { cn } from '../../../Utils/common.ui.utils';
 import { HoverCardProps, hoverCardSizes } from './hoverCard.types';
 
