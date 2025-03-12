@@ -7,12 +7,7 @@ import {
     toastBackendError,
     useKeywordAction,
 } from '@finnoto/core';
-import {
-    ArcBreadcrumbs,
-    Button,
-    Container,
-    Wizard,
-} from '@finnoto/design-system';
+import { ArcBreadcrumbs, Button, Container } from '@finnoto/design-system';
 
 import AddActionsModule from './components/add.action.module';
 import AddKeywordModule from './components/add.keyword.module';
@@ -27,31 +22,31 @@ const KeywordActionCreationModule = () => {
         setRageValue,
         fuzzyMatchingRage,
         setFuzzyMatchingRage,
-        action_id,
+        action_ids,
         setActionId,
     } = useKeywordActionUi();
 
     const { addKeyword } = useKeywordAction();
 
     const handleAddKeyWord = async () => {
-        if (!action_id)
-            toastBackendError(undefined, 'Please select the actions');
+        if (!action_ids?.length)
+            return toastBackendError(undefined, 'Please select the actions');
 
-        await addKeyword({
+        const data = await addKeyword({
             keywords,
             matching_type_id: rageValue,
             name: 'Action',
-            action_id,
+            action_ids,
             fuzzy_matching_rage: fuzzyMatchingRage,
         });
 
-        Navigation.navigate({ url: KEYWORD_ACTION_LIST_ROUTE });
+        if (data) Navigation.navigate({ url: KEYWORD_ACTION_LIST_ROUTE });
     };
 
-    const isNextDisabled = useMemo(() => {
-        if (keywords?.length <= 0) return true;
-        return false;
-    }, [keywords?.length]);
+    const isSubmitDisabled = useMemo(() => {
+        if (keywords?.length && action_ids?.length) return false;
+        return true;
+    }, [action_ids, keywords?.length]);
 
     return (
         <Container className='overflow-hidden py-4 col-flex h-content-screen'>
@@ -64,50 +59,12 @@ const KeywordActionCreationModule = () => {
                 ]}
             />
 
-            <Wizard
-                className='overflow-hidden flex-1 rounded'
-                stepWizardClassName='flex-1 overflow-hidden'
-                renderCustomFooter={({ activeStep, handleJumpStep }) => {
-                    return (
-                        <div className='flex gap-2 justify-end'>
-                            {activeStep != 1 && (
-                                <Button
-                                    onClick={() =>
-                                        handleJumpStep(activeStep - 1)
-                                    }
-                                    defaultMinWidth
-                                    outline
-                                >
-                                    Previous
-                                </Button>
-                            )}
-                            {activeStep === 1 && (
-                                <Button
-                                    onClick={() => handleJumpStep(2)}
-                                    defaultMinWidth
-                                    disabled={isNextDisabled}
-                                >
-                                    Next
-                                </Button>
-                            )}
-                            {activeStep === 2 && (
-                                <Button
-                                    onClick={handleAddKeyWord}
-                                    defaultMinWidth
-                                >
-                                    Submit
-                                </Button>
-                            )}
-                        </div>
-                    );
-                }}
-                footerActionClassName='hidden'
-                steps={[
-                    {
-                        title: 'Add Keyword',
-                        key: 'add-keyword',
-                        props: {
-                            ...{
+            <div className='overflow-hidden flex-1 gap-2 p-2 col-flex bg-base-100'>
+                <div className='gap-2 col-flex'>
+                    <h3 className='px-2 text-lg font-medium'>Step 1</h3>
+                    <div className='bg-gray-100 rounded'>
+                        <AddKeywordModule
+                            {...{
                                 keywords,
                                 setKeyword,
                                 removeKeywordAt: removeAt,
@@ -115,18 +72,28 @@ const KeywordActionCreationModule = () => {
                                 setRageValue,
                                 fuzzyMatchingRage,
                                 setFuzzyMatchingRage,
-                            },
-                        },
-                        component: AddKeywordModule,
-                    },
-                    {
-                        title: 'Add Actions',
-                        key: 'add-actions',
-                        props: { setActionId },
-                        component: AddActionsModule,
-                    },
-                ]}
-            />
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className='overflow-hidden flex-1 pt-2 border-t col-flex'>
+                    <h3 className='px-2 text-lg font-medium'>Step 2</h3>
+                    <AddActionsModule
+                        initialData={[]}
+                        setActionId={(action_ids) => setActionId(action_ids)}
+                    />
+                </div>
+            </div>
+
+            <div className='flex justify-end p-3 bg-base-100'>
+                <Button
+                    onClick={handleAddKeyWord}
+                    disabled={isSubmitDisabled}
+                    defaultMinWidth
+                >
+                    Submit
+                </Button>
+            </div>
         </Container>
     );
 };

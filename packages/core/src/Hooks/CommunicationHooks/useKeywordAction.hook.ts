@@ -25,6 +25,7 @@ export const useKeywordAction = () => {
 
             if (!success) return toastBackendError(response);
             Toast.success({ description: 'Added Keyword Successfully' });
+            return response;
         },
     });
 

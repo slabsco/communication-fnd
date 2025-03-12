@@ -1,6 +1,3 @@
-import React, { useState } from 'react';
-import { useList } from 'react-use';
-
 import { KeywordMatchingTypeEnum } from '@finnoto/core/src/backend/communication/dto/create.keyword.detail.dto';
 import {
     Button,
@@ -11,7 +8,6 @@ import {
     RadioGroup,
     Range,
 } from '@finnoto/design-system';
-import { Label } from '@finnoto/design-system/src/Components/Inputs/InputField/label.component';
 
 import { CrossSvgIcon } from 'assets';
 
@@ -33,7 +29,7 @@ const AddKeywordModule = ({
                         return (
                             <div
                                 key={word}
-                                className='px-3 gap-2 text-lg py-1.5 flex item border border-dashed bg-base-200 rounded'
+                                className='px-3 gap-2 text-lg py-1.5 flex item border border-dashed border-primary bg-base-200 rounded'
                             >
                                 {word}
 
