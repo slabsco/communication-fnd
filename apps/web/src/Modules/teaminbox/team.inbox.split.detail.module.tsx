@@ -423,11 +423,14 @@ const MessageItem = ({ message }: { message: any }) => {
         return content;
     }, [body, footer, header]);
 
+    const isSentBySystem =
+        message?.attributes?.sent_by || message?.attributes?.is_bot;
+
     return (
         <div
             className={cn('w-full col-flex gap-2', {
                 'mr-auto ': message.is_replied,
-                'ml-auto ': message?.attributes?.sent_by,
+                'ml-auto ': isSentBySystem,
             })}
         >
             {component ? (
@@ -445,7 +448,7 @@ const MessageItem = ({ message }: { message: any }) => {
                     />
                     <MessageBubbleTimePopper message={message} />
                 </div>
-            ) : message?.attributes?.sent_by ? (
+            ) : isSentBySystem ? (
                 <div className='flex flex-row-reverse gap-2 items-end'>
                     {message?.is_error && (
                         <Tooltip
@@ -1349,7 +1352,7 @@ const MessageBubbleTimePopper = ({ message }: { message: any }) => {
         <div className='flex gap-1'>
             <div>
                 <span className='text-base-secondary text-[10px]'>
-                    {message.creator}
+                    {message?.creator || 'Bot'}
                 </span>
                 {FormatDisplayDateStyled({
                     value: message?.created_at,

@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 import {
     FetchData,
     KEYWORD_ACTION_CREATION_ROUTE,
@@ -19,6 +21,7 @@ import {
 
 import GenericDocumentListingComponent from '../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../Components/GenericDocumentListing/genericDocumentListing.types';
+import { openTemplateViewer } from '../broadcast/your-templates/components/TemplateViewer.component';
 
 import { DeleteSvgIcon } from 'assets';
 
@@ -36,7 +39,10 @@ const KeywordActionListModule = () => {
                     return (
                         <div className='flex gap-2 items-center py-2'>
                             {data?.keywords?.map((words) => (
-                                <span className='px-3 py-2 bg-gray-100 rounded border border-dashed'>
+                                <span
+                                    key={words}
+                                    className='px-3 py-2 bg-gray-100 rounded border border-dashed'
+                                >
                                     {words}
                                 </span>
                             ))}
@@ -77,27 +83,18 @@ const KeywordActionListModule = () => {
                             See Actions
                         </Button>
                     );
-                    // return (
-                    //     <HoverBox
-                    //         id={data?.id}
-                    //         controller={KeywordDetailsController}
-                    //         method='showAction'
-                    //         renderFunction={(data) => {
-                    //             return (
-                    //                 <div className='z-[9999] bg-primary h-6 w-16'>
-                    //                     fdasfdsafdsafdas
-                    //                 </div>
-                    //             );
-                    //         }}
-                    //     >
-                    //         <Badge appearance='info' label={'See action'} />
-                    //     </HoverBox>
-                    // );
                 },
             },
             { name: 'Created At', key: 'updated_at', type: 'date_time' },
         ],
         rowActions: [
+            // {
+            //     name: 'Edit',
+            //     type: 'outer',
+            //     icon: EditSvgIcon,
+
+            //     action: (rowData) => {},
+            // },
             {
                 name: 'Delete',
                 type: 'inner',
@@ -148,13 +145,72 @@ const ActionDetailModals = ({ id }: { id: number }) => {
             return;
         },
     });
-
     const renderActions = (detail) => {
         if (detail?.action?.type_id === ActionTypeEnum.ASSIGN_TO_USER)
             return (
                 <div className='gap-1 p-2 m-2 bg-gray-100 rounded col-flex'>
                     <p className='font-medium'>Assign to</p>
                     <span>{detail?.action?.parameters?.user_name}</span>
+                </div>
+            );
+        if (detail?.action?.type_id === ActionTypeEnum.SEND_IMAGE)
+            return (
+                <div className='gap-1 p-2 m-2 bg-gray-100 rounded col-flex'>
+                    <p className='font-medium'>Send Image</p>
+                    <Image
+                        alt={detail?.action?.parameters?.attributes?.name}
+                        src={detail?.action?.parameters?.image_url}
+                        className='w-full h-[200px]'
+                        width={300}
+                        height={200}
+                    />
+                </div>
+            );
+        if (detail?.action?.type_id === ActionTypeEnum.SEND_TEMPLATE_MESSAGE)
+            return (
+                <div className='gap-1 p-2 m-2 bg-gray-100 rounded col-flex'>
+                    <p className='font-medium'>Send Template message</p>
+                    <div className='mt-2 col-flex'>
+                        <div className='flex gap-2 items-center'>
+                            <p>Template Name: </p>
+                            <p className='text-base-secondary'>
+                                {detail?.action?.parameters?.name}
+                            </p>
+                        </div>
+                        <div className='flex gap-2 items-center'>
+                            <p>Category: </p>
+                            <p className='text-base-secondary'>
+                                {detail?.action?.parameters?.category}
+                            </p>
+                        </div>
+                        <div className='flex gap-2 items-center'>
+                            <p>Language: </p>
+                            <p className='text-base-secondary'>
+                                {detail?.action?.parameters?.language}
+                            </p>
+                        </div>
+                        <Button
+                            onClick={() => {
+                                openTemplateViewer(
+                                    detail?.action?.parameters?.template_id
+                                );
+                            }}
+                            className='mt-2 w-full'
+                            outline
+                        >
+                            View Template
+                        </Button>
+                    </div>
+                </div>
+            );
+
+        if (detail?.action?.type_id === ActionTypeEnum.TEXT)
+            return (
+                <div className='gap-1 p-2 m-2 bg-gray-100 rounded col-flex'>
+                    <p className='font-medium'>Send Normal message</p>
+                    <div className='p-2 mt-2 bg-gray-300 rounded col-flex'>
+                        {detail?.action?.parameters?.message}
+                    </div>
                 </div>
             );
     };

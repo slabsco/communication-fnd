@@ -3,12 +3,12 @@ import { useList } from 'react-use';
 
 import { KeywordMatchingTypeEnum } from '@finnoto/core/src/backend/communication/dto/create.keyword.detail.dto';
 
-export const useKeywordActionUi = () => {
+export const useKeywordActionUi = (initialData?: any) => {
     const [keywords, { push: setKeyword, removeAt }] = useList([]);
     const [rageValue, setRageValue] = useState(KeywordMatchingTypeEnum.EXACT);
     const [fuzzyMatchingRage, setFuzzyMatchingRage] = useState(80);
 
-    const [action_id, setActionId] = useState(null);
+    const [action_ids, setActionId] = useState(null);
 
     return {
         keywords,
@@ -18,7 +18,7 @@ export const useKeywordActionUi = () => {
         setRageValue,
         fuzzyMatchingRage,
         setFuzzyMatchingRage,
-        action_id,
+        action_ids,
         setActionId,
     };
 };

@@ -1,11 +1,11 @@
 import { Expose } from 'class-transformer';
 import {
-    IsString,
-    IsNotEmpty,
     IsArray,
-    IsNumber,
     IsEnum,
+    IsNotEmpty,
+    IsNumber,
     IsOptional,
+    IsString,
 } from 'class-validator';
 import { IdPayloadDto } from '../../common/dtos/id.payload.dto';
 
@@ -39,6 +39,6 @@ export class CreateKeywordDetailDto extends IdPayloadDto {
 
     @Expose()
     @IsNotEmpty()
-    @IsNumber()
-    action_id?: number;
+    @IsArray()
+    action_ids?: number[];
 }

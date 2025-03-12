@@ -1,11 +1,15 @@
-import { BusinessUserController } from '@finnoto/core/src/backend/common/controllers/business.user.controller';
 import { ActionDetailsController } from '@finnoto/core/src/backend/communication/controller/action.details.controller';
 import { ActionTypeEnum } from '@finnoto/core/src/backend/communication/controller/keyword.details.controller';
 import { ApiSchema, ModalFormUtil } from '@finnoto/design-system';
 
-export const assignToUserFormUtil = (
+export const genericSetActionForm = (
     data?: any,
-    options?: { callback?: (data: any) => any }
+    options?: {
+        callback?: (data: any) => any;
+        otherFormSchema?: any;
+        type_id: ActionTypeEnum;
+        sanitizeParameter: (data) => {};
+    }
 ) => {
     const isEdit = ModalFormUtil.isEdit(data);
 
@@ -15,15 +19,7 @@ export const assignToUserFormUtil = (
             label: 'Material name',
             placeholder: 'Enter Material name here',
         },
-        user_id: {
-            type: 'reference_select',
-            controller: BusinessUserController,
-            label: 'Assignee',
-            placeholder: 'Select Assignee',
-            required: true,
-            labelKey: 'name',
-            sublabelKey: 'email',
-        },
+        ...options?.otherFormSchema,
     };
 
     const apiSchema: ApiSchema = {
@@ -32,11 +28,9 @@ export const assignToUserFormUtil = (
         sanitizeClassParamsData: (values) => {
             return {
                 id: data?.id,
-                type_id: ActionTypeEnum.ASSIGN_TO_USER,
+                type_id: options?.type_id,
                 name: values?.name,
-                parameters: {
-                    user_id: values?.user_id,
-                },
+                parameters: options?.sanitizeParameter(values),
             };
         },
         onSuccess: (data) => {
@@ -46,11 +40,11 @@ export const assignToUserFormUtil = (
 
     return new ModalFormUtil(formSchema, apiSchema).process({
         modal_type: 'slidingPanel',
-        title: `${isEdit ? 'Edit' : 'Add'} User Assign Action`,
+        title: `${isEdit ? 'Edit' : 'Add'} Action`,
         slidingPanelProps: {},
         formBuilderProps: {
             withSaveAndNew: !isEdit ? true : false,
         },
-        initialValues: { ...data, user_id: data?.parameters?.user_id },
+        initialValues: data,
     });
 };
