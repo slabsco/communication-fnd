@@ -13,7 +13,11 @@ import AddActionsModule from './components/add.action.module';
 import AddKeywordModule from './components/add.keyword.module';
 import { useKeywordActionUi } from './hook/useKeywordActionUi.hook';
 
-const KeywordActionCreationModule = () => {
+const KeywordActionCreationModule = ({
+    initialData,
+}: {
+    initialData?: any;
+}) => {
     const {
         keywords,
         removeAt,
@@ -24,7 +28,7 @@ const KeywordActionCreationModule = () => {
         setFuzzyMatchingRage,
         action_ids,
         setActionId,
-    } = useKeywordActionUi();
+    } = useKeywordActionUi(initialData);
 
     const { addKeyword } = useKeywordAction();
 
@@ -33,6 +37,7 @@ const KeywordActionCreationModule = () => {
             return toastBackendError(undefined, 'Please select the actions');
 
         const data = await addKeyword({
+            id: initialData?.id,
             keywords,
             matching_type_id: rageValue,
             name: 'Action',
@@ -43,10 +48,18 @@ const KeywordActionCreationModule = () => {
         if (data) Navigation.navigate({ url: KEYWORD_ACTION_LIST_ROUTE });
     };
 
+    console.log({ action_ids });
+
     const isSubmitDisabled = useMemo(() => {
         if (keywords?.length && action_ids?.length) return false;
         return true;
     }, [action_ids, keywords?.length]);
+
+    const defaultActions = useMemo(() => {
+        return initialData?.actions.map((act) => {
+            return act?.action;
+        });
+    }, [initialData?.actions]);
 
     return (
         <Container className='overflow-hidden py-4 col-flex h-content-screen'>
@@ -79,13 +92,23 @@ const KeywordActionCreationModule = () => {
                 <div className='overflow-hidden flex-1 pt-2 border-t col-flex'>
                     <h3 className='px-2 text-lg font-medium'>Step 2</h3>
                     <AddActionsModule
-                        initialData={[]}
+                        initialData={defaultActions}
                         setActionId={(action_ids) => setActionId(action_ids)}
                     />
                 </div>
             </div>
 
-            <div className='flex justify-end p-3 bg-base-100'>
+            <div className='flex gap-2 justify-end p-3 bg-base-100'>
+                <Button
+                    onClick={() => {
+                        Navigation.back();
+                    }}
+                    outline
+                    disabled={isSubmitDisabled}
+                    defaultMinWidth
+                >
+                    Back
+                </Button>
                 <Button
                     onClick={handleAddKeyWord}
                     disabled={isSubmitDisabled}

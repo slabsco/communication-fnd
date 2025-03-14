@@ -1,5 +1,15 @@
+import { useFetchParams, useKeywordAction } from '@finnoto/core';
+import { PageLoader } from '@finnoto/design-system';
+
+import KeywordActionCreationModule from './keyword.action.creation.module';
+
 const KeywordActionEditModule = () => {
-    return <div>KeywordActionEditModule</div>;
+    const { id } = useFetchParams();
+    const { keywordActions, isKeywordActionLoading } = useKeywordAction(id);
+
+    if (isKeywordActionLoading) return <PageLoader />;
+
+    return <KeywordActionCreationModule initialData={keywordActions} />;
 };
 
 export default KeywordActionEditModule;

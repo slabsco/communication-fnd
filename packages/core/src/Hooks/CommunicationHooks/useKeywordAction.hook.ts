@@ -1,16 +1,17 @@
 import { Toast } from '@finnoto/design-system';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { KeywordDetailsController } from '../../backend/communication/controller/keyword.details.controller';
 import { CreateKeywordDetailDto } from '../../backend/communication/dto/create.keyword.detail.dto';
 import {
+    IsUndefinedOrNull,
     RefetchGenericListing,
     toastBackendError,
 } from '../../Utils/common.utils';
 import { FetchData } from '../useFetchData.hook';
 
-export const useKeywordAction = () => {
+export const useKeywordAction = (id?: number) => {
     const invalidate = useQueryClient();
 
     const { mutateAsync: addKeyword } = useMutation({
@@ -46,5 +47,27 @@ export const useKeywordAction = () => {
         },
     });
 
-    return { addKeyword, deleteKeyword };
+    const { data: keywordActions, isLoading: isKeywordActionLoading } =
+        useQuery({
+            queryKey: ['keyword_action_detail', id],
+            cacheTime: 0,
+            enabled: !IsUndefinedOrNull(id),
+            queryFn: async () => {
+                const { response, success } = await FetchData({
+                    className: KeywordDetailsController,
+                    methodParams: id,
+                    method: 'show',
+                });
+
+                if (success) return response;
+                return toastBackendError(response);
+            },
+        });
+
+    return {
+        addKeyword,
+        deleteKeyword,
+        keywordActions,
+        isKeywordActionLoading,
+    };
 };

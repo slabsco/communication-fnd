@@ -3,6 +3,7 @@ import Image from 'next/image';
 import {
     FetchData,
     KEYWORD_ACTION_CREATION_ROUTE,
+    KEYWORD_ACTION_LIST_ROUTE,
     Navigation,
     useKeywordAction,
     useQuery,
@@ -23,7 +24,7 @@ import GenericDocumentListingComponent from '../../Components/GenericDocumentLis
 import { GenericDocumentListingProps } from '../../Components/GenericDocumentListing/genericDocumentListing.types';
 import { openTemplateViewer } from '../broadcast/your-templates/components/TemplateViewer.component';
 
-import { DeleteSvgIcon } from 'assets';
+import { DeleteSvgIcon, EditSvgIcon } from 'assets';
 
 const KeywordActionListModule = () => {
     const { deleteKeyword } = useKeywordAction();
@@ -88,13 +89,16 @@ const KeywordActionListModule = () => {
             { name: 'Created At', key: 'updated_at', type: 'date_time' },
         ],
         rowActions: [
-            // {
-            //     name: 'Edit',
-            //     type: 'outer',
-            //     icon: EditSvgIcon,
-
-            //     action: (rowData) => {},
-            // },
+            {
+                name: 'Edit',
+                type: 'outer',
+                icon: EditSvgIcon,
+                action: (rowData) => {
+                    Navigation.navigate({
+                        url: `${KEYWORD_ACTION_LIST_ROUTE}/${rowData?.id}`,
+                    });
+                },
+            },
             {
                 name: 'Delete',
                 type: 'inner',
