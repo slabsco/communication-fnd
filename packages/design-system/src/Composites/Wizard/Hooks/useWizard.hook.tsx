@@ -49,6 +49,9 @@ export const useWizard = ({ onSubmit, steps, onComplete, offset }) => {
     const onNextStep = useCallback(
         async (response?: any) => {
             const activeKey = activeWizardStep?.key;
+
+            console.log({ response });
+
             if (typeof response === 'object') {
                 onSubmit(response, activeKey);
             }
@@ -100,11 +103,11 @@ export const useWizard = ({ onSubmit, steps, onComplete, offset }) => {
     //handle jump step
     const handleJumpStep = useCallback(
         (targetStep?: number) => {
-            if (targetStep > noOfCompleteSteps || offset - 1 === targetStep)
-                return null;
+            // if (targetStep > noOfCompleteSteps || offset - 1 === targetStep)
+            //     return null;
             stepWizard?.goToStep(targetStep);
         },
-        [noOfCompleteSteps, offset, stepWizard]
+        [stepWizard]
     );
     return {
         activeWizardKey,
