@@ -24,14 +24,18 @@ const YourTemplatesDetailModule = () => {
     const { defaultData, response } = useHandleTemplate(+id);
 
     useEffect(() => {
-        const last = response?.logs?.length;
-        const error = response?.logs?.[last - 1]?.response?.error;
+        const log = response?.log || response?.logs;
+
+        const last = log?.length;
+        const error = log?.[last - 1]?.response?.error;
         if (!error) return;
 
         Toast.error({
             title: error?.error_user_title,
             description: error?.error_user_msg,
             position: 'top-center',
+            progress: 1,
+            closeButton: true,
             withBorder: true,
             className: 'w-[400px]',
         });
