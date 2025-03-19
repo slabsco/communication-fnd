@@ -54,8 +54,10 @@ export default function YourTemplateCreationModule() {
                         key={ref?.current}
                         disabled={isDisabled}
                         appearance={'primary'}
-                        onClick={() => {
-                            return ref?.current?.handleSubmit?.();
+                        progress
+                        onClick={async (next) => {
+                            await ref?.current?.handleSubmit?.();
+                            next();
                         }}
                     >
                         Submit
