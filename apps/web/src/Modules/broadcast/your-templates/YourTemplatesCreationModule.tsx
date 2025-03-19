@@ -18,9 +18,11 @@ import { useHandleTemplate } from './hooks/useHandleTemplate.hook';
 export default function YourTemplateCreationModule() {
     const ref = useRef<any>(null);
 
-    const { id } = useFetchParams();
-    const { onSubmit, isLoading, defaultData, isFetched } =
-        useHandleTemplate(id);
+    const { id, is_duplicate } = useFetchParams();
+    const { onSubmit, isLoading, defaultData, isFetched } = useHandleTemplate(
+        id,
+        { is_duplicate: Boolean(is_duplicate) }
+    );
 
     const isDisabled = useMemo(() => {
         return ref?.current?.disableSubmit;

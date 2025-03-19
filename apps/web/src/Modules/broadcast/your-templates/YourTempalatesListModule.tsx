@@ -1,5 +1,6 @@
 import {
     Navigation,
+    SCHEDULE_BROADCAST_CREATION_ROUTE,
     WHATSAPP_TEMPLATE_CREATION_ROUTE,
     WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
@@ -32,6 +33,17 @@ const YourTemplatesListModule = () => {
                         action: openImportYourTemplateModal,
                     },
                 ],
+            },
+        ],
+        rowActions: [
+            {
+                name: 'Duplicate',
+                key: 'duplicate',
+                action: (row: any) => {
+                    Navigation.navigate({
+                        url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${row.id}&is_duplicate=true`,
+                    });
+                },
             },
         ],
         table: [

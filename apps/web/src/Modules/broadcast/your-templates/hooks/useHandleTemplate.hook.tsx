@@ -13,22 +13,27 @@ import { CommunicationTemplateController } from '@finnoto/core/src/backend/commu
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-export const useHandleTemplate = (id: number) => {
+export const useHandleTemplate = (
+    id: number,
+    options: { is_duplicate?: boolean }
+) => {
     const queryClient = useQueryClient();
 
     const onSubmit: FormBuilderSubmitType = async (
         value: any,
         { setError }
     ) => {
+        const formValue = value;
+        if (options?.is_duplicate) formValue.id = undefined;
+
         const { success, response } = await FetchData({
             className: CommunicationTemplateController,
             method: 'create',
-            classParams: {
-                ...value,
-            },
+            classParams: formValue,
         });
 
         if (!success) return toastBackendError(response);
+
         queryClient.invalidateQueries({ queryKey: ['template_detail', id] });
         Navigation.navigate({ url: WHATSAPP_TEMPLATE_LIST_ROUTE });
     };
