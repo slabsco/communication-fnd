@@ -11,13 +11,22 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import { useFlowBuilder } from './flowbuilder.context';
-import { AskQuestionNodeType } from './utils/ask.question.node.type';
+import {
+    AskQuestionButtonNodeType,
+    AskQuestionListNodeType,
+    AskQuestionNodeType,
+} from './utils/ask.question.node.type';
 import { SendMessageNode } from './utils/send.message.node.type';
+import SetConditionNodeType from './utils/set.condition.node.type';
 
 const nodeTypes = {
     send_message: SendMessageNode,
     ask_question: AskQuestionNodeType,
+    ask_question_button: AskQuestionButtonNodeType,
+    ask_question_list: AskQuestionListNodeType,
+    set_condition: SetConditionNodeType,
 };
+
 export type NodeTypesInternal = keyof typeof nodeTypes;
 
 const FlowBuilderMain = () => {
@@ -30,7 +39,7 @@ const FlowBuilderMain = () => {
     );
 
     return (
-        <div className='w-full h-full'>
+        <div className='overflow-hidden flex-1 w-full h-full bg-white border'>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -41,11 +50,7 @@ const FlowBuilderMain = () => {
             >
                 <Controls />
                 <MiniMap />
-                <Background
-                    variant={BackgroundVariant.Dots}
-                    gap={12}
-                    size={1}
-                />
+                <Background variant={BackgroundVariant.Dots} />
             </ReactFlow>
         </div>
     );

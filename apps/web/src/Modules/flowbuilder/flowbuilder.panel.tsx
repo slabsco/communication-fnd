@@ -1,3 +1,4 @@
+import { openAskQuestionModal } from './components/flowbuilder.ask.question.modal';
 import FlowBuilderCard from './components/flowbuilder.card';
 import { useFlowBuilder } from './flowbuilder.context';
 import { NodeTypesInternal } from './flowbuilder.main';
@@ -30,17 +31,21 @@ const FlowBuilderPanel = () => {
                     color='bg-red-500'
                 />
                 <FlowBuilderCard
-                    onClick={() => addNode('ask_question')}
+                    onClick={() => {
+                        openAskQuestionModal((type) => {
+                            addNode(type);
+                        });
+                    }}
                     title='Ask a question'
                     description='Ask question and store user input in variable'
                     color='bg-orange'
                 />
-                {/* <FlowBuilderCard
-                    onClick={() addNode}
+                <FlowBuilderCard
+                    onClick={() => addNode('set_condition')}
                     title='Set a condition'
                     description='Send message(s) based on logical condition(s)'
                     color='bg-purple-500'
-                /> */}
+                />
             </div>
         </div>
     );

@@ -53,6 +53,9 @@ const appearanceConstant = {
     blue: {
         bg_color: 'bg-blue-400',
     },
+    orange: {
+        bg_color: 'bg-orange',
+    },
 };
 export const CommonNodeComponentContainer = ({
     data,
