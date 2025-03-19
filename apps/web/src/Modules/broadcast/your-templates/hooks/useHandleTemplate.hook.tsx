@@ -15,7 +15,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useHandleTemplate = (
     id: number,
-    options: { is_duplicate?: boolean }
+    options?: { is_duplicate?: boolean }
 ) => {
     const queryClient = useQueryClient();
 
