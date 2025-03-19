@@ -42,10 +42,11 @@ export const useHandleTemplate = (
     const {
         data: response,
         isLoading,
-        isFetched = true,
+        isFetched,
     } = useQuery({
         initialData: {},
         queryKey: ['template_detail', id],
+        cacheTime: 0,
         queryFn: async () => {
             const { response, success } = await FetchData({
                 className: CommunicationTemplateController,

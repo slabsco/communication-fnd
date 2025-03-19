@@ -188,7 +188,7 @@ export const deserializeRichText = (
         case 'BODY':
             return jsx('fragment', {}, children);
         case 'BR':
-            return '\n';
+            return '';
         case 'P':
             return jsx('element', { type: 'paragraph' }, children);
         case 'STRONG':

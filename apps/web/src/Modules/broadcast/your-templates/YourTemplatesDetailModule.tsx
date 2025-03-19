@@ -39,6 +39,10 @@ const YourTemplatesDetailModule = () => {
             withBorder: true,
             className: 'w-[400px]',
         });
+
+        return () => {
+            Toast.dismissAll();
+        };
     }, [response]);
 
     const isRejected =
