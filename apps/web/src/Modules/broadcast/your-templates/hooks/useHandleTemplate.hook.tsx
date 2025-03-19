@@ -32,6 +32,7 @@ export const useHandleTemplate = (
             classParams: formValue,
         });
 
+        if (response?.columns) return setError(response?.columns);
         if (!success) return toastBackendError(response);
 
         queryClient.invalidateQueries({ queryKey: ['template_detail', id] });
