@@ -22,7 +22,7 @@ const FlowBuilderPanel = () => {
     };
 
     return (
-        <div className='p-2 w-3/12 h-full bg-white col-flex'>
+        <div className='p-2 w-3/12 h-full bg-white rounded col-flex'>
             <div className='gap-3 col-flex'>
                 <FlowBuilderCard
                     onClick={() => addNode('send_message')}

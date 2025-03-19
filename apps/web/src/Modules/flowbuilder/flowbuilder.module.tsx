@@ -7,7 +7,7 @@ import FlowBuilderPanel from './flowbuilder.panel';
 
 const FlowBuilderModule = () => {
     return (
-        <div className='flex overflow-hidden gap-3 items-center w-full h-content-screen'>
+        <div className='flex overflow-hidden gap-3 items-center p-3 w-full h-content-screen'>
             <FlowBuilderProvider>
                 <FlowBuilderPanel />
 

@@ -5,11 +5,11 @@ import ReactFlow, {
     BackgroundVariant,
     Controls,
     MiniMap,
-    NodeTypes,
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
 
+import { FlowBuilderCustomEdge } from './components/flowbuilder.custom.edge';
 import { useFlowBuilder } from './flowbuilder.context';
 import {
     AskQuestionButtonNodeType,
@@ -27,6 +27,8 @@ const nodeTypes = {
     set_condition: SetConditionNodeType,
 };
 
+const edgeTypes: any = { custom_edge: FlowBuilderCustomEdge };
+
 export type NodeTypesInternal = keyof typeof nodeTypes;
 
 const FlowBuilderMain = () => {
@@ -34,12 +36,13 @@ const FlowBuilderMain = () => {
         useFlowBuilder();
 
     const onConnect = useCallback(
-        (params) => setEdges((eds) => addEdge(params, eds)),
+        (params) =>
+            setEdges((eds) => addEdge({ ...params, type: 'custom_edge' }, eds)),
         [setEdges]
     );
 
     return (
-        <div className='overflow-hidden flex-1 w-full h-full bg-white border'>
+        <div className='overflow-hidden flex-1 w-full h-full bg-white rounded border'>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -47,10 +50,11 @@ const FlowBuilderMain = () => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes} // Add Custom Edge Here
             >
                 <Controls />
                 <MiniMap />
-                <Background variant={BackgroundVariant.Dots} />
+                <Background variant={BackgroundVariant.Cross} />
             </ReactFlow>
         </div>
     );
