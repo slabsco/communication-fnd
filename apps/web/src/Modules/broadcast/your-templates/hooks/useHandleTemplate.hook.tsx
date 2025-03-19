@@ -6,15 +6,17 @@ import {
     IsEmptyObject,
     IsUndefinedOrNull,
     Navigation,
+    RefetchGenericListing,
     toastBackendError,
     WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
+import { Toast } from '@finnoto/design-system';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useHandleTemplate = (
-    id: number,
+    id?: number,
     options?: { is_duplicate?: boolean }
 ) => {
     const queryClient = useQueryClient();
@@ -64,12 +66,37 @@ export const useHandleTemplate = (
         return ConvertRawApiDataIntoFormSuitable(response);
     }, [response]);
 
+    const { mutateAsync: deleteTemplate } = useMutation({
+        mutationFn: async (id) => {
+            const loading = Toast.loading({
+                description: `Deleting...`,
+            });
+
+            const { response, success } = await FetchData({
+                className: CommunicationTemplateController,
+                method: 'remove',
+                methodParams: id,
+            });
+
+            loading.hide();
+
+            if (success) {
+                RefetchGenericListing();
+                Toast.success({ description: 'Deleted Successfully!!' });
+                return response;
+            }
+
+            return toastBackendError(response);
+        },
+    });
+
     return {
         onSubmit,
         isLoading,
         defaultData,
         isFetched,
         response,
+        deleteTemplate,
     };
 };
 export const ConvertRawApiDataIntoFormSuitable = (apiResponse: any) => {
