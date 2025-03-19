@@ -34,6 +34,17 @@ const YourTemplatesListModule = () => {
                 ],
             },
         ],
+        rowActions: [
+            {
+                name: 'Duplicate',
+                key: 'duplicate',
+                action: (row: any) => {
+                    Navigation.navigate({
+                        url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${row.id}&is_duplicate=true`,
+                    });
+                },
+            },
+        ],
         table: [
             {
                 name: 'Template Name',
