@@ -1,6 +1,5 @@
 import {
     Navigation,
-    SCHEDULE_BROADCAST_CREATION_ROUTE,
     WHATSAPP_TEMPLATE_CREATION_ROUTE,
     WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
