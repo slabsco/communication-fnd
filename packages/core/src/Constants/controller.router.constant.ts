@@ -12,6 +12,7 @@ import TallyGroupController from '../backend/common/controllers/tally.group.cont
 import UserNotificationController from '../backend/common/controllers/user.notification.controller';
 import { ActionDetailsController } from '../backend/communication/controller/action.details.controller';
 import { BusinessUserInvitationController } from '../backend/communication/controller/business.user.invitation.controller';
+import { ChatbotFLowController } from '../backend/communication/controller/chatbot.flow.controller';
 import { CommunicationTemplateController } from '../backend/communication/controller/commuinication.templates.controller';
 import { ContactController } from '../backend/communication/controller/contact.controller';
 import { KeywordDetailsController } from '../backend/communication/controller/keyword.details.controller';
@@ -76,6 +77,7 @@ export const LISTING_CONTROLLER_ROUTER = {
     invite_users: BusinessUserInvitationController,
     keyword_details: KeywordDetailsController,
     action_details: ActionDetailsController,
+    chat_bot_flow: ChatbotFLowController,
 } as const;
 
 export const SPOTLIGHT_QUERY_CONTROLLER_ROUTE = {

@@ -4,7 +4,7 @@ import { useFlowBuilder } from '../flowbuilder.context';
 import { CommonNodeComponentContainer } from './send.message.node.type';
 import { openSetQuestionModal } from './set.question.modal';
 
-export const AskQuestionNodeType = ({ data, id }: any) => {
+export const AskQuestionNodeType = ({ data, id, position, type }: any) => {
     const { updateNodeData } = useFlowBuilder();
 
     return (
@@ -13,6 +13,8 @@ export const AskQuestionNodeType = ({ data, id }: any) => {
             appearance='orange'
             data={data}
             id={id}
+            component={type}
+            position={position}
             onManage={() => {
                 openSetQuestionModal({
                     data: data,
@@ -67,13 +69,20 @@ export const AskQuestionNodeType = ({ data, id }: any) => {
     );
 };
 
-export const AskQuestionButtonNodeType = ({ data, id }: any) => {
+export const AskQuestionButtonNodeType = ({
+    data,
+    id,
+    position,
+    type,
+}: any) => {
     return (
         <CommonNodeComponentContainer
             title='Buttons'
             appearance='orange'
             data={data}
             id={id}
+            component={type}
+            position={position}
         >
             <div className='grid grid-cols-2 gap-2 p-4'>Ask question</div>
             <Handle
@@ -92,13 +101,15 @@ export const AskQuestionButtonNodeType = ({ data, id }: any) => {
     );
 };
 
-export const AskQuestionListNodeType = ({ data, id }: any) => {
+export const AskQuestionListNodeType = ({ data, id, position, type }: any) => {
     return (
         <CommonNodeComponentContainer
             title='List'
             appearance='orange'
             data={data}
             id={id}
+            component={type}
+            position={position}
         >
             <div className='grid grid-cols-2 gap-2 p-4'>Ask question</div>
             <Handle

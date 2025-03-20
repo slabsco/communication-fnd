@@ -17,10 +17,10 @@ const FlowBuilderCard: React.FC<CardProps> = ({
     return (
         <div
             onClick={onClick}
-            className={`p-4 text-white rounded-lg transition-all cursor-pointer hover:shadow-md hover:-translate-y-0.5 ${color}`}
+            className={`p-2 text-white rounded-lg transition-all cursor-pointer hover:shadow-md hover:-translate-y-0.5 ${color}`}
         >
             <h3 className='font-bold'>{title}</h3>
-            <p>{description}</p>
+            <p className='text-sm'>{description}</p>
         </div>
     );
 };
