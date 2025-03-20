@@ -1,5 +1,4 @@
 import { Trash2 } from 'lucide-react'; // For the trash icon
-import React from 'react';
 import {
     BaseEdge,
     EdgeLabelRenderer,
@@ -11,7 +10,7 @@ import { DropdownMenu, IconButton } from '@finnoto/design-system';
 
 import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
 
-import { ArrowUpSvgIcon } from 'assets';
+import { DeleteSvgIcon } from 'assets';
 
 export const FlowBuilderCustomEdge = ({
     id,
@@ -37,7 +36,8 @@ export const FlowBuilderCustomEdge = ({
     };
 
     return (
-        <DropdownMenu actions={[{ name: 'Delete', action: () => {} }]}>
+        <>
+            {/* Custom Edge Path */}
             <BaseEdge
                 path={edgePath}
                 markerEnd={markerEnd}
@@ -47,6 +47,32 @@ export const FlowBuilderCustomEdge = ({
                     strokeDasharray: '4 4',
                 }}
             />
-        </DropdownMenu>
+
+            {/* Delete Button as Edge Label */}
+            <EdgeLabelRenderer>
+                <div
+                    style={{
+                        position: 'absolute',
+                        transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+                        background: '#fff',
+                        color: '#E53935',
+                        padding: '6px 12px',
+                        borderRadius: '12px',
+                        border: '1px solid #E53935',
+                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)',
+                        fontSize: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        cursor: 'pointer',
+                        pointerEvents: 'all', // Ensures it's clickable
+                    }}
+                    onClick={handleDelete}
+                >
+                    <Trash2 size={16} />
+                    Delete
+                </div>
+            </EdgeLabelRenderer>
+        </>
     );
 };

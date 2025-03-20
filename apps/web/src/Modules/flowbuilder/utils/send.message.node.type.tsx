@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { Handle, Position } from 'reactflow';
 
 import { IsFunction } from '@finnoto/core';
-import { cn, DropdownMenu, IconButton } from '@finnoto/design-system';
+import { Button, cn, DropdownMenu, IconButton } from '@finnoto/design-system';
 
 import { MoreIcon } from 'assets';
 
@@ -63,15 +63,17 @@ export const CommonNodeComponentContainer = ({
     id,
     children,
     appearance = 'red',
+    onManage,
 }: {
     data: any;
     id: string | number;
     children: ReactNode;
     appearance?: keyof typeof appearanceConstant;
     title: string;
+    onManage?: () => void;
 }) => {
     return (
-        <div className='overflow-hidden w-60 text-white bg-white rounded-xl shadow-md'>
+        <div className='overflow-hidden text-white bg-white rounded-xl shadow-md hover:cursor-move max-w-60'>
             <div
                 className={cn(
                     'flex gap-3 justify-between items-center px-3 py-2',
@@ -112,6 +114,12 @@ export const CommonNodeComponentContainer = ({
                 </DropdownMenu>
             </div>
             {children}
+
+            <div className='overflow-hidden p-2 bg-slate-600/10'>
+                <Button wide outline size='xs' onClick={onManage}>
+                    Manage
+                </Button>
+            </div>
         </div>
     );
 };

@@ -18,7 +18,9 @@ interface FlowBuilderContextType {
     onEdgesChange: OnEdgesChange;
     addNode: (node: FlowNode) => void;
     updateNode: (node: FlowNode) => void;
+    updateNodeData: (nodeId: string, newData: any) => void; // Added updateNodeData method
     deleteNode: (nodeId: string) => void; // New method to delete a node
+    getNodeData: (nodeId: string) => FlowNode | undefined; // New method to get node data
     addEdge: (edge: FlowEdge) => void;
     updateEdge: (edge: FlowEdge) => void;
     addMultipleNodes: (newNodes: FlowNode[]) => void; // New method to add multiple nodes
@@ -34,7 +36,9 @@ const FlowBuilderContext = createContext<FlowBuilderContextType>({
     onEdgesChange: () => {},
     addNode: () => {},
     updateNode: () => {},
+    updateNodeData: () => {}, // Default implementation
     deleteNode: () => {}, // Default implementation
+    getNodeData: () => undefined, // Default implementation
     addEdge: () => {},
     updateEdge: () => {},
     addMultipleNodes: () => {}, // Default implementation
@@ -55,8 +59,23 @@ export const FlowBuilderProvider = ({ children }) => {
         );
     };
 
+    const updateNodeData = (nodeId: string, newData: any) => {
+        // Implemented updateNodeData
+        setNodes((nodes) =>
+            nodes.map((node) =>
+                node.id === nodeId
+                    ? { ...node, data: { ...node.data, ...newData } }
+                    : node
+            )
+        );
+    };
+
     const deleteNode = (nodeId: string) => {
         setNodes((prevNodes) => prevNodes.filter((n) => n.id !== nodeId));
+    };
+
+    const getNodeData = (nodeId: string) => {
+        return nodes.find((node) => node.id === nodeId);
     };
 
     const addEdge = (edge: FlowEdge) => {
@@ -88,7 +107,9 @@ export const FlowBuilderProvider = ({ children }) => {
         onEdgesChange,
         addNode,
         updateNode,
+        updateNodeData, // Added to values
         deleteNode,
+        getNodeData, // Added to values
         addEdge,
         updateEdge,
         addMultipleNodes,
