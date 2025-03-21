@@ -38,7 +38,7 @@ const WebhookConfigModule = () => {
                 route={[
                     { name: 'Home', link: HOME_ROUTE },
                     { name: 'Developers' },
-                    { name: 'Webhook Config' },
+                    { name: 'Webhooks' },
                 ]}
             />
 

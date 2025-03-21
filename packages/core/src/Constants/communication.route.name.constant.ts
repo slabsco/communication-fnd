@@ -10,7 +10,8 @@ export const SCHEDULE_BROADCAST_CREATION_ROUTE =
     SCHEDULE_BROADCAST_LIST_ROUTE + '/create';
 
 export const TEAM_INBOX_SPLIT_LIST = HOME_ROUTE + 'team-inbox';
-export const BUSINESS_PROFILE_ROUTE = HOME_ROUTE + 'business-profile';
+export const BUSINESS_PROFILE_ROUTE = HOME_ROUTE + 'business-users';
+export const BUSINESS_USER_INVITATION_LIST = HOME_ROUTE + 'business-profile';
 
 export const KEYWORD_ACTION_LIST_ROUTE = HOME_ROUTE + 'keyword-action';
 
