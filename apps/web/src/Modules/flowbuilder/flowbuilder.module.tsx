@@ -24,7 +24,6 @@ const FlowBuilderModule = ({
     return (
         <div className='flex overflow-hidden gap-3 items-center p-3 w-full h-content-screen'>
             <FlowBuilderProvider rawJsonData={rawJsonData}>
-                <FlowBuilderPanel />
                 <div className='overflow-hidden gap-3 w-full h-full col-flex'>
                     <ArcBreadcrumbs
                         mainClassName='rounded py-4 rounded-none pb-2'
@@ -41,6 +40,7 @@ const FlowBuilderModule = ({
                         onSave={onSave}
                     />
                 </div>
+                <FlowBuilderPanel />
             </FlowBuilderProvider>
         </div>
     );

@@ -2,11 +2,13 @@ import React from 'react';
 
 import {
     Button,
+    cn,
     DropdownMenu,
     DropdownMenuActionProps,
     dropdownMenuSizes,
     Icon,
 } from '@finnoto/design-system';
+import { ButtonProps } from '@finnoto/design-system/src/Components/Inputs/Button/button.types';
 
 import { ActionArrowDownSvgIcon } from 'assets';
 
@@ -17,6 +19,9 @@ const DropdownActionButton = ({
     align,
     isSortable,
     size = 'sm',
+    buttonProps,
+    className,
+    buttonName,
 }: {
     actions: DropdownMenuActionProps[];
     searchable?: boolean;
@@ -24,19 +29,22 @@ const DropdownActionButton = ({
     align?: 'center' | 'start' | 'end';
     isSortable?: boolean;
     size?: keyof typeof dropdownMenuSizes;
+    buttonProps?: ButtonProps;
+    className?: string;
+    buttonName?: string;
 }) => {
     return (
         <DropdownMenu
             actions={actions}
-            className='gap-2 mt-2'
+            className={cn('gap-2 mt-2', className)}
             searchable={searchable}
             hideOnNoAction={hideOnNoAction}
             align={align}
             isSortable={isSortable}
             size={size === 'sm' ? 'md' : size}
         >
-            <Button size={size} appearance='primary'>
-                Actions{' '}
+            <Button wide size={size} appearance='primary' {...buttonProps}>
+                {buttonName || 'Actions'}
                 <Icon
                     source={ActionArrowDownSvgIcon}
                     isSvg

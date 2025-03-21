@@ -1,4 +1,3 @@
-import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button, IconButton, InputField } from '@finnoto/design-system';

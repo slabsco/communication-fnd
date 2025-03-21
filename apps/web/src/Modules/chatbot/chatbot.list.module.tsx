@@ -52,7 +52,7 @@ const ChatbotListModule = () => {
 
         actions: [
             {
-                name: 'Add Flow',
+                name: 'Add Chatbot',
                 type: 'create',
                 action: () =>
                     addChatbotFormUtil((res) => {

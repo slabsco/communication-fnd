@@ -6,12 +6,6 @@ import {
     useReactFlow,
 } from 'reactflow';
 
-import { DropdownMenu, IconButton } from '@finnoto/design-system';
-
-import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
-
-import { DeleteSvgIcon } from 'assets';
-
 export const FlowBuilderCustomEdge = ({
     id,
     sourceX,

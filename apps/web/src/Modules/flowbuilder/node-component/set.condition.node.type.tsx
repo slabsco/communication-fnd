@@ -1,15 +1,11 @@
 import { Handle, Position } from 'reactflow';
 
-import { CommonNodeComponentContainer } from './send.message.node.type';
+import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
+import { CommonNodePropsTypes } from './ask.question.node.type';
 
-const SetConditionNodeType = ({ data, id }: any) => {
+const SetConditionNodeType = ({ data, id, type }: CommonNodePropsTypes) => {
     return (
-        <CommonNodeComponentContainer
-            title='Set a Condition'
-            appearance='blue'
-            data={data}
-            id={id}
-        >
+        <CommonNodeComponentContainer data={data} id={id} type={type}>
             <div className='grid grid-cols-2 gap-2 p-4'>Ask question</div>
             <Handle
                 isConnectable

@@ -1,15 +1,11 @@
-import { NodeTypesInternal } from '../flowbuilder.main';
-
-export const generateIdFromTimestamp = (): string => {
-    return Date.now().toString(36);
-};
+import { FlowBuilderPanelCardType } from '../constants/flowbuilder.constant';
 
 export const CreateNewNode = ({
     component,
     position = { x: 250, y: 5 },
 }: {
     position?: { x: number; y: number };
-    component: NodeTypesInternal;
+    component: FlowBuilderPanelCardType;
 }) => {
     return {
         id: generateIdFromTimestamp(),
@@ -17,4 +13,8 @@ export const CreateNewNode = ({
         position,
         data: {},
     };
+};
+
+export const generateIdFromTimestamp = (): string => {
+    return Date.now().toString(36);
 };

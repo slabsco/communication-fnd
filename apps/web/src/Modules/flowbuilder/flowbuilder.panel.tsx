@@ -1,12 +1,14 @@
+import { openAskQuestionModal } from './components/flowbuilder.ask.question.modal';
 import FlowBuilderCard from './components/flowbuilder.card';
+import FlowBuilderOperatorsCard from './components/flowbuilder.pannel.operators';
+import { FlowBuilderPanelCardType } from './constants/flowbuilder.constant';
 import { useFlowBuilder } from './flowbuilder.context';
-import { NodeTypesInternal } from './flowbuilder.main';
 import { CreateNewNode } from './utils/flowbuilder.common.utils';
 
 const FlowBuilderPanel = () => {
     const { addMultipleNodes } = useFlowBuilder();
 
-    const addNode = (component: NodeTypesInternal) => {
+    const addNode = (component: FlowBuilderPanelCardType) => {
         const node = CreateNewNode({
             component: component,
         });
@@ -19,28 +21,33 @@ const FlowBuilderPanel = () => {
             <div className='gap-3 col-flex'>
                 <FlowBuilderCard
                     onClick={() => addNode('send_message')}
-                    title='Send a message'
-                    description='With no response required from visitor'
-                    color='bg-red-500'
+                    type='send_message'
                 />
                 <FlowBuilderCard
                     onClick={() => {
-                        addNode('ask_question');
-
-                        // openAskQuestionModal((type) => {
-                        //     addNode(type);
-                        // });
+                        openAskQuestionModal((type) => {
+                            addNode(type);
+                        });
                     }}
-                    title='Ask a question'
-                    description='Ask question and store user input in variable'
-                    color='bg-orange'
+                    type='ask_question'
                 />
                 <FlowBuilderCard
                     onClick={() => addNode('set_condition')}
-                    title='Set a condition'
-                    description='Send message(s) based on logical condition(s)'
-                    color='bg-purple-500'
+                    type='set_condition'
                 />
+            </div>
+            <div className='mt-4'>
+                <h3 className='text-lg font-medium'>Operators</h3>
+                <div className='grid grid-cols-2 gap-2 items-center mt-2'>
+                    <FlowBuilderOperatorsCard
+                        onClick={() => {}}
+                        type='assign_user'
+                    />
+                    <FlowBuilderOperatorsCard
+                        type='time_delay'
+                        onClick={() => {}}
+                    />
+                </div>
             </div>
         </div>
     );

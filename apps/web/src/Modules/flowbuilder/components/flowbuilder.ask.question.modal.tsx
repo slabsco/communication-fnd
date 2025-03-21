@@ -1,16 +1,14 @@
 import { Modal, ModalBody, ModalContainer } from '@finnoto/design-system';
 
-import { NodeTypesInternal } from '../flowbuilder.main';
+import { FlowBuilderPanelCardType } from '../constants/flowbuilder.constant';
 import FlowBuilderCard from './flowbuilder.card';
-
-type selectedComponentType = (type: NodeTypesInternal) => void;
 
 const FlowBuilderAskQuestionModal = ({
     selectedComponent,
 }: {
-    selectedComponent: selectedComponentType;
+    selectedComponent: (FlowBuilderPanelCardType) => void;
 }) => {
-    const handleSelectedComponent = (type: NodeTypesInternal) => {
+    const handleSelectedComponent = (type: FlowBuilderPanelCardType) => {
         selectedComponent?.(type);
         Modal.close();
     };
@@ -19,23 +17,17 @@ const FlowBuilderAskQuestionModal = ({
             <ModalBody className='gap-2 col-flex'>
                 <FlowBuilderCard
                     onClick={() => handleSelectedComponent('ask_question')}
-                    title='Question'
-                    description='Ask anything to user'
-                    color='bg-orange'
+                    type='ask_question'
                 />
                 <FlowBuilderCard
                     onClick={() =>
                         handleSelectedComponent('ask_question_button')
                     }
-                    title='Buttons'
-                    description='Chose Based On button (Maximum 3 choice)'
-                    color='bg-orange'
+                    type='ask_question_button'
                 />
                 <FlowBuilderCard
                     onClick={() => handleSelectedComponent('ask_question_list')}
-                    title='List'
-                    description='Chose Based On button (Maximum 10 choice)'
-                    color='bg-orange'
+                    type='ask_question_list'
                 />
             </ModalBody>
         </ModalContainer>
@@ -45,7 +37,7 @@ const FlowBuilderAskQuestionModal = ({
 export default FlowBuilderAskQuestionModal;
 
 export const openAskQuestionModal = (
-    selectedComponent: selectedComponentType
+    selectedComponent: (type: FlowBuilderPanelCardType) => void
 ) => {
     return Modal.open({
         component: FlowBuilderAskQuestionModal,

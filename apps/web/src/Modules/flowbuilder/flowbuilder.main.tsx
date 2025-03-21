@@ -10,26 +10,17 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import { FlowBuilderCustomEdge } from './components/flowbuilder.custom.edge';
+import { FlowBuilderCardConstants } from './constants/flowbuilder.constant';
 import { useFlowBuilder } from './flowbuilder.context';
-import {
-    AskQuestionButtonNodeType,
-    AskQuestionListNodeType,
-    AskQuestionNodeType,
-} from './utils/ask.question.node.type';
-import { SendMessageNode } from './utils/send.message.node.type';
-import SetConditionNodeType from './utils/set.condition.node.type';
-
-const nodeTypes = {
-    send_message: SendMessageNode,
-    ask_question: AskQuestionNodeType,
-    ask_question_button: AskQuestionButtonNodeType,
-    ask_question_list: AskQuestionListNodeType,
-    set_condition: SetConditionNodeType,
-};
 
 const edgeTypes: any = { custom_edge: FlowBuilderCustomEdge };
 
-export type NodeTypesInternal = keyof typeof nodeTypes;
+const nodeTypes = Object.fromEntries(
+    Object.entries(FlowBuilderCardConstants).map(([key, value]) => [
+        value.identifier,
+        value.nodeComponent,
+    ])
+);
 
 const FlowBuilderMain = () => {
     const { nodes, onEdgesChange, edges, setEdges, onNodesChange } =
