@@ -4,7 +4,7 @@ import {
     FormBuilderSubmitType,
     toastBackendError,
 } from '@finnoto/core';
-import { MetaUserController } from '@finnoto/core/src/backend/meta/controllers/meta.user.controller';
+import { UserProfileController } from '@finnoto/core/src/backend/communication/controller/user.profile.controller';
 import {
     ConfirmAsyncUtil,
     FormBuilder,
@@ -51,7 +51,7 @@ const ChangePasswordForm = ({ item, callback, isEdit }) => {
         if (!confirm) return;
 
         const { success, response } = await FetchData({
-            className: MetaUserController,
+            className: UserProfileController,
             method: 'changePassword',
             classParams: {
                 ...values,

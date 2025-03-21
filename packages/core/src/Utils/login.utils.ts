@@ -1,6 +1,7 @@
 import { PublicController } from '../backend/common/controllers/public.controller';
 import { ObjectDto } from '../backend/Dtos';
 import {
+    ACCESS_TOKEN,
     CHANGE_PASSWORD_ROUTE,
     CLIENT_INVITATION_DATA,
     HOME_ROUTE,
@@ -97,11 +98,13 @@ export const authenticateBusiness = async (
     const businessApiUrl = UserBusiness.getBusinessAPIUrl();
     const { user } = userData;
 
+    const accessToken = user?.access_token || GetItem(ACCESS_TOKEN, false);
+
     const response = await fetch(`${businessApiUrl}auth/validate-token`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${user?.access_token}`,
+            Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({ id: business.business_id }),
     });
