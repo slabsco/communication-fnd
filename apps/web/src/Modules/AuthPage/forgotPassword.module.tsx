@@ -92,7 +92,7 @@ const ForgotPasswordPage = () => {
                             </div>
                         )}
                         {!success && (
-                            <div className='flex-1 h-full gap-2 col-flex '>
+                            <div className='flex-1 gap-2 h-full col-flex'>
                                 <div className='flex-1'>
                                     <InputField
                                         type='email'
@@ -119,7 +119,7 @@ const ForgotPasswordPage = () => {
 
                                 <div className='gap-6 col-flex'>
                                     <div className='border'></div>
-                                    <div className='grid items-center grid-cols-2 gap-6'>
+                                    <div className='grid grid-cols-2 gap-6 items-center'>
                                         <Button
                                             type='button'
                                             appearance='primary'
@@ -170,7 +170,7 @@ const EmailSent = ({
     reSendOtp: () => void;
 }) => {
     return (
-        <div className='flex-1 h-full gap-4 col-flex'>
+        <div className='flex-1 gap-4 h-full col-flex'>
             <div className='w-full h-full centralize'>
                 <Image
                     src={EmailSentImage()}
@@ -189,7 +189,7 @@ const EmailSent = ({
                     className={`${
                         showCountDown
                             ? 'opacity-25 cursor-not-allowed'
-                            : 'text-info cursor-pointer'
+                            : 'cursor-pointer text-info'
                     }`}
                 >
                     Resend
@@ -206,7 +206,7 @@ const EmailSent = ({
             </div>
             <div className='mt-auto'>
                 <Button
-                    className='normal-case h-11 dark:text-base-content'
+                    className='h-11 normal-case dark:text-base-content'
                     appearance='primary'
                     outline
                     block

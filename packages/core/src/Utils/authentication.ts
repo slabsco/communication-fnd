@@ -127,6 +127,20 @@ export class Authentication {
         return userObj;
     }
 
+    public static async refreshUserData() {
+        const result = await Get({
+            url: this.LOGIN_CHECK,
+            baseURL: API_CONSTANTS.ROUTE_URL,
+            isMeta: true,
+        });
+
+        let userObj = user.getUserData();
+
+        if (result?.data) {
+            user.updateUserData(result?.data);
+        }
+    }
+
     /**
      * fetches refresh token from localstorage
      * if token not found and redirectToLoginWhenFailToFetch is true, redirects to home page

@@ -1,7 +1,9 @@
 import Joi from 'joi';
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
+    FORGOT_PASSWORD_ROUTE,
     formatJoiErrorMessages,
     FormBuilderFormSchema,
     getJoiValidationOptions,
@@ -358,16 +360,16 @@ const EmailLoginSection = ({ email, resetLogin = () => {} }: any) => {
             minLength: 6,
             required: true,
             autoFocus: true,
-            // messageComponent: () => (
-            //     <div className='mt-2 mb-1'>
-            //         <Link
-            //             href={`${FORGOT_PASSWORD_ROUTE}?email=${email}`}
-            //             className='text-sm link link-hover'
-            //         >
-            //             Forgot Password?
-            //         </Link>
-            //     </div>
-            // ),
+            messageComponent: () => (
+                <div className='mt-2 mb-1'>
+                    <Link
+                        href={`${FORGOT_PASSWORD_ROUTE}?email=${email}`}
+                        className='text-sm link link-hover'
+                    >
+                        Forgot Password?
+                    </Link>
+                </div>
+            ),
         },
     };
 

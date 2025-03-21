@@ -18,3 +18,4 @@ export const KEYWORD_ACTION_LIST_ROUTE = HOME_ROUTE + 'keyword-action';
 
 export const KEYWORD_ACTION_CREATION_ROUTE =
     KEYWORD_ACTION_LIST_ROUTE + '/create';
+export const USER_PROFILE_ROUTE = HOME_ROUTE + 'user-profile';
