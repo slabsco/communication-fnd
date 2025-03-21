@@ -46,7 +46,7 @@ const ResetPasswordPage = () => {
                 <form
                     onSubmit={handleSubmit}
                     noValidate
-                    className='flex-1 col-flex '
+                    className='flex-1 col-flex'
                 >
                     {success && (
                         <div className='w-full h-full centralize'>
@@ -90,7 +90,7 @@ const ResetPasswordPage = () => {
                                     trimSpecialChar={false}
                                     required
                                 />
-                                <div className='text-sm '>
+                                <div className='text-sm'>
                                     Already have an account?{' '}
                                     <Link
                                         href={LOGIN_ROUTE}
@@ -100,7 +100,7 @@ const ResetPasswordPage = () => {
                                     </Link>
                                 </div>
                             </div>
-                            <div className='items-center gap-2 col-flex'>
+                            <div className='gap-2 items-center mt-2 col-flex'>
                                 <Button
                                     loading={loading}
                                     className='normal-case'
@@ -112,9 +112,9 @@ const ResetPasswordPage = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className='w-full gap-4 mt-auto'>
+                        <div className='gap-4 mt-auto w-full'>
                             <Button
-                                className='normal-case h-11'
+                                className='h-11 normal-case'
                                 appearance='primary'
                                 block
                                 onClick={() =>

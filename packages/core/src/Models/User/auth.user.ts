@@ -1,7 +1,7 @@
 import { IdPayloadDto } from '../../backend/common/dtos/id.payload.dto';
 import { BaseModel } from '../base.models';
 import { ForgotPasswordPayloadDto } from '../dto/forgot.password.dto';
-import { LoginDto } from '../dto/login.dto';
+import { ForgetPasswordPayloadDto, LoginDto } from '../dto/login.dto';
 import { Login2faDto } from '../dto/login2fa.dto';
 import { MobileOtpPayloadDto } from '../dto/mobile.otp.payload.dto';
 import { RegisterUserDto } from '../dto/register.user.dto';
@@ -17,6 +17,13 @@ export class AuthUser extends BaseModel {
     async login() {
         this.api = 'auth/login';
         this.bodyDto = LoginDto;
+        return this.post();
+    }
+
+    async sendForgetPasswordEmail() {
+        this.api = 'auth/send-forget-email';
+        this.bodyDto = ForgetPasswordPayloadDto;
+
         return this.post();
     }
 
