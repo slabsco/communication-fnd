@@ -40,7 +40,7 @@ const BusinessProfileDetailModule = () => {
                             alt={businessInfo?.name}
                             shape='rounded'
                             size='lg'
-                            source={businessInfo?.image}
+                            source={businessInfo?.attributes?.business_image}
                             unOptimizeImage={true}
                         />
                         <div className='flex gap-2 items-center'>

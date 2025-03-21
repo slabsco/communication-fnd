@@ -17,6 +17,7 @@ import {
     Navigation,
     PAYMENT_HOME_ROUTE,
     useApp,
+    USER_PROFILE_ROUTE,
     useUserHook,
     VENDOR_EXPENSE_DASHBOARD_ROUTE,
 } from '@finnoto/core';
@@ -743,7 +744,7 @@ const Profilecomponent = ({ isSidebarExpand }: any) => {
                         </div>
                     }
                 >
-                    <Link href={BUSINESS_PROFILE_ROUTE}>
+                    <Link href={USER_PROFILE_ROUTE}>
                         {user?.image_url ? (
                             <div
                                 className={cn(
