@@ -2,7 +2,7 @@ import { useList, useUpdateEffect } from 'react-use';
 import { Handle, Position } from 'reactflow';
 
 import { IsEmptyArray } from '@finnoto/core';
-import { Button, TextareaField } from '@finnoto/design-system';
+import { TextareaField } from '@finnoto/design-system';
 import { SingleFileUploader } from '@finnoto/design-system/src/Composites/Uploader/Components/SingleFile.upload.component copy';
 
 import {
@@ -64,8 +64,7 @@ export const SendMessageNode = ({ data, id, type }: CommonNodePropsTypes) => {
                     component={component}
                     removeAt={removeAt}
                     type='message'
-                >
-                    {(index, value) => {
+                    element={(index, value) => {
                         return (
                             <TextareaField
                                 inputClassName='leading-5'
@@ -80,17 +79,18 @@ export const SendMessageNode = ({ data, id, type }: CommonNodePropsTypes) => {
                             />
                         );
                     }}
-                </RenderMessagesComponent>
+                />
                 <RenderMessagesComponent
                     component={component}
                     removeAt={removeAt}
                     type='image'
-                >
-                    {(index, val) => {
+                    element={(index, value) => {
                         return (
                             <SingleFileUploader
                                 value={
-                                    val?.data?.document_url ? [val?.data] : []
+                                    value?.data?.document_url
+                                        ? [value?.data]
+                                        : []
                                 }
                                 onFileUpload={(data) => {
                                     handleUpdateData(index, data?.[0]);
@@ -98,7 +98,7 @@ export const SendMessageNode = ({ data, id, type }: CommonNodePropsTypes) => {
                             />
                         );
                     }}
-                </RenderMessagesComponent>
+                />
             </div>
 
             <Handle
