@@ -8,23 +8,15 @@ import {
 } from '@finnoto/core';
 import { Button, Container, Icon, PageLoader } from '@finnoto/design-system';
 
-import { RenderBusinessError } from '../businessProfile/business.profile.whatsapp.info.tab';
-
 import { ArcWarningSvgIcon } from 'assets';
 
 const LandingModule = () => {
-    const { user, businessInfo, isBusinessInfoLoading } = useLandingPage();
+    const { user, isBusinessInfoLoading } = useLandingPage();
     if (isBusinessInfoLoading) return <PageLoader />;
 
     return (
         <Container className='overflow-hidden gap-3 py-6 col-flex'>
             <h3 className='text-2xl font-semibold'>Welcome, {user.name} </h3>
-            <div className='grid grid-cols-3 gap-4'>
-                <RenderFlowError user={user} businessInfo={businessInfo} />
-                <div className='col-span-2'>
-                    <RenderBusinessError businessInfo={businessInfo} />
-                </div>
-            </div>
         </Container>
     );
 };
