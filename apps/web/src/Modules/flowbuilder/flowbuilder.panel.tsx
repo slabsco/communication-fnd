@@ -40,12 +40,12 @@ const FlowBuilderPanel = () => {
                 <h3 className='text-lg font-medium'>Operators</h3>
                 <div className='grid grid-cols-2 gap-2 items-center mt-2'>
                     <FlowBuilderOperatorsCard
-                        onClick={() => {}}
+                        onClick={() => addNode('assign_user')}
                         type='assign_user'
                     />
                     <FlowBuilderOperatorsCard
-                        type='time_delay'
-                        onClick={() => {}}
+                        type='set_time_delay'
+                        onClick={() => addNode('set_time_delay')}
                     />
                 </div>
             </div>

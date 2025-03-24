@@ -43,7 +43,7 @@ const DropdownActionButton = ({
             isSortable={isSortable}
             size={size === 'sm' ? 'md' : size}
         >
-            <Button wide size={size} appearance='primary' {...buttonProps}>
+            <Button size={size} appearance='primary' {...buttonProps}>
                 {buttonName || 'Actions'}
                 <Icon
                     source={ActionArrowDownSvgIcon}

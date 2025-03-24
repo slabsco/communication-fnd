@@ -14,9 +14,11 @@ import FlowBuilderMessageComponent from '../components/flowbuilder.message.compo
 const SetQuestionModal = ({
     data,
     getData,
+    max,
 }: {
     getData: (data: any) => void;
     data: any;
+    max?: number;
 }) => {
     const [html, setHtml] = useState<any>(data?.html || '');
     const [answer, setAnswer] = useState<any>(data?.answer || []);
@@ -30,12 +32,20 @@ const SetQuestionModal = ({
                     }}
                     html={html}
                 />
+
                 <FlowBuilderAnswerOptions
+                    max={max}
                     answers={answer}
                     getAnswers={(answers) => {
                         setAnswer(answers);
                     }}
                 />
+
+                {max && (
+                    <div className='text-warning'>
+                        Only {max} answer are allowed!
+                    </div>
+                )}
             </ModalBody>
             <ModalFooter className='py-4 justify'>
                 <div className='flex-1 gap-4 row-flex'>
@@ -64,11 +74,20 @@ const SetQuestionModal = ({
     );
 };
 
-export const openSetQuestionModal = ({ data, getData }) => {
+export const openSetQuestionModal = ({
+    data,
+    getData,
+    max,
+}: {
+    data?: any;
+    getData?: any;
+    max?: any;
+}) => {
     return Modal.open({
         component: SetQuestionModal,
         modalSize: 'sm',
         props: {
+            max,
             data,
             getData,
         },

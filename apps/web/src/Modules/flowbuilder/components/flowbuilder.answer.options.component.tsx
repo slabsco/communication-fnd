@@ -11,9 +11,11 @@ export interface AnswerOption {
 export const FlowBuilderAnswerOptions = ({
     getAnswers,
     answers = [],
+    max,
 }: {
     getAnswers: (ans: AnswerOption[]) => void; // Updated to reflect the correct type
     answers: AnswerOption[];
+    max?: number;
 }) => {
     const [options, setOptions] = useState<AnswerOption[]>(answers);
     const [newOption, setNewOption] = useState('');
@@ -62,24 +64,26 @@ export const FlowBuilderAnswerOptions = ({
                     </div>
                 ))}
             </div>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    handleAddOption();
-                }}
-                className='flex gap-2'
-            >
-                <InputField
-                    type='text'
-                    value={newOption}
-                    onChange={(e) => setNewOption(e)}
-                    placeholder='Add answer variant'
-                    className='flex-1'
-                />
-                <Button size='lg' type='submit' outline>
-                    Create
-                </Button>
-            </form>
+            {max !== options?.length && (
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleAddOption();
+                    }}
+                    className='flex gap-2'
+                >
+                    <InputField
+                        type='text'
+                        value={newOption}
+                        onChange={(e) => setNewOption(e)}
+                        placeholder='Add answer variant'
+                        className='flex-1'
+                    />
+                    <Button size='lg' type='submit' outline>
+                        Create
+                    </Button>
+                </form>
+            )}
         </div>
     );
 };

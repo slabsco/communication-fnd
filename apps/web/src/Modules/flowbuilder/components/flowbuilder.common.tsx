@@ -1,6 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 
+import { IsUndefinedOrNull } from '@finnoto/core';
 import {
+    Button,
     cn,
     DropdownMenu,
     DropdownMenuActionProps,
@@ -17,6 +19,12 @@ import { generateIdFromTimestamp } from '../utils/flowbuilder.common.utils';
 
 import { MoreIcon } from 'assets';
 
+export type CommonNodePropsTypes = {
+    data: any;
+    id: string;
+    type: any;
+};
+
 export const CommonNodeComponentContainer = ({
     data,
     id,
@@ -31,10 +39,15 @@ export const CommonNodeComponentContainer = ({
     children: ReactNode;
 }) => {
     const { addMultipleNodes, deleteNode, getNodeData } = useFlowBuilder();
-    const CONSTANT_DATA = FlowBuilderCardConstants[type];
+    const CONSTANT_DATA: any = FlowBuilderCardConstants[type];
+
+    const onlyActions = useMemo(() => {
+        if (actions?.length > 1) return;
+        return actions?.[0];
+    }, [actions]);
 
     return (
-        <div className='overflow-hidden text-white bg-white rounded-xl shadow-md col-flex w-[400px]'>
+        <div className='overflow-hidden text-white bg-white rounded-xl shadow-md col-flex min-w-[200px] max-w-[400px]'>
             <div
                 className={cn(
                     'flex gap-3 justify-between items-center px-3 py-2 hover:cursor-move',
@@ -86,17 +99,32 @@ export const CommonNodeComponentContainer = ({
                 </DropdownMenu>
             </div>
             {children}
+
             <div className='overflow-hidden px-2 py-2 w-full'>
-                <DropdownActionButton
-                    size='sm'
-                    buttonProps={{
-                        wide: true,
-                        outline: true,
-                        className: 'w-full',
-                    }}
-                    hideOnNoAction
-                    actions={actions}
-                />
+                {!IsUndefinedOrNull(onlyActions) ? (
+                    <Button
+                        outline
+                        size='sm'
+                        wide
+                        className='w-full'
+                        onClick={() => {
+                            onlyActions?.action?.();
+                        }}
+                    >
+                        {onlyActions?.name}
+                    </Button>
+                ) : (
+                    <DropdownActionButton
+                        size='sm'
+                        buttonProps={{
+                            wide: true,
+                            outline: true,
+                            className: 'w-full',
+                        }}
+                        hideOnNoAction
+                        actions={actions}
+                    />
+                )}
             </div>
         </div>
     );

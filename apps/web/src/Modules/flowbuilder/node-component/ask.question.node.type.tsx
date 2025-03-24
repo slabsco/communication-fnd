@@ -1,14 +1,11 @@
 import { Handle, Position } from 'reactflow';
 
-import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
+import {
+    CommonNodeComponentContainer,
+    CommonNodePropsTypes,
+} from '../components/flowbuilder.common';
 import { useFlowBuilder } from '../flowbuilder.context';
 import { openSetQuestionModal } from './set.question.modal';
-
-export type CommonNodePropsTypes = {
-    data: any;
-    id: string;
-    type: any;
-};
 
 export const AskQuestionNodeType = ({
     data,
