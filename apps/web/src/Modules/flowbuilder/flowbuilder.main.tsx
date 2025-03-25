@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import ReactFlow, {
     addEdge,
     Background,
@@ -13,23 +13,38 @@ import { FlowBuilderCustomEdge } from './components/flowbuilder.custom.edge';
 import { FlowBuilderCardConstants } from './constants/flowbuilder.constant';
 import { useFlowBuilder } from './flowbuilder.context';
 
-const edgeTypes: any = { custom_edge: FlowBuilderCustomEdge };
-
-const nodeTypes = Object.fromEntries(
-    Object.entries(FlowBuilderCardConstants).map(([key, value]) => [
-        value.identifier,
-        value.nodeComponent,
-    ])
-);
-
 const FlowBuilderMain = () => {
-    const { nodes, onEdgesChange, edges, setEdges, onNodesChange } =
-        useFlowBuilder();
+    const {
+        nodes,
+        onEdgesChange,
+        edges,
+        setEdges,
+        onNodesChange,
+        updateEdgeData,
+    } = useFlowBuilder();
 
     const onConnect = useCallback(
         (params) =>
             setEdges((eds) => addEdge({ ...params, type: 'custom_edge' }, eds)),
         [setEdges]
+    );
+
+    const edgeTypes: any = useMemo(
+        () => ({
+            custom_edge: FlowBuilderCustomEdge,
+        }),
+        []
+    );
+
+    const nodeTypes = useMemo(
+        () =>
+            Object.fromEntries(
+                Object.entries(FlowBuilderCardConstants).map(([key, value]) => [
+                    value.identifier,
+                    value.nodeComponent,
+                ])
+            ),
+        []
     );
 
     return (
@@ -41,7 +56,14 @@ const FlowBuilderMain = () => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 nodeTypes={nodeTypes}
-                edgeTypes={edgeTypes} // Add Custom Edge Here
+                edgeTypes={edgeTypes}
+                onEdgeMouseEnter={(_, edge) => {
+                    updateEdgeData(edge.id, { isHovered: true });
+                }}
+                onEdgeMouseLeave={(_, edge) => {
+                    updateEdgeData(edge.id, { isHovered: false });
+                }}
+                fitView
             >
                 <Controls />
                 <MiniMap />

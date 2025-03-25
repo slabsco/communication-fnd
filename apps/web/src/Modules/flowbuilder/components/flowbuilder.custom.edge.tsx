@@ -6,6 +6,8 @@ import {
     useReactFlow,
 } from 'reactflow';
 
+import { cn } from '@finnoto/design-system';
+
 export const FlowBuilderCustomEdge = ({
     id,
     sourceX,
@@ -23,6 +25,8 @@ export const FlowBuilderCustomEdge = ({
     });
 
     const { setEdges } = useReactFlow(); // React Flow's hook for state management
+
+    const isHovered = data?.isHovered;
 
     const isTrueCondition = id?.includes('condition-true');
     const isFalseCondition = id?.includes('condition-false');
@@ -52,21 +56,15 @@ export const FlowBuilderCustomEdge = ({
             {/* Delete Button as Edge Label */}
             <EdgeLabelRenderer>
                 <div
+                    className={cn(
+                        'opacity-0 bg-base-100 transition-all hover:bg-error hover:!text-error-content  text-error p-[6px_12px] rounded-[12px] border border-error shadow-[0_2px_5px_rgba(0,0,0,0.15)] text-[12px] flex items-center gap-[4px] cursor-pointer pointer-events-auto',
+                        {
+                            'opacity-100': isHovered,
+                        }
+                    )}
                     style={{
                         position: 'absolute',
                         transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-                        background: '#fff',
-                        color: '#E53935',
-                        padding: '6px 12px',
-                        borderRadius: '12px',
-                        border: '1px solid #E53935',
-                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)',
-                        fontSize: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        cursor: 'pointer',
-                        pointerEvents: 'all', // Ensures it's clickable
                     }}
                     onClick={handleDelete}
                 >

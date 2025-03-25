@@ -23,6 +23,7 @@ interface FlowBuilderContextType {
     getNodeData: (nodeId: string) => FlowNode | undefined; // New method to get node data
     addEdge: (edge: FlowEdge) => void;
     updateEdge: (edge: FlowEdge) => void;
+    updateEdgeData: (edgeId: string, newData: any) => void; // New method to update edge data
     addMultipleNodes: (newNodes: FlowNode[]) => void; // New method to add multiple nodes
     addMultipleEdges: (newEdges: FlowEdge[]) => void; // New method to add multiple edges
     getAllData: () => { nodes: FlowNode[]; edges: FlowEdge[] }; // New method to get all node and edge data
@@ -43,6 +44,7 @@ const FlowBuilderContext = createContext<FlowBuilderContextType>({
     getNodeData: () => undefined, // Default implementation
     addEdge: () => {},
     updateEdge: () => {},
+    updateEdgeData: () => {}, // Default implementation
     addMultipleNodes: () => {}, // Default implementation
     addMultipleEdges: () => {}, // Default implementation
     getAllData: () => ({ nodes: [], edges: [] }), // Default implementation
@@ -96,6 +98,16 @@ export const FlowBuilderProvider = ({ children, rawJsonData }) => {
         );
     };
 
+    const updateEdgeData = (edgeId: string, newData: any) => {
+        setEdges((edges) =>
+            edges.map((edge) =>
+                edge.id === edgeId
+                    ? { ...edge, data: { ...edge.data, ...newData } }
+                    : edge
+            )
+        );
+    };
+
     const addMultipleNodes = (newNodes: FlowNode[]) => {
         setNodes((prevNodes) => {
             return [...prevNodes, ...newNodes];
@@ -133,6 +145,7 @@ export const FlowBuilderProvider = ({ children, rawJsonData }) => {
         getNodeData, // Added to values
         addEdge,
         updateEdge,
+        updateEdgeData, // Added to values
         addMultipleNodes,
         addMultipleEdges,
         getAllData, // Added to values
