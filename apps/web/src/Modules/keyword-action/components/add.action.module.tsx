@@ -1,9 +1,11 @@
+import { BotIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import { useList, useUpdateEffect } from 'react-use';
 
 import { IsEmptyArray } from '@finnoto/core';
 import { BusinessUserController } from '@finnoto/core/src/backend/common/controllers/business.user.controller';
+import { ChatbotFLowController } from '@finnoto/core/src/backend/communication/controller/chatbot.flow.controller';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { ActionTypeEnum } from '@finnoto/core/src/backend/communication/controller/keyword.details.controller';
 import { Button, cn, IconButton } from '@finnoto/design-system';
@@ -290,6 +292,60 @@ const AddActionsModule = ({
                     sanitizeParameter={(data) => {
                         return {
                             message: data?.message,
+                        };
+                    }}
+                />
+            ),
+        },
+        {
+            name: 'Trigger Chatbot',
+            key: ActionTypeEnum?.CHATBOT,
+            components: (
+                <GenericActionComponent
+                    actionName='Trigger Chatbot'
+                    type_id={ActionTypeEnum?.CHATBOT}
+                    selectedActions={getActionDetail(ActionTypeEnum?.CHATBOT)}
+                    setSelectedActions={(action, remove) => {
+                        if (remove) handleRemove(action);
+                        handleSetAction(action, true);
+                    }}
+                    renderDetailComponent={(data: any) => {
+                        const props = data?.parameters;
+                        return (
+                            <div className='flex items-center p-4 bg-white rounded-lg border border-gray-200 shadow-md'>
+                                <div className='flex items-center'>
+                                    <BotIcon className='mr-2 w-8 h-8 text-success' />
+                                    <p className='text-lg font-semibold text-gray-800'>
+                                        Chatbot:
+                                    </p>
+                                </div>
+                                <div className='ml-4'>
+                                    <p className='text-gray-600 text-md'>
+                                        {props?.name}
+                                    </p>
+                                </div>
+                            </div>
+                        );
+                    }}
+                    schema={{
+                        chatbot_id: {
+                            type: 'reference_select',
+                            controller: ChatbotFLowController,
+                            label: 'Chatbot',
+                            placeholder: 'Select chatbot',
+                            required: true,
+                            autoSelectZeroth: true,
+                        },
+                    }}
+                    sanitizeInitialData={(actions) => {
+                        return {
+                            ...actions,
+                            chatbot_id: actions?.parameters?.id,
+                        };
+                    }}
+                    sanitizeParameter={(data) => {
+                        return {
+                            chatbot_id: data?.chatbot_id,
                         };
                     }}
                 />

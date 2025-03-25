@@ -1,3 +1,4 @@
+import { BotIcon } from 'lucide-react';
 import Image from 'next/image';
 
 import {
@@ -214,6 +215,22 @@ const ActionDetailModals = ({ id }: { id: number }) => {
                     <p className='font-medium'>Send Normal message</p>
                     <div className='p-2 mt-2 bg-gray-300 rounded col-flex'>
                         {detail?.action?.parameters?.message}
+                    </div>
+                </div>
+            );
+        if (detail?.action?.type_id === ActionTypeEnum.CHATBOT)
+            return (
+                <div className='gap-1 p-2 m-2 bg-gray-100 rounded col-flex'>
+                    <div className='flex items-center'>
+                        <BotIcon className='mr-2 w-8 h-8 text-success' />
+                        <p className='text-lg font-semibold text-gray-800'>
+                            Chatbot:
+                        </p>
+                    </div>
+                    <div className='ml-4'>
+                        <p className='text-gray-600 text-md'>
+                            {detail?.action?.parameters?.name}
+                        </p>
                     </div>
                 </div>
             );
