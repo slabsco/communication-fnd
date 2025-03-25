@@ -52,11 +52,18 @@ const FlowBuilderMain = () => {
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
+                // onConnectEnd={(event) => {
+                //     console.log(event);
+                // }}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
+                connectionLineStyle={{
+                    strokeWidth: 3,
+                    stroke: 'blue',
+                }}
                 onEdgeMouseEnter={(_, edge) => {
                     updateEdgeData(edge.id, { isHovered: true });
                 }}
