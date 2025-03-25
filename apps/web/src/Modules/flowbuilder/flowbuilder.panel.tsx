@@ -6,14 +6,15 @@ import { useFlowBuilder } from './flowbuilder.context';
 import { CreateNewNode } from './utils/flowbuilder.common.utils';
 
 const FlowBuilderPanel = () => {
-    const { addMultipleNodes } = useFlowBuilder();
+    const { addMultipleNodes, nodes } = useFlowBuilder();
 
     const addNode = (component: FlowBuilderPanelCardType) => {
         const node = CreateNewNode({
             component: component,
         });
 
-        addMultipleNodes([node]);
+        if (nodes?.length) return addMultipleNodes([node]);
+        addMultipleNodes([{ ...node, isStartingStep: true } as any]);
     };
 
     return (

@@ -2,6 +2,7 @@ import { ReactNode, useMemo } from 'react';
 
 import { IsUndefinedOrNull } from '@finnoto/core';
 import {
+    Badge,
     Button,
     cn,
     DropdownMenu,
@@ -38,7 +39,9 @@ export const CommonNodeComponentContainer = ({
     actions?: DropdownMenuActionProps[];
     children: ReactNode;
 }) => {
-    const { addMultipleNodes, deleteNode, getNodeData } = useFlowBuilder();
+    const { addMultipleNodes, deleteNode, getNodeData, setStartingStep } =
+        useFlowBuilder();
+
     const CONSTANT_DATA: any = FlowBuilderCardConstants[type];
 
     const onlyActions = useMemo(() => {
@@ -46,27 +49,34 @@ export const CommonNodeComponentContainer = ({
         return actions?.[0];
     }, [actions]);
 
+    const isStartingStep = useMemo(() => {
+        const data: any = getNodeData(id);
+        return data?.isStartingStep;
+    }, [getNodeData, id]);
+
     return (
-        <div className='overflow-hidden text-white bg-white rounded-xl shadow-md col-flex min-w-[200px] max-w-[400px]'>
+        <div className=' text-white bg-white rounded-xl shadow-md col-flex min-w-[200px] max-w-[400px] relative'>
             <div
                 className={cn(
-                    'flex gap-3 justify-between items-center px-3 py-2 hover:cursor-move',
+                    'flex gap-3 rounded-t-lg justify-between items-center px-3 py-2 hover:cursor-move',
                     CONSTANT_DATA.color
                 )}
             >
                 <div className='flex gap-1 items-center'>
                     {CONSTANT_DATA?.icon}
-                    <p className='font-bold'>{CONSTANT_DATA?.title}</p>
+                    <div className='flex flex-1 gap-3 items-center'>
+                        <p className='font-bold'>{CONSTANT_DATA?.title}</p>
+                        {isStartingStep && (
+                            <Badge
+                                label={'Starting Step'}
+                                size='xs'
+                                appearance='polaris-tertiary'
+                            />
+                        )}
+                    </div>
                 </div>
                 <DropdownMenu
                     actions={[
-                        {
-                            name: 'Delete',
-                            action: () => {
-                                deleteNode?.(id);
-                            },
-                            isCancel: true,
-                        },
                         {
                             name: 'Copy',
                             action: () => {
@@ -83,6 +93,20 @@ export const CommonNodeComponentContainer = ({
                                     },
                                 ]);
                             },
+                        },
+                        {
+                            name: 'Set Starting Step',
+                            visible: !isStartingStep,
+                            action: () => {
+                                setStartingStep(id);
+                            },
+                        },
+                        {
+                            name: 'Delete',
+                            action: () => {
+                                deleteNode?.(id);
+                            },
+                            isCancel: true,
                         },
                     ]}
                     className='gap-2 mt-2'

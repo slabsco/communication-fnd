@@ -26,6 +26,7 @@ interface FlowBuilderContextType {
     addMultipleNodes: (newNodes: FlowNode[]) => void; // New method to add multiple nodes
     addMultipleEdges: (newEdges: FlowEdge[]) => void; // New method to add multiple edges
     getAllData: () => { nodes: FlowNode[]; edges: FlowEdge[] }; // New method to get all node and edge data
+    setStartingStep: (nodeId: string) => void; // New method to set a starting step
 }
 
 const FlowBuilderContext = createContext<FlowBuilderContextType>({
@@ -45,6 +46,7 @@ const FlowBuilderContext = createContext<FlowBuilderContextType>({
     addMultipleNodes: () => {}, // Default implementation
     addMultipleEdges: () => {}, // Default implementation
     getAllData: () => ({ nodes: [], edges: [] }), // Default implementation
+    setStartingStep: () => {}, // Default implementation
 });
 
 export const FlowBuilderProvider = ({ children, rawJsonData }) => {
@@ -108,6 +110,15 @@ export const FlowBuilderProvider = ({ children, rawJsonData }) => {
         return { nodes, edges }; // Return current nodes and edges
     };
 
+    const setStartingStep = (nodeId: string) => {
+        setNodes((prevNodes) =>
+            prevNodes.map((node) => ({
+                ...node,
+                isStartingStep: node.id === nodeId, // Only one node can be the starting step
+            }))
+        );
+    };
+
     const values = {
         nodes,
         setNodes,
@@ -125,6 +136,7 @@ export const FlowBuilderProvider = ({ children, rawJsonData }) => {
         addMultipleNodes,
         addMultipleEdges,
         getAllData, // Added to values
+        setStartingStep, // Added to values
     };
 
     return (
