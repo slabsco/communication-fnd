@@ -58,10 +58,18 @@ const SetConditionNodeType = ({ data, id, type }: CommonNodePropsTypes) => {
                 position={Position.Left}
                 className='bg-transparent'
             />
+
             <Handle
                 type='source'
+                id='condition-true'
                 position={Position.Right}
-                className='w-3 h-3 bg-blue-400 border-2 border-white'
+                className='bottom-1/3 w-3 h-3 border-2 border-white bg-success' // Handle for true condition
+            />
+            <Handle
+                type='source'
+                id='condition-false'
+                position={Position.Right}
+                className='top-1/3 w-3 h-3 border-2 border-white bg-error' // Handle for false condition
             />
         </CommonNodeComponentContainer>
     );

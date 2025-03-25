@@ -24,6 +24,9 @@ export const FlowBuilderCustomEdge = ({
 
     const { setEdges } = useReactFlow(); // React Flow's hook for state management
 
+    const isTrueCondition = id?.includes('condition-true');
+    const isFalseCondition = id?.includes('condition-false');
+
     // Handle delete functionality
     const handleDelete = () => {
         setEdges((edges) => edges.filter((edge) => edge.id !== id));
@@ -36,8 +39,12 @@ export const FlowBuilderCustomEdge = ({
                 path={edgePath}
                 markerEnd={markerEnd}
                 style={{
-                    stroke: '#A0A0A0',
-                    strokeWidth: 2,
+                    stroke: isTrueCondition
+                        ? 'green'
+                        : isFalseCondition
+                        ? 'red'
+                        : '#A0A0A0', // Changed to blue color
+                    strokeWidth: 3,
                     strokeDasharray: '4 4',
                 }}
             />
