@@ -5,7 +5,7 @@ import {
     CommonNodePropsTypes,
 } from '../components/flowbuilder.common';
 import { useFlowBuilder } from '../flowbuilder.context';
-import { openSetQuestionModal } from './set.question.modal';
+import { openListQuestionModal } from './set.list.question.modal';
 
 export const AskQuestionListNodeType = ({
     data,
@@ -23,8 +23,7 @@ export const AskQuestionListNodeType = ({
                 {
                     name: 'Manage',
                     action: () => {
-                        openSetQuestionModal({
-                            max: 10,
+                        openListQuestionModal({
                             data: data,
                             getData: (data) => {
                                 updateNodeData(id, data);
@@ -34,33 +33,54 @@ export const AskQuestionListNodeType = ({
                 },
             ]}
         >
-            <div className='p-2 text-primary min-h-12'>
+            <div className='p-2 text-primary min-h-12 min-w-[300px]'>
                 <div className='gap-2 col-flex'>
-                    {data?.html && (
-                        <div
-                            dangerouslySetInnerHTML={{ __html: data?.html }}
-                        ></div>
-                    )}
+                    <RenderHeaderBodyFooter
+                        body={data?.html}
+                        footer={data?.footer}
+                        header={data?.header}
+                    />
 
                     <div className='gap-2 col-flex'>
-                        {data?.answer?.map((_answer) => {
+                        {data?.sections?.map((_section) => {
                             return (
                                 <div
-                                    key={_answer?.id}
-                                    className='relative px-3 py-2 rounded bg-base-200'
+                                    key={_section?.id}
+                                    className='p-1 rounded bg-base-300'
                                 >
-                                    {_answer?.text}
-                                    <Handle
-                                        type='source'
-                                        position={Position.Right}
-                                        id={_answer.id}
-                                        className='w-3 h-3 bg-blue-400 border-2 border-white'
-                                        style={{
-                                            right: 1,
-                                            top: '50%',
-                                            transform: 'translateY(-50%)',
-                                        }}
-                                    />
+                                    {_section?.title}
+
+                                    <div className='gap-1 p-1 rounded col-flex bg-base-100'>
+                                        {_section?.rows?.map((_row) => {
+                                            return (
+                                                <div
+                                                    key={_row?.id}
+                                                    className='relative p-1 leading-3 rounded col-flex bg-primary text-primary-content'
+                                                >
+                                                    <p className='text-[10px]'>
+                                                        {_row.text}
+                                                    </p>
+                                                    <p className='text-base-tertiary text-[8px]'>
+                                                        {_row.description}
+                                                    </p>
+                                                    <Handle
+                                                        type='source'
+                                                        position={
+                                                            Position.Right
+                                                        }
+                                                        id={_row.id}
+                                                        className='w-3 h-3 bg-blue-400 border-2 border-white'
+                                                        style={{
+                                                            right: 1,
+                                                            top: '50%',
+                                                            transform:
+                                                                'translateY(-50%)',
+                                                        }}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             );
                         })}
@@ -76,5 +96,28 @@ export const AskQuestionListNodeType = ({
                 className='bg-transparent'
             />
         </CommonNodeComponentContainer>
+    );
+};
+
+const RenderHeaderBodyFooter = ({
+    header = '',
+    body = '',
+    footer = '',
+}: {
+    header: string;
+    body: string;
+    footer: string;
+}) => {
+    return (
+        <div className='gap-2 fol-flex'>
+            <div className='text-base font-semibold'>{header}</div>
+            {body && (
+                <div
+                    dangerouslySetInnerHTML={{ __html: body }}
+                    className='text-sm'
+                ></div>
+            )}
+            <div className='text-xs text-base-tertiary'>{footer}</div>
+        </div>
     );
 };

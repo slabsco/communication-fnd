@@ -9,13 +9,21 @@ import {
     ModalFooter,
 } from '@finnoto/design-system';
 
-import {
-    FlowBuilderAnswerOptions,
-    FlowBuilderQuestionModalHeader,
-} from '../components/flowbuilder.answer.options.component';
+import { FlowBuilderQuestionModalHeader } from '../components/flowbuilder.answer.options.component';
+import { FlowBuilderListAnswerOptions } from '../components/flowbuilder.list.answer.options.component';
 import FlowBuilderMessageComponent from '../components/flowbuilder.message.component';
 
-const SetQuestionModal = ({
+export interface Section {
+    id: string;
+    title: string;
+    rows: Array<{
+        id: string;
+        text: string;
+        description?: string; // Added description field
+    }>;
+}
+
+const SetListQuestionModal = ({
     data,
     getData,
     max,
@@ -24,24 +32,47 @@ const SetQuestionModal = ({
     data: any;
     max?: number;
 }) => {
+    console.log({ data });
+
     const [html, setHtml] = useState<any>(data?.html || '');
-    const [answer, setAnswer] = useState<any>(data?.answer || []);
     const [header, setHeader] = useState<string>(data?.header || '');
     const [footer, setFooter] = useState<string>(data?.footer || '');
+    const [buttonName, setButtonName] = useState<string>(
+        data?.buttonName || ''
+    );
+
+    const initialSections = data?.sections || [];
+
+    const [sections, setSections] = useState<Section[]>(
+        initialSections.length
+            ? initialSections
+            : [
+                  {
+                      id: Date.now().toString(),
+                      title: '',
+                      rows: [
+                          {
+                              id: Date.now().toString(),
+                              text: '',
+                              description: '',
+                          },
+                      ], // Added description field
+                  },
+              ]
+    );
 
     const sendData = () => {
         getData({
             html,
-            answer,
             header,
             footer,
+            sections,
+            buttonName,
         });
     };
 
     return (
-        <ModalContainer
-            title={max === 3 ? ' Add Question Button' : 'Add Question List'}
-        >
+        <ModalContainer title={'Add Lists'}>
             <ModalBody className='gap-3 col-flex'>
                 <div className='gap-2 col-flex'>
                     <FlowBuilderQuestionModalHeader name={'Header'} />
@@ -69,13 +100,20 @@ const SetQuestionModal = ({
                         }}
                     />
                 </div>
+                <div className='gap-2 col-flex'>
+                    <FlowBuilderQuestionModalHeader name={'Button Name'} />
+                    <InputField
+                        placeholder={'Enter your button name'}
+                        value={buttonName}
+                        onBlur={(val) => {
+                            setButtonName(val);
+                        }}
+                    />
+                </div>
 
-                <FlowBuilderAnswerOptions
-                    max={max}
-                    answers={answer}
-                    getAnswers={(answers) => {
-                        setAnswer(answers);
-                    }}
+                <FlowBuilderListAnswerOptions
+                    setSections={setSections}
+                    sections={sections}
                 />
 
                 {max && (
@@ -108,7 +146,7 @@ const SetQuestionModal = ({
     );
 };
 
-export const openSetQuestionModal = ({
+export const openListQuestionModal = ({
     data,
     getData,
     max,
@@ -118,7 +156,7 @@ export const openSetQuestionModal = ({
     max?: any;
 }) => {
     return Modal.open({
-        component: SetQuestionModal,
+        component: SetListQuestionModal,
         modalSize: 'sm',
         props: {
             max,
