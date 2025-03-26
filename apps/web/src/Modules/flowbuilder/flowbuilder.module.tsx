@@ -1,3 +1,5 @@
+import { useCallback } from 'react';
+
 import { CHATBOT_LIST_ROUTE, HOME_ROUTE, Navigation } from '@finnoto/core';
 import {
     ArcBreadcrumbs,
@@ -21,8 +23,6 @@ const FlowBuilderModule = ({
     onSave: (data: any) => Promise<void>;
     extraActions?: DropdownMenuActionProps[];
 }) => {
-    const { getAllData } = useFlowBuilder();
-
     return (
         <div className='flex overflow-hidden gap-3 items-center p-3 w-full h-content-screen'>
             <FlowBuilderProvider rawJsonData={rawJsonData}>
@@ -39,7 +39,8 @@ const FlowBuilderModule = ({
                             {
                                 name: 'Export Json',
                                 action: () => {
-                                    const data = getAllData();
+                                    const data = rawJsonData;
+
                                     const jsonData = JSON.stringify(
                                         data,
                                         null,
@@ -62,7 +63,10 @@ const FlowBuilderModule = ({
                         ]}
                     />
                     <FlowBuilderMain />
-                    <ActionComponent onSave={onSave} />
+                    <ActionComponent
+                        rawJsonData={rawJsonData}
+                        onSave={onSave}
+                    />
                 </div>
                 <FlowBuilderPanel />
             </FlowBuilderProvider>
@@ -74,8 +78,16 @@ export default FlowBuilderModule;
 
 const ActionComponent: React.FC<{
     onSave: (data: any) => Promise<void>;
-}> = ({ onSave }) => {
+    rawJsonData: any;
+}> = ({ onSave, rawJsonData }) => {
     const { getAllData } = useFlowBuilder();
+
+    const hasNodeChanged = useCallback(
+        (updatedJson: any) => {
+            return JSON.stringify(rawJsonData) !== JSON.stringify(updatedJson);
+        },
+        [rawJsonData]
+    );
 
     return (
         <div className='flex gap-3 justify-end p-3 w-full rounded shadow-lg bg-base-100'>
@@ -84,6 +96,11 @@ const ActionComponent: React.FC<{
                 size='sm'
                 defaultMinWidth
                 onClick={() => {
+                    const data = getAllData();
+                    const hasChanged = hasNodeChanged(data);
+
+                    if (!hasChanged) return Navigation.back();
+
                     ConfirmUtil({
                         isArc: true,
                         appearance: 'warning',

@@ -48,7 +48,7 @@ export const FlowBuilderCustomEdge = ({
                         : isFalseCondition
                         ? 'red'
                         : '#A0A0A0', // Changed to blue color
-                    strokeWidth: 3,
+                    strokeWidth: 2,
                     strokeDasharray: '4 4',
                 }}
             />
