@@ -52,9 +52,6 @@ const FlowBuilderMain = () => {
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
-                // onConnectEnd={(event) => {
-                //     console.log(event);
-                // }}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
