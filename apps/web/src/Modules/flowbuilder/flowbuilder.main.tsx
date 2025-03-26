@@ -70,7 +70,7 @@ const FlowBuilderMain = () => {
                 fitView
             >
                 <Controls />
-                <MiniMap />
+                <MiniMap zoomable pannable nodeColor='#3498db' />
                 <Background variant={BackgroundVariant.Cross} />
             </ReactFlow>
         </div>
