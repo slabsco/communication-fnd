@@ -1,9 +1,10 @@
 import {
+    Circle,
     Clock,
-    FileQuestion,
-    MailQuestion,
+    Equal,
+    List,
     MessageCircleIcon,
-    ShieldQuestionIcon,
+    ShieldQuestion,
     UserIcon,
 } from 'lucide-react';
 
@@ -27,7 +28,7 @@ export const FlowBuilderCardConstants = {
     ask_question: {
         identifier: 'ask_question',
         title: 'Question',
-        icon: <MailQuestion size={18} />, // Existing icon for Question
+        icon: <ShieldQuestion size={18} />, // Existing icon for Question
         description: 'Ask any thing to the user',
         color: 'bg-orange',
         nodeComponent: AskQuestionNodeType,
@@ -35,7 +36,7 @@ export const FlowBuilderCardConstants = {
     ask_question_button: {
         identifier: 'ask_question_button',
         title: 'Buttons',
-        icon: <MessageCircleIcon size={18} />, // Existing icon for Question
+        icon: <Circle size={18} />, // Existing icon for Question
         description: 'Choices based on buttons (Maximum of 3 choices)',
         color: 'bg-orange',
         nodeComponent: AskQuestionButtonNodeType,
@@ -43,7 +44,7 @@ export const FlowBuilderCardConstants = {
     ask_question_list: {
         identifier: 'ask_question_list',
         title: 'List',
-        icon: <ShieldQuestionIcon size={18} />, // Updated icon for List
+        icon: <List size={18} />, // Updated icon for List
         description: 'Choices based on buttons (Maximum of 10 choices)',
         color: 'bg-orange',
         nodeComponent: AskQuestionListNodeType,
@@ -51,7 +52,7 @@ export const FlowBuilderCardConstants = {
     set_condition: {
         identifier: 'set_condition',
         title: 'Set a condition',
-        icon: <FileQuestion size={18} />,
+        icon: <Equal size={18} />,
         description: 'Send message(s) based on logical condition(s)',
         color: 'bg-red-500',
         nodeComponent: SetConditionNodeType,
