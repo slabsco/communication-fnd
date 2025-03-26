@@ -32,8 +32,6 @@ const SetListQuestionModal = ({
     data: any;
     max?: number;
 }) => {
-    console.log({ data });
-
     const [html, setHtml] = useState<any>(data?.html || '');
     const [header, setHeader] = useState<string>(data?.header || '');
     const [footer, setFooter] = useState<string>(data?.footer || '');
@@ -77,7 +75,7 @@ const SetListQuestionModal = ({
 
     return (
         <ModalContainer title={'Add Lists'}>
-            <ModalBody className='gap-3 col-flex'>
+            <ModalBody className='gap-3 col-flex max-h-[80vh]'>
                 <div className='gap-2 col-flex'>
                     <FlowBuilderQuestionModalHeader name={'Header'} />
                     <InputField
@@ -175,7 +173,7 @@ export const openListQuestionModal = ({
 }) => {
     return Modal.open({
         component: SetListQuestionModal,
-        modalSize: 'sm',
+        modalSize: 'md',
         props: {
             max,
             data,

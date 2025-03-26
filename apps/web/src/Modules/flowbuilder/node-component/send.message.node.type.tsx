@@ -57,6 +57,12 @@ export const SendMessageNode = ({ data, id, type }: CommonNodePropsTypes) => {
                         addComponent('image');
                     },
                 },
+                // {
+                //     name: 'Add Document',
+                //     action: () => {
+                //         addComponent('document');
+                //     },
+                // },
             ]}
         >
             <div className='gap-2 px-2 py-4 col-flex'>
@@ -87,6 +93,10 @@ export const SendMessageNode = ({ data, id, type }: CommonNodePropsTypes) => {
                     element={(index, value) => {
                         return (
                             <SingleFileUploader
+                                accept={{
+                                    'image/jpeg': [],
+                                    'image/png': [],
+                                }}
                                 value={
                                     value?.data?.document_url
                                         ? [value?.data]

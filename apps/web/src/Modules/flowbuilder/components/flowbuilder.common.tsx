@@ -55,7 +55,7 @@ export const CommonNodeComponentContainer = ({
     }, [getNodeData, id]);
 
     return (
-        <div className=' text-white bg-white rounded-xl shadow-md col-flex min-w-[200px] max-w-[400px] relative'>
+        <div className=' text-white bg-white rounded-xl shadow-xl col-flex min-w-[200px] max-w-[400px] relative'>
             <div
                 className={cn(
                     'flex gap-3 rounded-t-lg justify-between items-center px-3 py-2 hover:cursor-move',
