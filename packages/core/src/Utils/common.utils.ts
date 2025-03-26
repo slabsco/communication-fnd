@@ -1001,7 +1001,9 @@ export const getPanNumberFromGstin = (gstin: string) => {
 
 export const toastBackendError = (response: any, defaultMessage?: string) => {
     if (response?.message || (!response?.columns && !!defaultMessage)) {
-        Toast.error({ description: response?.message || defaultMessage });
+        Toast.error({
+            description: response?.message || defaultMessage,
+        });
     }
     if (response?.columns) {
         Object.values(response?.columns).forEach((column: any[]) => {

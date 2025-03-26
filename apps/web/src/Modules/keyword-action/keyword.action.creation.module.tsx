@@ -48,8 +48,6 @@ const KeywordActionCreationModule = ({
         if (data) Navigation.navigate({ url: KEYWORD_ACTION_LIST_ROUTE });
     };
 
-    console.log({ action_ids });
-
     const isSubmitDisabled = useMemo(() => {
         if (keywords?.length && action_ids?.length) return false;
         return true;

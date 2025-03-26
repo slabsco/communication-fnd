@@ -24,6 +24,11 @@ export class CommunicationTemplateController extends BaseModel {
 
         return this.get();
     }
+
+    async remove(id: number) {
+        this.api = `${this.endPoint}/${id}`;
+        return this.delete();
+    }
     async create() {
         this.api = `${this.endPoint}`;
         this.bodyDto = WhatsappTemplateCreationDto;

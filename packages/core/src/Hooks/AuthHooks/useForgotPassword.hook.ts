@@ -36,7 +36,7 @@ export const useForgotPassword = () => {
 
         const { success } = await FetchData({
             className: AuthUser,
-            method: 'forgotPassword',
+            method: 'sendForgetPasswordEmail',
             classParams: { email },
         });
         if (success) {
@@ -48,7 +48,7 @@ export const useForgotPassword = () => {
     const reSendOtp = async () => {
         const { success } = await FetchData({
             className: AuthUser,
-            method: 'forgotPassword',
+            method: 'sendForgetPasswordEmail',
             classParams: { email },
         });
         if (success) {

@@ -84,6 +84,7 @@ import { MessageSectionPreview } from '../broadcast/your-templates/components/Yo
 import { openAddContactForm } from '../contact/add.contact.modal.form';
 import { openQuickReplySelect } from '../quickreply/quick.reply.select.list';
 import { addAssignee } from './add.assignee.form.util';
+import { openTriggerChatbotResponse } from './modal/TriggerChatbotResponse.modal';
 
 import {
     ArcMessageSvgIcon,
@@ -93,6 +94,7 @@ import {
     FileDownloadSvgIcon,
     MoreIcon,
     ReplySvgICon,
+    RobotSvgIcon,
 } from 'assets';
 
 const TeamInboxModuleDetail = () => {
@@ -740,6 +742,23 @@ const MessageChat = ({ data }) => {
         setFiles,
     ]);
 
+    const triggerChatbotAction = useCallback(
+        async (chatbot_id: number) => {
+            const { success, response } = await FetchData({
+                className: TeamInboxController,
+                method: 'triggerChatbot',
+                methodParams: { id: data?.id, chatbot_id },
+            });
+
+            if (!success) return toastBackendError(response);
+
+            setInput('');
+            setFiles([]);
+            invalidateMessage();
+        },
+        [data?.id, invalidateMessage, setFiles]
+    );
+
     const handleKeyPress = useCallback(
         (e: KeyboardEvent) => {
             if (
@@ -854,6 +873,19 @@ const MessageChat = ({ data }) => {
                         onClick={sendTemplateMessage}
                         outline
                         appearance='polaris-transparent'
+                    />
+
+                    <IconButton
+                        name='Trigger Chatbot'
+                        icon={RobotSvgIcon}
+                        onClick={() => {
+                            openTriggerChatbotResponse({
+                                onTrigger: (id) => {
+                                    triggerChatbotAction(id);
+                                },
+                            });
+                        }}
+                        appearance='plain'
                     />
 
                     <CommonFileUploader

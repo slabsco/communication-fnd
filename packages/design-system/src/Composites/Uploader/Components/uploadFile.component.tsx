@@ -43,8 +43,6 @@ export const UplodedFile = ({
         },
     ];
 
-    console.log(file);
-
     return (
         <div className='flex overflow-hidden gap-4 justify-between items-center px-4 py-2 text-xs rounded border bg-base-100 border-base-300'>
             <div className='flex overflow-hidden gap-3 items-center'>

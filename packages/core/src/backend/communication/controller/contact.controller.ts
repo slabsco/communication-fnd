@@ -37,6 +37,13 @@ export class ContactController extends BaseModel {
         return this.post();
     }
 
+    async findContactAttributes() {
+        this.api = `${this.endPoint}/find-contact-attributes`;
+        this.bodyDto = StringSearchDto;
+
+        return this.post();
+    }
+
     async findAttributes() {
         this.api = `${this.endPoint}/find`;
         this.bodyDto = StringSearchDto;
