@@ -5,6 +5,7 @@ import {
     CommonNodePropsTypes,
 } from '../components/flowbuilder.common';
 import { useFlowBuilder } from '../flowbuilder.context';
+import { RenderHeaderBodyFooter } from './ask.question.list.node.type';
 import { openSetQuestionModal } from './set.question.modal';
 
 export const AskQuestionNodeType = ({
@@ -35,11 +36,11 @@ export const AskQuestionNodeType = ({
         >
             <div className='p-2 text-primary min-h-12'>
                 <div className='gap-2 col-flex'>
-                    {data?.html && (
-                        <div
-                            dangerouslySetInnerHTML={{ __html: data?.html }}
-                        ></div>
-                    )}
+                    <RenderHeaderBodyFooter
+                        body={data?.html}
+                        footer={data?.footer}
+                        header={data?.header}
+                    />
 
                     <div className='gap-2 col-flex'>
                         {data?.answer?.map((_answer) => {

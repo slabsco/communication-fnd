@@ -1,4 +1,6 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useMemo } from 'react';
+
+import { AccessNestedObject } from '@finnoto/core';
 
 import {
     useEdgesState,
@@ -28,6 +30,7 @@ interface FlowBuilderContextType {
     addMultipleEdges: (newEdges: FlowEdge[]) => void; // New method to add multiple edges
     getAllData: () => { nodes: FlowNode[]; edges: FlowEdge[] }; // New method to get all node and edge data
     setStartingStep: (nodeId: string) => void; // New method to set a starting step
+    chatVariables: any[]; // Added chatVariables to context type
 }
 
 const FlowBuilderContext = createContext<FlowBuilderContextType>({
@@ -49,6 +52,7 @@ const FlowBuilderContext = createContext<FlowBuilderContextType>({
     addMultipleEdges: () => {}, // Default implementation
     getAllData: () => ({ nodes: [], edges: [] }), // Default implementation
     setStartingStep: () => {}, // Default implementation
+    chatVariables: [], // Default implementation
 });
 
 export const FlowBuilderProvider = ({ children, rawJsonData }) => {
@@ -131,6 +135,14 @@ export const FlowBuilderProvider = ({ children, rawJsonData }) => {
         );
     };
 
+    const chatVariables = useMemo(() => {
+        return nodes.flatMap((node) => {
+            const data = AccessNestedObject(node, 'data.variableName', null);
+            if (!data) return [];
+            return { variableName: data, node };
+        });
+    }, [nodes]);
+
     const values = {
         nodes,
         setNodes,
@@ -150,6 +162,7 @@ export const FlowBuilderProvider = ({ children, rawJsonData }) => {
         addMultipleEdges,
         getAllData, // Added to values
         setStartingStep, // Added to values
+        chatVariables, // Added chatVariables to values
     };
 
     return (

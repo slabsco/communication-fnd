@@ -28,6 +28,9 @@ const SetQuestionModal = ({
     const [answer, setAnswer] = useState<any>(data?.answer || []);
     const [header, setHeader] = useState<string>(data?.header || '');
     const [footer, setFooter] = useState<string>(data?.footer || '');
+    const [variableName, setVariableName] = useState<string>(
+        data?.variableName || ''
+    );
 
     const sendData = () => {
         getData({
@@ -35,6 +38,7 @@ const SetQuestionModal = ({
             answer,
             header,
             footer,
+            variableName,
         });
     };
 
@@ -83,6 +87,19 @@ const SetQuestionModal = ({
                         Only {max} answer are allowed!
                     </div>
                 )}
+                <div className='gap-2 col-flex'>
+                    <FlowBuilderQuestionModalHeader
+                        name={'Save Answer in Variable'}
+                    />
+                    <InputField
+                        prefix='@'
+                        placeholder={'ex: age'}
+                        value={variableName}
+                        onBlur={(val) => {
+                            setVariableName(val);
+                        }}
+                    />
+                </div>
             </ModalBody>
             <ModalFooter className='py-4 justify'>
                 <div className='flex-1 gap-4 row-flex'>

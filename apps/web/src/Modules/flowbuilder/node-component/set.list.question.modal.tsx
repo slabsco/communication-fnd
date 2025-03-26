@@ -37,6 +37,9 @@ const SetListQuestionModal = ({
     const [html, setHtml] = useState<any>(data?.html || '');
     const [header, setHeader] = useState<string>(data?.header || '');
     const [footer, setFooter] = useState<string>(data?.footer || '');
+    const [variableName, setVariableName] = useState<string>(
+        data?.variableName || ''
+    );
     const [buttonName, setButtonName] = useState<string>(
         data?.buttonName || ''
     );
@@ -68,6 +71,7 @@ const SetListQuestionModal = ({
             footer,
             sections,
             buttonName,
+            variableName,
         });
     };
 
@@ -115,6 +119,20 @@ const SetListQuestionModal = ({
                     setSections={setSections}
                     sections={sections}
                 />
+
+                <div className='gap-2 col-flex'>
+                    <FlowBuilderQuestionModalHeader
+                        name={'Save Answer in Variable'}
+                    />
+                    <InputField
+                        prefix='@'
+                        placeholder={'ex: age'}
+                        value={variableName}
+                        onBlur={(val) => {
+                            setVariableName(val);
+                        }}
+                    />
+                </div>
 
                 {max && (
                     <div className='text-warning'>

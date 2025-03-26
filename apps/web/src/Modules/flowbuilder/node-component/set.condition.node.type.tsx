@@ -2,18 +2,21 @@ import { useState } from 'react';
 import { useList } from 'react-use';
 import { Handle, Position } from 'reactflow';
 
-import { IsEmptyObject } from '@finnoto/core';
-import { BusinessUserController } from '@finnoto/core/src/backend/common/controllers/business.user.controller';
+import { FetchData, IsEmptyObject, useQuery } from '@finnoto/core';
+import { ContactController } from '@finnoto/core/src/backend/communication/controller/contact.controller';
 import {
     BasicFilterButton,
     Button,
+    GroupedOption,
+    InputField,
     Modal,
     ModalBody,
     ModalContainer,
     ModalFooter,
-    ReferenceSelectBox,
     SelectBox,
+    Switch,
 } from '@finnoto/design-system';
+import { Label } from '@finnoto/design-system/src/Components/Inputs/InputField/label.component';
 
 import {
     CommonNodeComponentContainer,
@@ -22,7 +25,7 @@ import {
 import { useFlowBuilder } from '../flowbuilder.context';
 
 const SetConditionNodeType = ({ data, id, type }: CommonNodePropsTypes) => {
-    const { updateNodeData } = useFlowBuilder();
+    const { updateNodeData, chatVariables } = useFlowBuilder();
 
     return (
         <CommonNodeComponentContainer
@@ -34,6 +37,7 @@ const SetConditionNodeType = ({ data, id, type }: CommonNodePropsTypes) => {
                     name: 'Manage Condition',
                     action: () => {
                         openConditionModal({
+                            chatVariables: chatVariables,
                             onConditionUpdate: (data) => {
                                 updateNodeData(id, data);
                             },
@@ -77,11 +81,16 @@ const SetConditionNodeType = ({ data, id, type }: CommonNodePropsTypes) => {
 
 export default SetConditionNodeType;
 
-const openConditionModal = ({ onConditionUpdate, initialCondition }: any) => {
+const openConditionModal = ({
+    onConditionUpdate,
+    initialCondition,
+    chatVariables,
+}: any) => {
     return Modal.open({
         component: ConditionModal,
         modalSize: 'xs',
         props: {
+            chatVariables,
             initialData: initialCondition,
             onConditionUpdate: (data) => {
                 onConditionUpdate?.(data);
@@ -95,14 +104,17 @@ type conditionType = {
     first_value: string;
     operator: string;
     second_value: string;
+    is_second_variable: boolean;
 };
 
 const ConditionModal = ({
     onConditionUpdate,
     initialData,
+    chatVariables,
 }: {
     onConditionUpdate: (data: any) => void;
-    initialData;
+    initialData: any;
+    chatVariables: any;
 }) => {
     const defaultData = initialData?.condition;
     const [condition, { removeAt, updateAt, push }] = useList<conditionType>(
@@ -111,6 +123,7 @@ const ConditionModal = ({
                 first_value: '',
                 operator: 'not_equal',
                 second_value: '',
+                is_second_variable: false,
             },
         ]
     );
@@ -122,8 +135,11 @@ const ConditionModal = ({
             first_value: '',
             operator: 'not_equal',
             second_value: '',
+            is_second_variable: false,
         });
     };
+
+    console.log({ condition });
 
     const isMultiple = condition?.length > 1;
 
@@ -137,6 +153,7 @@ const ConditionModal = ({
             <ModalBody>
                 <div className='gap-3 col-flex'>
                     <MainConditionComponent
+                        chatVariables={chatVariables}
                         updatedCondition={(updatedCond) => {
                             updateAt(0, updatedCond);
                         }}
@@ -163,6 +180,7 @@ const ConditionModal = ({
                                 ]}
                             />
                             <MainConditionComponent
+                                chatVariables={chatVariables}
                                 updatedCondition={(updatedCond) => {
                                     updateAt(1, updatedCond);
                                 }}
@@ -205,23 +223,55 @@ const ConditionModal = ({
 const MainConditionComponent = ({
     updatedCondition,
     condition,
+    chatVariables,
 }: {
     updatedCondition: (condition: any) => void;
     condition: conditionType;
+    chatVariables: any;
 }) => {
+    const { data, isLoading } = useQuery({
+        queryKey: ['business_custom_attributes'],
+        queryFn: async () => {
+            const { response, success } = await FetchData({
+                className: ContactController,
+                method: 'findContactAttributes',
+            });
+            if (success) return response;
+            return [];
+        },
+    });
+
+    const groupedSelectBoxOptions: GroupedOption[] = [
+        {
+            label: 'Contact Attributes',
+            options: data?.map((_var) => {
+                return {
+                    value: _var.key,
+                    label: _var.key,
+                    subLabel: _var?.value,
+                };
+            }),
+        },
+        {
+            label: 'Chat Variables',
+            options: chatVariables?.map((_var) => ({
+                value: _var.variableName,
+                label: _var.variableName,
+                subLabel: _var?.node?.type,
+            })),
+        },
+    ];
     return (
         <div className='flex gap-3 items-center p-3 col-flex bg-base-200'>
-            <ReferenceSelectBox
+            <SelectBox
+                isLoading={isLoading}
                 prefix={
                     <div className='px-3 py-1.5 rounded bg-primary text-primary-content -ml-1'>
                         IF
                     </div>
                 }
-                required
-                width={300}
-                controller={BusinessUserController}
-                isAsyncCreatable
                 placeholder='Select Variable or type'
+                width={300}
                 value={condition?.first_value}
                 onChange={(data) =>
                     updatedCondition({
@@ -229,10 +279,9 @@ const MainConditionComponent = ({
                         first_value: data?.value,
                     })
                 }
-                isClearable
-                labelKey='name'
-                sublabelKey={'email'}
+                options={groupedSelectBoxOptions}
             />
+
             <SelectBox
                 width={200}
                 value={condition?.operator}
@@ -257,23 +306,50 @@ const MainConditionComponent = ({
                     },
                 ]}
             />
-            <ReferenceSelectBox
-                required
-                width={300}
-                controller={BusinessUserController}
-                isAsyncCreatable
-                placeholder='Select Variable or type'
-                value={condition?.second_value}
-                onChange={(data) =>
-                    updatedCondition({
-                        ...condition,
-                        second_value: data?.value,
-                    })
-                }
-                isClearable
-                labelKey='name'
-                sublabelKey={'email'}
-            />
+
+            <div className='p-2 w-full bg-base-100 col-flex'>
+                <div className='flex gap-2 items-center'>
+                    <Label label='Variable' />
+                    <Switch
+                        checked={condition?.is_second_variable}
+                        onChange={(va) => {
+                            updatedCondition({
+                                ...condition,
+                                is_second_variable: va,
+                                second_value: undefined,
+                            });
+                        }}
+                    />
+                </div>
+                {condition?.is_second_variable ? (
+                    <SelectBox
+                        isLoading={isLoading}
+                        placeholder='Select Variable or type'
+                        width={270}
+                        value={condition?.second_value}
+                        isAsyncCreatable
+                        onChange={(data) =>
+                            updatedCondition({
+                                ...condition,
+                                second_value: data?.value,
+                            })
+                        }
+                        options={groupedSelectBoxOptions}
+                    />
+                ) : (
+                    <InputField
+                        width={100}
+                        placeholder={'Enter the value'}
+                        value={condition?.second_value}
+                        onBlur={(val) => {
+                            updatedCondition({
+                                ...condition,
+                                second_value: val,
+                            });
+                        }}
+                    />
+                )}
+            </div>
         </div>
     );
 };

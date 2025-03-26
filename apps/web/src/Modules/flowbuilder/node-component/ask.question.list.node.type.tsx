@@ -99,7 +99,7 @@ export const AskQuestionListNodeType = ({
     );
 };
 
-const RenderHeaderBodyFooter = ({
+export const RenderHeaderBodyFooter = ({
     header = '',
     body = '',
     footer = '',
