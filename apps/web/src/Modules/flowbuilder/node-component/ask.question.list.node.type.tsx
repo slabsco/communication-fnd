@@ -71,7 +71,7 @@ export const AskQuestionListNodeType = ({
                                                         id={_row.id}
                                                         className='w-3 h-3 bg-blue-400 border-2 border-white'
                                                         style={{
-                                                            right: 1,
+                                                            right: 2,
                                                             top: '50%',
                                                             transform:
                                                                 'translateY(-50%)',
