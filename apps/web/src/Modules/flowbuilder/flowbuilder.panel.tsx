@@ -10,17 +10,15 @@ const FlowBuilderPanel = () => {
     const { addMultipleNodes, nodes } = useFlowBuilder();
     const { availableNodes } = useFlowBuilderApi();
 
-    const mainComponent = Object.entries(availableNodes)?.flatMap(
-        ([Key, value]: any) => {
-            if (value?.type === 'main') return [value];
-            return [];
-        }
-    );
-    const operators = Object.entries(availableNodes)?.flatMap(
-        ([Key, value]: any) => {
-            if (value?.type === 'operators') return [value];
-            return [];
-        }
+    const { main: mainComponent, operators } = Object.entries(
+        availableNodes
+    ).reduce(
+        (acc, [key, value]: any) => {
+            if (value?.type === 'main') acc.main.push(value);
+            if (value?.type === 'operators') acc.operators.push(value);
+            return acc;
+        },
+        { main: [], operators: [] }
     );
 
     const addNode = (component: any) => {
@@ -29,7 +27,7 @@ const FlowBuilderPanel = () => {
         });
 
         if (nodes?.length) return addMultipleNodes([node]);
-        addMultipleNodes([{ ...node, isStartingStep: true } as any]);
+        addMultipleNodes([{ ...node } as any]);
     };
 
     return (
