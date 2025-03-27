@@ -1,6 +1,6 @@
 import { Handle, Position } from 'reactflow';
 
-import { DateTimePicker, InputField } from '@finnoto/design-system';
+import { InputField } from '@finnoto/design-system';
 
 import {
     CommonNodeComponentContainer,
@@ -13,7 +13,7 @@ export const AddTimeDelayNodeType = ({
     id,
     type,
 }: CommonNodePropsTypes) => {
-    const { updateNodeData } = useFlowBuilder();
+    const { updateNodeData, isValidCondition } = useFlowBuilder();
 
     return (
         <CommonNodeComponentContainer data={data} id={id} type={type}>
@@ -40,6 +40,9 @@ export const AddTimeDelayNodeType = ({
                 type='target'
                 position={Position.Left}
                 className='bg-transparent'
+                isValidConnection={(connection) => {
+                    return isValidCondition(connection?.source, 'source');
+                }}
             />
             <Handle
                 type='source'

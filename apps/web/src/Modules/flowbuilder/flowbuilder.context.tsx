@@ -1,6 +1,10 @@
 import { createContext, useContext, useMemo } from 'react';
 
-import { AccessNestedObject } from '@finnoto/core';
+import {
+    AccessNestedObject,
+    IsEmptyObject,
+    useChatbotNodes,
+} from '@finnoto/core';
 
 import {
     useEdgesState,
@@ -30,6 +34,10 @@ interface FlowBuilderContextType {
     addMultipleEdges: (newEdges: FlowEdge[]) => void; // New method to add multiple edges
     getAllData: () => { nodes: FlowNode[]; edges: FlowEdge[] }; // New method to get all node and edge data
     setStartingStep: (nodeId: string) => void; // New method to set a starting step
+    isValidCondition: (
+        sourceHandle: string,
+        key: 'source' | 'sourceHandle'
+    ) => boolean; // New method to validate condition
     chatVariables: any[]; // Added chatVariables to context type
 }
 
@@ -52,10 +60,13 @@ const FlowBuilderContext = createContext<FlowBuilderContextType>({
     addMultipleEdges: () => {}, // Default implementation
     getAllData: () => ({ nodes: [], edges: [] }), // Default implementation
     setStartingStep: () => {}, // Default implementation
+    isValidCondition: () => false, // Default implementation
     chatVariables: [], // Default implementation
 });
 
 export const FlowBuilderProvider = ({ children, rawJsonData }) => {
+    const { data: chatbotNodes, isLoading: isNodeLoading } = useChatbotNodes();
+
     const [nodes, setNodes, onNodesChange] = useNodesState<FlowNode>(
         rawJsonData?.nodes || []
     );
@@ -135,6 +146,14 @@ export const FlowBuilderProvider = ({ children, rawJsonData }) => {
         );
     };
 
+    const isValidCondition = (
+        sourceHandle: string,
+        key: 'source' | 'sourceHandle'
+    ) => {
+        const data = edges?.find((val) => val?.[key] === sourceHandle);
+        return IsEmptyObject(data);
+    };
+
     const chatVariables = useMemo(() => {
         return nodes.flatMap((node) => {
             const data = AccessNestedObject(node, 'data.variableName', null);
@@ -162,6 +181,7 @@ export const FlowBuilderProvider = ({ children, rawJsonData }) => {
         addMultipleEdges,
         getAllData, // Added to values
         setStartingStep, // Added to values
+        isValidCondition, // Added isValidCondition to values
         chatVariables, // Added chatVariables to values
     };
 

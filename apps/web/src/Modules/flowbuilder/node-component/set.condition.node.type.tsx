@@ -25,7 +25,8 @@ import {
 import { useFlowBuilder } from '../flowbuilder.context';
 
 const SetConditionNodeType = ({ data, id, type }: CommonNodePropsTypes) => {
-    const { updateNodeData, chatVariables } = useFlowBuilder();
+    const { updateNodeData, chatVariables, isValidCondition } =
+        useFlowBuilder();
 
     return (
         <CommonNodeComponentContainer
@@ -66,12 +67,24 @@ const SetConditionNodeType = ({ data, id, type }: CommonNodePropsTypes) => {
             <Handle
                 type='source'
                 id='condition-true'
+                isValidConnection={(connection) => {
+                    return isValidCondition(
+                        connection?.sourceHandle,
+                        'sourceHandle'
+                    );
+                }}
                 position={Position.Right}
                 className='bottom-1/3 w-3 h-3 border-2 border-white bg-success' // Handle for true condition
             />
             <Handle
                 type='source'
                 id='condition-false'
+                isValidConnection={(connection) => {
+                    return isValidCondition(
+                        connection?.sourceHandle,
+                        'sourceHandle'
+                    );
+                }}
                 position={Position.Right}
                 className='top-1/3 w-3 h-3 border-2 border-white bg-error' // Handle for false condition
             />

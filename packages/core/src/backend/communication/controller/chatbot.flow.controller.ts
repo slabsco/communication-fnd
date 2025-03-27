@@ -7,7 +7,7 @@ import {
 } from '../dto/create.chatbot.flow.dto';
 
 export class ChatbotFLowController extends BaseModel {
-    protected endPoint = 'api/b/chatbot-flow';
+    protected endPoint = 'api/b/chatbot';
 
     async list() {
         this.api = `${this.endPoint}/search`;

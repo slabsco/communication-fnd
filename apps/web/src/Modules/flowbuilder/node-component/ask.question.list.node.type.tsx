@@ -12,7 +12,7 @@ export const AskQuestionListNodeType = ({
     id,
     type,
 }: CommonNodePropsTypes) => {
-    const { updateNodeData } = useFlowBuilder();
+    const { updateNodeData, isValidCondition } = useFlowBuilder();
 
     return (
         <CommonNodeComponentContainer
@@ -68,6 +68,12 @@ export const AskQuestionListNodeType = ({
                                                         position={
                                                             Position.Right
                                                         }
+                                                        isValidConnection={() => {
+                                                            return isValidCondition(
+                                                                _row.id,
+                                                                'sourceHandle'
+                                                            );
+                                                        }}
                                                         id={_row.id}
                                                         className='w-3 h-3 bg-blue-400 border-2 border-white'
                                                         style={{

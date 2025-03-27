@@ -13,7 +13,7 @@ export const AskQuestionButtonNodeType = ({
     id,
     type,
 }: CommonNodePropsTypes) => {
-    const { updateNodeData } = useFlowBuilder();
+    const { updateNodeData, isValidCondition } = useFlowBuilder();
 
     return (
         <CommonNodeComponentContainer
@@ -55,6 +55,12 @@ export const AskQuestionButtonNodeType = ({
                                         type='source'
                                         position={Position.Right}
                                         id={_answer.id}
+                                        isValidConnection={(connection) => {
+                                            return isValidCondition(
+                                                connection.sourceHandle,
+                                                'sourceHandle'
+                                            );
+                                        }}
                                         className='w-3 h-3 bg-blue-400 border-2 border-white'
                                         style={{
                                             right: 1,

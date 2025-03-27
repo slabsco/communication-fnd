@@ -13,7 +13,7 @@ import { RenderMessagesComponent } from '../components/flowbuilder.render.messag
 import { useFlowBuilder } from '../flowbuilder.context';
 
 export const SendMessageNode = ({ data, id, type }: CommonNodePropsTypes) => {
-    const { updateNodeData } = useFlowBuilder();
+    const { updateNodeData, isValidCondition } = useFlowBuilder();
 
     const [component, { push, removeAt, updateAt }] = useList<any>(
         data?.data || []
@@ -118,10 +118,14 @@ export const SendMessageNode = ({ data, id, type }: CommonNodePropsTypes) => {
                 position={Position.Left}
                 className='bg-transparent'
             />
+
             <Handle
                 type='source'
                 position={Position.Right}
                 className='w-3 h-3 bg-red-500 border-2 border-white'
+                isValidConnection={(connection) => {
+                    return isValidCondition(connection?.source, 'source');
+                }}
             />
         </CommonNodeComponentContainer>
     );

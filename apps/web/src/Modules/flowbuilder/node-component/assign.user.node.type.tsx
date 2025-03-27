@@ -24,7 +24,7 @@ export const AssignUserNodeType = ({
     id,
     type,
 }: CommonNodePropsTypes) => {
-    const { updateNodeData } = useFlowBuilder();
+    const { updateNodeData, isValidCondition } = useFlowBuilder();
 
     return (
         <CommonNodeComponentContainer
@@ -63,6 +63,9 @@ export const AssignUserNodeType = ({
                 type='target'
                 position={Position.Left}
                 className='bg-transparent'
+                isValidConnection={(connection) => {
+                    return isValidCondition(connection.source, 'source');
+                }}
             />
             <Handle
                 type='source'
