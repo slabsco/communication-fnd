@@ -11,7 +11,7 @@ import * as NODE_COMPONENT from './node-component/index';
 
 import 'reactflow/dist/style.css';
 
-import { FlowBuilderCustomEdge } from './components/flowbuilder.custom.edge';
+import { custom_edge } from './edge-component';
 import { useFlowBuilderApi } from './flowbuilder.api.context';
 import { useFlowBuilder } from './flowbuilder.context';
 
@@ -35,7 +35,7 @@ const FlowBuilderMain = () => {
 
     const edgeTypes: any = useMemo(
         () => ({
-            custom_edge: FlowBuilderCustomEdge,
+            custom_edge,
         }),
         []
     );

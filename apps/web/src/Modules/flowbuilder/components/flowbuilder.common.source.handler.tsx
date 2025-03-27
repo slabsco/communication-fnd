@@ -4,7 +4,7 @@ import { useFlowBuilder } from '../flowbuilder.context';
 
 export const FlowBuilderCommonSourceHandler = ({
     className,
-    validateFromSourceHandle,
+    validateFromSourceHandle: fromSource,
     ...rest
 }: {
     className: string;
@@ -18,13 +18,8 @@ export const FlowBuilderCommonSourceHandler = ({
             type='source'
             position={Position.Right}
             isValidConnection={(connection) => {
-                if (validateFromSourceHandle) {
-                    return isValidCondition(
-                        connection?.sourceHandle,
-                        'sourceHandle'
-                    );
-                }
-                return isValidCondition(connection?.source, 'source');
+                const key = fromSource ? 'sourceHandle' : 'source';
+                return isValidCondition(connection?.[key], key);
             }}
             className={className}
             {...rest}

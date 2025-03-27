@@ -22,8 +22,14 @@ const FlowBuilderPanel = () => {
     );
 
     const addNode = (component: any) => {
+        const lastNode = nodes[nodes?.length - 1];
+
         const node = CreateNewNode({
             component: component,
+            position: {
+                x: lastNode?.position?.x - 100,
+                y: lastNode?.position?.y - 200,
+            },
         });
 
         if (nodes?.length) return addMultipleNodes([node]);

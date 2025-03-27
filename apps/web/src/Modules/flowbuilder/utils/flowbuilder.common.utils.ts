@@ -1,6 +1,6 @@
 export const CreateNewNode = ({
     component,
-    position = { x: 250, y: 5 },
+    position = { x: 1000, y: 5 },
 }: {
     position?: { x: number; y: number };
     component: string;
