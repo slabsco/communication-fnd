@@ -14,6 +14,8 @@ import {
 } from '@finnoto/design-system';
 
 import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
+import { FlowBuilderCommonSourceHandler } from '../components/flowbuilder.common.source.handler';
+import { FlowBuilderCommonTargetHandler } from '../components/flowbuilder.common.target.handler';
 import { useFlowBuilder } from '../flowbuilder.context';
 
 export const AssignUserNodeType = ({ data, id, type }: any) => {
@@ -50,21 +52,8 @@ export const AssignUserNodeType = ({ data, id, type }: any) => {
                 </div>
             )}
 
-            <Handle
-                isConnectable
-                isConnectableStart
-                type='target'
-                position={Position.Left}
-                className='bg-transparent'
-                isValidConnection={(connection) => {
-                    return isValidCondition(connection.source, 'source');
-                }}
-            />
-            <Handle
-                type='source'
-                position={Position.Right}
-                className='w-3 h-3 bg-blue-400 border-2 border-white'
-            />
+            <FlowBuilderCommonTargetHandler />
+            <FlowBuilderCommonSourceHandler className='w-3 h-3 bg-blue-400 border-2 border-white' />
         </CommonNodeComponentContainer>
     );
 };

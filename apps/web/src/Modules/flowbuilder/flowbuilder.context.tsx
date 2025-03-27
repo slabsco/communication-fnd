@@ -59,29 +59,31 @@ const FlowBuilderContext = createContext<FlowBuilderContextType>({
     isValidCondition: () => false, // Default implementation
     chatVariables: [], // Default implementation
 });
+const initialNodes: FlowNode[] = [
+    {
+        id: '1',
+        type: 'start_node',
+        position: { x: 250, y: 5 },
+        data: {},
+    },
+    {
+        id: '2',
+        type: 'end_node',
+        position: { x: 1850, y: 5 },
+        data: {},
+    },
+];
 
 export const FlowBuilderProvider = ({ children, rawJsonData }) => {
-    const initialNodes: FlowNode[] = [
-        {
-            id: '1',
-            type: 'start_node',
-            position: { x: 250, y: 5 },
-            data: {},
-        },
-        {
-            id: '2',
-            type: 'end_node',
-            position: { x: 750, y: 5 },
-            data: {},
-        },
-    ];
-
-    const [nodes, setNodes, onNodesChange] =
-        useNodesState<FlowNode[]>(initialNodes);
+    const [nodes, setNodes, onNodesChange] = useNodesState<FlowNode[]>(
+        rawJsonData?.nodes || initialNodes
+    );
 
     const [edges, setEdges, onEdgesChange] = useEdgesState<FlowEdge[]>(
         rawJsonData?.edges || []
     );
+
+    console.log({ edges });
 
     const addNode = (node: FlowNode) => {
         setNodes((prevNodes) => [...prevNodes, node]);
@@ -105,6 +107,9 @@ export const FlowBuilderProvider = ({ children, rawJsonData }) => {
     };
 
     const deleteNode = (nodeId: string) => {
+        setEdges((prevEdges) =>
+            prevEdges.filter((e) => e.source !== nodeId && e.target !== nodeId)
+        );
         setNodes((prevNodes) => prevNodes.filter((n) => n.id !== nodeId));
     };
 

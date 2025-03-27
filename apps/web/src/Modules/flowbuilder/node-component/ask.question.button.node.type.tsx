@@ -67,14 +67,6 @@ export const AskQuestionButtonNodeType = ({ data, id, type }: any) => {
                     </div>
                 </div>
             </div>
-
-            <Handle
-                isConnectable
-                isConnectableStart
-                type='target'
-                position={Position.Left}
-                className='bg-transparent'
-            />
         </CommonNodeComponentContainer>
     );
 };

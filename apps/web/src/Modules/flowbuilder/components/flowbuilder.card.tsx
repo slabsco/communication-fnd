@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 
+import { cn } from '@finnoto/design-system';
+
 interface CardProps {
     icon: ReactNode;
     title: string;
@@ -18,11 +20,13 @@ const FlowBuilderCard: React.FC<CardProps> = ({
     return (
         <div
             onClick={onClick}
-            className={`p-2 text-white rounded-lg transition-all cursor-pointer hover:shadow-md hover:-translate-y-0.5 ${color}`}
+            className={cn(
+                `p-2 text-white rounded-lg transition-all cursor-pointer  hover:shadow-md hover:-translate-y-0.5`,
+                color
+            )}
         >
             <div className='flex gap-2 items-center'>
                 {icon}
-
                 <h3 className='font-bold'>{title}</h3>
             </div>
             <p className='text-sm'>{description}</p>

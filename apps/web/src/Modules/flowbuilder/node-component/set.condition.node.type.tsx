@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useList } from 'react-use';
-import { Handle, Position } from 'reactflow';
 
 import { FetchData, IsEmptyObject, useQuery } from '@finnoto/core';
 import { ContactController } from '@finnoto/core/src/backend/communication/controller/contact.controller';
@@ -19,6 +18,8 @@ import {
 import { Label } from '@finnoto/design-system/src/Components/Inputs/InputField/label.component';
 
 import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
+import { FlowBuilderCommonSourceHandler } from '../components/flowbuilder.common.source.handler';
+import { FlowBuilderCommonTargetHandler } from '../components/flowbuilder.common.target.handler';
 import { useFlowBuilder } from '../flowbuilder.context';
 
 export const SetConditionNodeType = ({ data, id, type }: any) => {
@@ -53,38 +54,9 @@ export const SetConditionNodeType = ({ data, id, type }: any) => {
                     </h2>
                 )}
             </div>
-            <Handle
-                isConnectable
-                isConnectableStart
-                type='target'
-                position={Position.Left}
-                className='bg-transparent'
-            />
-
-            <Handle
-                type='source'
-                id='condition-true'
-                isValidConnection={(connection) => {
-                    return isValidCondition(
-                        connection?.sourceHandle,
-                        'sourceHandle'
-                    );
-                }}
-                position={Position.Right}
-                className='bottom-1/3 w-3 h-3 border-2 border-white bg-success' // Handle for true condition
-            />
-            <Handle
-                type='source'
-                id='condition-false'
-                isValidConnection={(connection) => {
-                    return isValidCondition(
-                        connection?.sourceHandle,
-                        'sourceHandle'
-                    );
-                }}
-                position={Position.Right}
-                className='top-1/3 w-3 h-3 border-2 border-white bg-error' // Handle for false condition
-            />
+            <FlowBuilderCommonTargetHandler />
+            <FlowBuilderCommonSourceHandler className='bottom-1/3 w-3 h-3 border-2 border-white bg-success' />
+            <FlowBuilderCommonSourceHandler className='top-1/3 w-3 h-3 border-2 border-white bg-error' />
         </CommonNodeComponentContainer>
     );
 };

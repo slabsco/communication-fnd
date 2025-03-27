@@ -26,7 +26,7 @@ export const EndingNodeType = ({ type }: any) => {
             </div>
             <div className='relative p-3 text-primary'>
                 {CONSTANT_DATA?.description}
-                <FlowBuilderCommonTargetHandler className='' />
+                <FlowBuilderCommonTargetHandler />
             </div>
         </div>
     );

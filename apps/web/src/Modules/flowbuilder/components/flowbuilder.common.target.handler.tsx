@@ -1,24 +1,20 @@
 import { Handle, Position } from 'reactflow';
 
-import { useFlowBuilder } from '../flowbuilder.context';
+import { cn } from '@finnoto/design-system';
 
 export const FlowBuilderCommonTargetHandler = ({
     className,
     ...rest
 }: {
-    className: string;
+    className?: string;
 }) => {
-    const { isValidCondition } = useFlowBuilder();
     return (
         <Handle
             isConnectable
             isConnectableStart
             type='target'
             position={Position.Left}
-            className='bg-transparent'
-            isValidConnection={(connection) => {
-                return isValidCondition(connection.source, 'source');
-            }}
+            className={cn('bg-transparent', className)}
             {...rest}
         />
     );

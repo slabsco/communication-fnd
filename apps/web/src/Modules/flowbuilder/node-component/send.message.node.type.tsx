@@ -6,6 +6,8 @@ import { TextareaField } from '@finnoto/design-system';
 import { SingleFileUploader } from '@finnoto/design-system/src/Composites/Uploader/Components/SingleFile.upload.component copy';
 
 import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
+import { FlowBuilderCommonSourceHandler } from '../components/flowbuilder.common.source.handler';
+import { FlowBuilderCommonTargetHandler } from '../components/flowbuilder.common.target.handler';
 import { RenderMessagesComponent } from '../components/flowbuilder.render.message.component';
 import { useFlowBuilder } from '../flowbuilder.context';
 
@@ -108,22 +110,8 @@ export const SendMessageNode = ({ data, id, type }: any) => {
                 />
             </div>
 
-            <Handle
-                isConnectable
-                isConnectableStart
-                type='target'
-                position={Position.Left}
-                className='bg-transparent'
-            />
-
-            <Handle
-                type='source'
-                position={Position.Right}
-                className='w-3 h-3 bg-red-500 border-2 border-white'
-                isValidConnection={(connection) => {
-                    return isValidCondition(connection?.source, 'source');
-                }}
-            />
+            <FlowBuilderCommonTargetHandler />
+            <FlowBuilderCommonSourceHandler className='w-3 h-3 bg-red-500 border-2 border-white' />
         </CommonNodeComponentContainer>
     );
 };

@@ -1,6 +1,7 @@
 import { Handle, Position } from 'reactflow';
 
 import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
+import { FlowBuilderCommonTargetHandler } from '../components/flowbuilder.common.target.handler';
 import { openListQuestionModal } from '../components/set.list.question.modal';
 import { useFlowBuilder } from '../flowbuilder.context';
 
@@ -61,16 +62,18 @@ export const AskQuestionListNodeType = ({ data, id, type }: any) => {
                                                         position={
                                                             Position.Right
                                                         }
-                                                        isValidConnection={() => {
+                                                        id={_row.id}
+                                                        isValidConnection={(
+                                                            connection
+                                                        ) => {
                                                             return isValidCondition(
-                                                                _row.id,
+                                                                connection.sourceHandle,
                                                                 'sourceHandle'
                                                             );
                                                         }}
-                                                        id={_row.id}
                                                         className='w-3 h-3 bg-blue-400 border-2 border-white'
                                                         style={{
-                                                            right: 2,
+                                                            right: 1,
                                                             top: '50%',
                                                             transform:
                                                                 'translateY(-50%)',
@@ -87,13 +90,7 @@ export const AskQuestionListNodeType = ({ data, id, type }: any) => {
                 </div>
             </div>
 
-            <Handle
-                isConnectable
-                isConnectableStart
-                type='target'
-                position={Position.Left}
-                className='bg-transparent'
-            />
+            <FlowBuilderCommonTargetHandler />
         </CommonNodeComponentContainer>
     );
 };
