@@ -83,8 +83,6 @@ export const FlowBuilderProvider = ({ children, rawJsonData }) => {
         rawJsonData?.edges || []
     );
 
-    console.log({ edges });
-
     const addNode = (node: FlowNode) => {
         setNodes((prevNodes) => [...prevNodes, node]);
     };
