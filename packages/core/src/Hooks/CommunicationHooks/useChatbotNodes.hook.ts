@@ -5,6 +5,7 @@ import { FetchData } from '../useFetchData.hook';
 
 export const useChatbotNodes = () => {
     const { data, isLoading, refetch } = useQuery({
+        cacheTime: Infinity,
         queryKey: ['chatbot_node'],
         queryFn: async () => {
             const { success, response } = await FetchData({
@@ -15,7 +16,7 @@ export const useChatbotNodes = () => {
                 },
             });
 
-            if (success) return response;
+            if (success) return response?.records;
             return [];
         },
     });

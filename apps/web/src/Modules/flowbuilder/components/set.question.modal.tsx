@@ -12,8 +12,8 @@ import {
 import {
     FlowBuilderAnswerOptions,
     FlowBuilderQuestionModalHeader,
-} from '../components/flowbuilder.answer.options.component';
-import FlowBuilderMessageComponent from '../components/flowbuilder.message.component';
+} from './flowbuilder.answer.options.component';
+import FlowBuilderMessageComponent from './flowbuilder.message.component';
 
 const SetQuestionModal = ({
     data,
@@ -144,3 +144,13 @@ export const openSetQuestionModal = ({
         },
     });
 };
+
+export interface Section {
+    id: string;
+    title: string;
+    rows: Array<{
+        id: string;
+        text: string;
+        description?: string; // Added description field
+    }>;
+}

@@ -1,6 +1,6 @@
 import { Button, IconButton, InputField } from '@finnoto/design-system';
 
-import { Section } from '../node-component/set.list.question.modal';
+import { Section } from './set.question.modal';
 
 import { DeleteSvgIcon } from 'assets';
 

@@ -13,17 +13,10 @@ import {
     ReferenceSelectBox,
 } from '@finnoto/design-system';
 
-import {
-    CommonNodeComponentContainer,
-    CommonNodePropsTypes,
-} from '../components/flowbuilder.common';
+import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
 import { useFlowBuilder } from '../flowbuilder.context';
 
-export const AssignUserNodeType = ({
-    data,
-    id,
-    type,
-}: CommonNodePropsTypes) => {
+export const AssignUserNodeType = ({ data, id, type }: any) => {
     const { updateNodeData, isValidCondition } = useFlowBuilder();
 
     return (

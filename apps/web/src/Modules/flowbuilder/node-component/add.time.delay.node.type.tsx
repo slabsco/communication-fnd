@@ -2,17 +2,10 @@ import { Handle, Position } from 'reactflow';
 
 import { InputField } from '@finnoto/design-system';
 
-import {
-    CommonNodeComponentContainer,
-    CommonNodePropsTypes,
-} from '../components/flowbuilder.common';
+import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
 import { useFlowBuilder } from '../flowbuilder.context';
 
-export const AddTimeDelayNodeType = ({
-    data,
-    id,
-    type,
-}: CommonNodePropsTypes) => {
+export const AddTimeDelayNodeType = ({ data, id, type }: any) => {
     const { updateNodeData, isValidCondition } = useFlowBuilder();
 
     return (

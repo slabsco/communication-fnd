@@ -5,14 +5,11 @@ import { IsEmptyArray } from '@finnoto/core';
 import { TextareaField } from '@finnoto/design-system';
 import { SingleFileUploader } from '@finnoto/design-system/src/Composites/Uploader/Components/SingleFile.upload.component copy';
 
-import {
-    CommonNodeComponentContainer,
-    CommonNodePropsTypes,
-} from '../components/flowbuilder.common';
+import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
 import { RenderMessagesComponent } from '../components/flowbuilder.render.message.component';
 import { useFlowBuilder } from '../flowbuilder.context';
 
-export const SendMessageNode = ({ data, id, type }: CommonNodePropsTypes) => {
+export const SendMessageNode = ({ data, id, type }: any) => {
     const { updateNodeData, isValidCondition } = useFlowBuilder();
 
     const [component, { push, removeAt, updateAt }] = useList<any>(

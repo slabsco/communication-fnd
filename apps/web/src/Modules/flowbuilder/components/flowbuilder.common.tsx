@@ -11,20 +11,11 @@ import {
 } from '@finnoto/design-system';
 
 import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
-import {
-    FlowBuilderCardConstants,
-    FlowBuilderPanelCardType,
-} from '../constants/flowbuilder.constant';
+import { useFlowBuilderApi } from '../flowbuilder.api.context';
 import { useFlowBuilder } from '../flowbuilder.context';
 import { generateIdFromTimestamp } from '../utils/flowbuilder.common.utils';
 
 import { MoreIcon } from 'assets';
-
-export type CommonNodePropsTypes = {
-    data: any;
-    id: string;
-    type: any;
-};
 
 export const CommonNodeComponentContainer = ({
     data,
@@ -35,14 +26,16 @@ export const CommonNodeComponentContainer = ({
 }: {
     data: any;
     id: string;
-    type: FlowBuilderPanelCardType;
+    type: string;
     actions?: DropdownMenuActionProps[];
     children: ReactNode;
 }) => {
     const { addMultipleNodes, deleteNode, getNodeData, setStartingStep } =
         useFlowBuilder();
 
-    const CONSTANT_DATA: any = FlowBuilderCardConstants[type];
+    const { availableNodes } = useFlowBuilderApi();
+
+    const CONSTANT_DATA: any = availableNodes[type];
 
     const onlyActions = useMemo(() => {
         if (actions?.length > 1) return;
@@ -59,13 +52,22 @@ export const CommonNodeComponentContainer = ({
             <div
                 className={cn(
                     'flex gap-3 rounded-t-lg justify-between items-center px-3 py-2 hover:cursor-move',
-                    CONSTANT_DATA.color
+                    CONSTANT_DATA?.style?.color
                 )}
             >
                 <div className='flex gap-1 items-center'>
                     {CONSTANT_DATA?.icon}
                     <div className='flex flex-1 gap-3 items-center'>
-                        <p className='font-bold'>{CONSTANT_DATA?.title}</p>
+                        <p className='flex gap-1 items-center font-semibold'>
+                            {CONSTANT_DATA?.title}{' '}
+                            {/* <Tooltip
+                                asChild
+                                isArrow
+                                message={CONSTANT_DATA?.description}
+                            >
+                                <Icon isSvg source={ArcInfoSvgIcon} />
+                            </Tooltip> */}
+                        </p>
                         {isStartingStep && (
                             <Badge
                                 label={'Starting Step'}

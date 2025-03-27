@@ -1,29 +1,31 @@
-// apps/web/src/Components/Card.tsx
-import React from 'react';
-
-import {
-    FlowBuilderCardConstants,
-    FlowBuilderPanelCardType,
-} from '../constants/flowbuilder.constant';
+import { ReactNode } from 'react';
 
 interface CardProps {
-    type: FlowBuilderPanelCardType;
+    icon: ReactNode;
+    title: string;
+    description: string;
+    color: string;
     onClick: () => void;
 }
 
-const FlowBuilderCard: React.FC<CardProps> = ({ type, onClick }) => {
-    const activeData = FlowBuilderCardConstants[type];
+const FlowBuilderCard: React.FC<CardProps> = ({
+    color,
+    description,
+    title,
+    icon,
+    onClick,
+}) => {
     return (
         <div
             onClick={onClick}
-            className={`p-2 text-white rounded-lg transition-all cursor-pointer hover:shadow-md hover:-translate-y-0.5 ${activeData.color}`}
+            className={`p-2 text-white rounded-lg transition-all cursor-pointer hover:shadow-md hover:-translate-y-0.5 ${color}`}
         >
             <div className='flex gap-2 items-center'>
-                {activeData?.icon}
+                {icon}
 
-                <h3 className='font-bold'>{activeData?.title}</h3>
+                <h3 className='font-bold'>{title}</h3>
             </div>
-            <p className='text-sm'>{activeData?.description}</p>
+            <p className='text-sm'>{description}</p>
         </div>
     );
 };

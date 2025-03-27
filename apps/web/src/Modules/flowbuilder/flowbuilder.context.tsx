@@ -1,10 +1,6 @@
 import { createContext, useContext, useMemo } from 'react';
 
-import {
-    AccessNestedObject,
-    IsEmptyObject,
-    useChatbotNodes,
-} from '@finnoto/core';
+import { AccessNestedObject, IsEmptyObject } from '@finnoto/core';
 
 import {
     useEdgesState,
@@ -65,11 +61,24 @@ const FlowBuilderContext = createContext<FlowBuilderContextType>({
 });
 
 export const FlowBuilderProvider = ({ children, rawJsonData }) => {
-    const { data: chatbotNodes, isLoading: isNodeLoading } = useChatbotNodes();
+    const initialNodes: FlowNode[] = [
+        {
+            id: '1',
+            type: 'start_node',
+            position: { x: 250, y: 5 },
+            data: {},
+        },
+        {
+            id: '2',
+            type: 'end_node',
+            position: { x: 750, y: 5 },
+            data: {},
+        },
+    ];
 
-    const [nodes, setNodes, onNodesChange] = useNodesState<FlowNode>(
-        rawJsonData?.nodes || []
-    );
+    const [nodes, setNodes, onNodesChange] =
+        useNodesState<FlowNode[]>(initialNodes);
+
     const [edges, setEdges, onEdgesChange] = useEdgesState<FlowEdge[]>(
         rawJsonData?.edges || []
     );

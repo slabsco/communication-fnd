@@ -18,13 +18,10 @@ import {
 } from '@finnoto/design-system';
 import { Label } from '@finnoto/design-system/src/Components/Inputs/InputField/label.component';
 
-import {
-    CommonNodeComponentContainer,
-    CommonNodePropsTypes,
-} from '../components/flowbuilder.common';
+import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
 import { useFlowBuilder } from '../flowbuilder.context';
 
-const SetConditionNodeType = ({ data, id, type }: CommonNodePropsTypes) => {
+export const SetConditionNodeType = ({ data, id, type }: any) => {
     const { updateNodeData, chatVariables, isValidCondition } =
         useFlowBuilder();
 
@@ -92,8 +89,6 @@ const SetConditionNodeType = ({ data, id, type }: CommonNodePropsTypes) => {
     );
 };
 
-export default SetConditionNodeType;
-
 const openConditionModal = ({
     onConditionUpdate,
     initialCondition,
@@ -151,8 +146,6 @@ const ConditionModal = ({
             is_second_variable: false,
         });
     };
-
-    console.log({ condition });
 
     const isMultiple = condition?.length > 1;
 

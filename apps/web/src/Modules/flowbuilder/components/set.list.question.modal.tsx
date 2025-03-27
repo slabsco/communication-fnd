@@ -9,19 +9,10 @@ import {
     ModalFooter,
 } from '@finnoto/design-system';
 
-import { FlowBuilderQuestionModalHeader } from '../components/flowbuilder.answer.options.component';
-import { FlowBuilderListAnswerOptions } from '../components/flowbuilder.list.answer.options.component';
-import FlowBuilderMessageComponent from '../components/flowbuilder.message.component';
-
-export interface Section {
-    id: string;
-    title: string;
-    rows: Array<{
-        id: string;
-        text: string;
-        description?: string; // Added description field
-    }>;
-}
+import { FlowBuilderQuestionModalHeader } from './flowbuilder.answer.options.component';
+import { FlowBuilderListAnswerOptions } from './flowbuilder.list.answer.options.component';
+import FlowBuilderMessageComponent from './flowbuilder.message.component';
+import { Section } from './set.question.modal';
 
 const SetListQuestionModal = ({
     data,

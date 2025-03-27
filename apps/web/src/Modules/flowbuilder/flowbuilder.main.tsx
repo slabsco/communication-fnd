@@ -7,10 +7,12 @@ import ReactFlow, {
     MiniMap,
 } from 'reactflow';
 
+import * as NODE_COMPONENT from './node-component/index';
+
 import 'reactflow/dist/style.css';
 
 import { FlowBuilderCustomEdge } from './components/flowbuilder.custom.edge';
-import { FlowBuilderCardConstants } from './constants/flowbuilder.constant';
+import { useFlowBuilderApi } from './flowbuilder.api.context';
 import { useFlowBuilder } from './flowbuilder.context';
 
 const FlowBuilderMain = () => {
@@ -22,6 +24,8 @@ const FlowBuilderMain = () => {
         onNodesChange,
         updateEdgeData,
     } = useFlowBuilder();
+
+    const { availableNodes } = useFlowBuilderApi();
 
     const onConnect = useCallback(
         (params) =>
@@ -39,12 +43,12 @@ const FlowBuilderMain = () => {
     const nodeTypes = useMemo(
         () =>
             Object.fromEntries(
-                Object.entries(FlowBuilderCardConstants).map(([key, value]) => [
-                    value.identifier,
-                    value.nodeComponent,
+                Object.entries(availableNodes).map(([key, value]: any) => [
+                    key,
+                    NODE_COMPONENT[key],
                 ])
             ),
-        []
+        [availableNodes]
     );
 
     return (
