@@ -9,6 +9,7 @@ import {
     Contact,
     FileIcon,
     Info,
+    Reply,
     User,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -80,6 +81,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import ArcGenericSplitDetailComponent from '../../Components/ArcGenericSplitDetail/arcGenericSplitDetail.component';
 import { AsyncTemplateViewer } from '../broadcast/your-templates/components/TemplateViewer.component';
+import { YOUR_TEMPLATE_SUPPORTED_CONFIG } from '../broadcast/your-templates/components/YourTemplateEditor.button.component';
 import { MessageSectionPreview } from '../broadcast/your-templates/components/YourTemplatesPriview.component';
 import { openAddContactForm } from '../contact/add.contact.modal.form';
 import { openQuickReplySelect } from '../quickreply/quick.reply.select.list';
@@ -400,6 +402,47 @@ const RenderMessageDetail = ({ data }: { data: { id: string } }) => {
     );
 };
 
+const RenderInteractiveMessage = ({ message }: { message: any }) => {
+    const interactive = message?.payload?.interactive;
+    if (!interactive) return;
+
+    return (
+        <div className='flex flex-row-reverse gap-2 items-end'>
+            <RenderSeenUnseen message={message} />
+            <div
+                className={cn(
+                    ' rounded-md p-3 shadow-md  w-[90%] self-end flex flex-col gap-1 text-black max-w-[50%] bg-green-200'
+                )}
+            >
+                <div className='flex flex-col gap-2'>
+                    <h3 className='font-bold'>{interactive?.header?.text}</h3>
+                    <span className='text-sm text-primary-950'>
+                        {interactive?.body?.text}
+                    </span>
+                </div>
+                <div className='flex items-end text-muted-foreground'>
+                    <span className='flex-1 text-xs text-base-secondary'>
+                        {interactive?.footer?.text}
+                    </span>
+                </div>
+                <div className='flex flex-col gap-2 mt-2 w-full'>
+                    {interactive?.action?.buttons?.map((btn) => {
+                        return (
+                            <div
+                                key={btn.reply.id}
+                                className='flex gap-2 justify-center items-center w-full text-xs text-center text-info'
+                            >
+                                <Reply size={14} />
+                                {btn.reply.title}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+            <MessageBubbleTimePopper message={message} />
+        </div>
+    );
+};
 const getData = (components: any[], type: string) => {
     if (!components?.length) return [];
     return components?.find((val) => val?.type === type)?.parameters || [];
@@ -451,22 +494,29 @@ const MessageItem = ({ message }: { message: any }) => {
                     <MessageBubbleTimePopper message={message} />
                 </div>
             ) : isSentBySystem ? (
-                <div className='flex flex-row-reverse gap-2 items-end'>
-                    {message?.is_error && (
-                        <Tooltip
-                            message={JSON.stringify(
-                                message.attributes?.errors?.[0]?.error_data
-                                    ?.details || message.response
+                <>
+                    {message?.payload?.interactive ? (
+                        <RenderInteractiveMessage message={message} />
+                    ) : (
+                        <div className='flex flex-row-reverse gap-2 items-end'>
+                            {message?.is_error && (
+                                <Tooltip
+                                    message={JSON.stringify(
+                                        message.attributes?.errors?.[0]
+                                            ?.error_data?.details ||
+                                            message.response
+                                    )}
+                                >
+                                    <Info size={14} color='red' />
+                                </Tooltip>
                             )}
-                        >
-                            <Info size={14} color='red' />
-                        </Tooltip>
-                    )}
 
-                    <RenderSeenUnseen message={message} />
-                    <RenderInnerTextMessage message={message} />
-                    <MessageBubbleTimePopper message={message} />
-                </div>
+                            <RenderSeenUnseen message={message} />
+                            <RenderInnerTextMessage message={message} />
+                            <MessageBubbleTimePopper message={message} />
+                        </div>
+                    )}{' '}
+                </>
             ) : (
                 <></>
             )}
@@ -1075,7 +1125,12 @@ const RenderInnerTextMessage = ({ message }: any) => {
         return (
             <div className='flex flex-col gap-2'>
                 <span className='text-sm text-primary-950'>
-                    {payload?.text?.body}
+                    {payload?.text?.body?.split('\n')?.map((line, index) => (
+                        <span key={index}>
+                            {line}
+                            <br />
+                        </span>
+                    ))}
                 </span>
             </div>
         );
@@ -1223,6 +1278,8 @@ const RenderUserMessageBubble = ({ message }) => {
             <span>
                 {message?.payload?.button?.text ||
                     message?.payload?.text?.body ||
+                    message?.payload?.interactive?.button_reply?.title ||
+                    message?.payload?.interactive?.list_reply?.title ||
                     'Unsupported Format'}
             </span>
         );
@@ -1239,6 +1296,15 @@ const RenderUserMessageBubble = ({ message }) => {
                                 message?.template_parent_body,
                                 repliedContent
                             ),
+                        }}
+                    ></div>
+                )}
+                {message?.parent_payload?.interactive && (
+                    <div
+                        className='h-[25px] overflow-hidden text-ellipsis whitespace-pre-line line-clamp-3 w-[200px] bg-primary/70 text-xs p-1 rounded text-primary-content'
+                        dangerouslySetInnerHTML={{
+                            __html: message?.parent_payload?.interactive?.body
+                                ?.text,
                         }}
                     ></div>
                 )}

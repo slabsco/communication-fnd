@@ -15,7 +15,7 @@ import {
 } from './flowbuilder.answer.options.component';
 import FlowBuilderMessageComponent from './flowbuilder.message.component';
 
-const SetQuestionModal = ({
+const SetButtonQuestionModal = ({
     data,
     getData,
     max,
@@ -26,6 +26,8 @@ const SetQuestionModal = ({
 }) => {
     const [html, setHtml] = useState<any>(data?.html || '');
     const [answer, setAnswer] = useState<any>(data?.answer || []);
+    const [header, setHeader] = useState<string>(data?.header || '');
+    const [footer, setFooter] = useState<string>(data?.footer || '');
     const [variableName, setVariableName] = useState<string>(
         data?.variableName || ''
     );
@@ -34,6 +36,8 @@ const SetQuestionModal = ({
         getData({
             html,
             answer,
+            header,
+            footer,
             variableName,
         });
     };
@@ -43,12 +47,32 @@ const SetQuestionModal = ({
             title={max === 3 ? ' Add Question Button' : 'Add Question List'}
         >
             <ModalBody className='gap-3 col-flex'>
+                <div className='gap-2 col-flex'>
+                    <FlowBuilderQuestionModalHeader name={'Header'} />
+                    <InputField
+                        placeholder={'Enter your header here'}
+                        value={header}
+                        onBlur={(val) => {
+                            setHeader(val);
+                        }}
+                    />
+                </div>
                 <FlowBuilderMessageComponent
                     getHtml={(_data) => {
                         setHtml(_data);
                     }}
                     html={html}
                 />
+                <div className='gap-2 col-flex'>
+                    <FlowBuilderQuestionModalHeader name={'Footer'} />
+                    <InputField
+                        placeholder={'Enter your footer here'}
+                        value={footer}
+                        onBlur={(val) => {
+                            setFooter(val);
+                        }}
+                    />
+                </div>
 
                 <FlowBuilderAnswerOptions
                     max={max}
@@ -101,7 +125,7 @@ const SetQuestionModal = ({
     );
 };
 
-export const openSetQuestionModal = ({
+export const openSetButtonQuestionModal = ({
     data,
     getData,
     max,
@@ -111,7 +135,7 @@ export const openSetQuestionModal = ({
     max?: any;
 }) => {
     return Modal.open({
-        component: SetQuestionModal,
+        component: SetButtonQuestionModal,
         modalSize: 'sm',
         props: {
             max,
@@ -120,13 +144,3 @@ export const openSetQuestionModal = ({
         },
     });
 };
-
-export interface Section {
-    id: string;
-    title: string;
-    rows: Array<{
-        id: string;
-        text: string;
-        description?: string; // Added description field
-    }>;
-}

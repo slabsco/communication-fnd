@@ -1,7 +1,8 @@
 import { Handle, Position } from 'reactflow';
 
 import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
-import { openSetQuestionModal } from '../components/set.question.modal';
+import { FlowBuilderCommonTargetHandler } from '../components/flowbuilder.common.target.handler';
+import { openSetButtonQuestionModal } from '../components/set.button.question.modal';
 import { useFlowBuilder } from '../flowbuilder.context';
 import { RenderHeaderBodyFooter } from './ask.question.list.node.type';
 
@@ -17,7 +18,7 @@ export const AskQuestionButtonNodeType = ({ data, id, type }: any) => {
                 {
                     name: 'Manage',
                     action: () => {
-                        openSetQuestionModal({
+                        openSetButtonQuestionModal({
                             max: 3,
                             data: data,
                             getData: (data) => {
@@ -67,6 +68,7 @@ export const AskQuestionButtonNodeType = ({ data, id, type }: any) => {
                     </div>
                 </div>
             </div>
+            <FlowBuilderCommonTargetHandler />
         </CommonNodeComponentContainer>
     );
 };

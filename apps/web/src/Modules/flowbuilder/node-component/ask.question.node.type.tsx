@@ -29,12 +29,12 @@ export const AskQuestionNodeType = ({ data, id, type }: any) => {
         >
             <div className='p-2 text-primary min-h-12'>
                 <div className='gap-2 col-flex'>
-                    <RenderHeaderBodyFooter
-                        body={data?.html}
-                        footer={data?.footer}
-                        header={data?.header}
-                    />
-
+                    {data?.html && (
+                        <div
+                            dangerouslySetInnerHTML={{ __html: data?.html }}
+                            className='text-sm'
+                        ></div>
+                    )}
                     <div className='gap-2 col-flex'>
                         {data?.answer?.map((_answer) => {
                             return (
