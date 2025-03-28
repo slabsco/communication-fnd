@@ -107,7 +107,7 @@ export const FlowBuilderListAnswerOptions = ({
                             onChange={(value) =>
                                 updateSectionTitle(section.id, value)
                             }
-                            placeholder='Section Title (optional, max 24 chars)'
+                            placeholder='Section Title (max 24 chars)'
                             maxLength={24}
                         />
                     </div>
@@ -143,7 +143,7 @@ export const FlowBuilderListAnswerOptions = ({
                                                 value
                                             )
                                         }
-                                        placeholder='Description (optional)'
+                                        placeholder='Description'
                                     />
                                 </div>
                                 <IconButton
