@@ -51,7 +51,7 @@ export const CommonNodeComponentContainer = ({
         <div className=' text-white bg-white rounded-xl shadow-xl col-flex min-w-[200px] max-w-[400px] relative'>
             <div
                 className={cn(
-                    'flex gap-3 rounded-t-lg justify-between items-center px-3 py-2 bg-yellow-400 bg-pink-500 bg-blue-500 hover:cursor-move',
+                    'flex gap-3 rounded-t-lg justify-between items-center px-3 py-2 bg-yellow-400 bg-pink-500 bg-blue-500 bg-green-500 hover:cursor-move',
                     CONSTANT_DATA?.style?.color
                 )}
             >

@@ -21,7 +21,7 @@ const FlowBuilderOperatorsCard = ({
             <div className={cn('p-2 rounded-full bg-base-200', color)}>
                 {icon}
             </div>
-            <p className='text-sm font-medium'>{title}</p>
+            <p className='text-sm font-medium text-center'>{title}</p>
         </div>
     );
 };

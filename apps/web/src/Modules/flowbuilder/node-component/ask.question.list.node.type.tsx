@@ -1,6 +1,7 @@
 import { Handle, Position } from 'reactflow';
 
 import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
+import { FlowBuilderCommonSourceHandler } from '../components/flowbuilder.common.source.handler';
 import { FlowBuilderCommonTargetHandler } from '../components/flowbuilder.common.target.handler';
 import { openListQuestionModal } from '../components/set.list.question.modal';
 import { useFlowBuilder } from '../flowbuilder.context';
@@ -57,27 +58,16 @@ export const AskQuestionListNodeType = ({ data, id, type }: any) => {
                                                     <p className='text-base-tertiary text-[8px]'>
                                                         {_row.description}
                                                     </p>
-                                                    <Handle
-                                                        type='source'
-                                                        position={
-                                                            Position.Right
-                                                        }
-                                                        id={_row.id}
-                                                        isValidConnection={(
-                                                            connection
-                                                        ) => {
-                                                            return isValidCondition(
-                                                                connection.sourceHandle,
-                                                                'sourceHandle'
-                                                            );
-                                                        }}
+                                                    <FlowBuilderCommonSourceHandler
                                                         className='w-3 h-3 bg-blue-400 border-2 border-white'
+                                                        validateFromSourceHandle
                                                         style={{
                                                             right: 1,
                                                             top: '50%',
                                                             transform:
                                                                 'translateY(-50%)',
                                                         }}
+                                                        id={_row.id}
                                                     />
                                                 </div>
                                             );

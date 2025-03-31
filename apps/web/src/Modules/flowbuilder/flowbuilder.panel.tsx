@@ -10,15 +10,18 @@ const FlowBuilderPanel = () => {
     const { addMultipleNodes, nodes } = useFlowBuilder();
     const { availableNodes } = useFlowBuilderApi();
 
-    const { main: mainComponent, operators } = Object.entries(
-        availableNodes
-    ).reduce(
+    const {
+        main: mainComponent,
+        operators,
+        dynamicNode,
+    } = Object.entries(availableNodes).reduce(
         (acc, [key, value]: any) => {
             if (value?.type === 'main') acc.main.push(value);
             if (value?.type === 'operators') acc.operators.push(value);
+            if (value?.type === 'dynamic') acc.dynamicNode.push(value);
             return acc;
         },
-        { main: [], operators: [] }
+        { main: [], operators: [], dynamicNode: [] }
     );
 
     const addNode = (component: any) => {
@@ -38,7 +41,7 @@ const FlowBuilderPanel = () => {
 
     return (
         <div className='p-2 w-2/12 h-full bg-white rounded col-flex'>
-            <div className='gap-3 col-flex'>
+            <div className='gap-2 col-flex'>
                 {mainComponent?.map((val) => {
                     return (
                         <FlowBuilderCard
@@ -54,11 +57,32 @@ const FlowBuilderPanel = () => {
                     );
                 })}
             </div>
+
             {!IsEmptyArray(operators) && (
-                <div className='mt-4'>
-                    <h3 className='text-lg font-medium'>Operators</h3>
+                <div className='mt-4 border-t'>
+                    <h3 className='mt-2 text-lg font-medium'>Operators</h3>
                     <div className='grid grid-cols-2 gap-2 items-center mt-2'>
                         {SortArrayObjectBy(operators, 'title', 'asc')?.map(
+                            (val) => {
+                                return (
+                                    <FlowBuilderOperatorsCard
+                                        icon={val?.icon}
+                                        key={val?.identifier}
+                                        onClick={() => addNode(val?.identifier)}
+                                        color={val?.style.color}
+                                        title={val?.title}
+                                    />
+                                );
+                            }
+                        )}
+                    </div>
+                </div>
+            )}
+            {!IsEmptyArray(dynamicNode) && (
+                <div className='mt-4 border-t'>
+                    <h3 className='mt-2 text-lg font-medium'>Dynamic Node</h3>
+                    <div className='grid grid-cols-2 gap-2 items-center mt-2'>
+                        {SortArrayObjectBy(dynamicNode, 'title', 'asc')?.map(
                             (val) => {
                                 return (
                                     <FlowBuilderOperatorsCard
