@@ -1,5 +1,3 @@
-import { Handle, Position } from 'reactflow';
-
 import { CommonNodeComponentContainer } from '../components/flowbuilder.common';
 import { FlowBuilderCommonSourceHandler } from '../components/flowbuilder.common.source.handler';
 import { FlowBuilderCommonTargetHandler } from '../components/flowbuilder.common.target.handler';
@@ -7,7 +5,7 @@ import { openListQuestionModal } from '../components/set.list.question.modal';
 import { useFlowBuilder } from '../flowbuilder.context';
 
 export const AskQuestionListNodeType = ({ data, id, type }: any) => {
-    const { updateNodeData, isValidCondition } = useFlowBuilder();
+    const { updateNodeData } = useFlowBuilder();
 
     return (
         <CommonNodeComponentContainer
