@@ -90,7 +90,7 @@ export const CommonNodeComponentContainer = ({
                                                     ?.value as any,
                                             });
                                             setShowInputTitle(false);
-                                        }, 2000);
+                                        }, 3000);
                                     }}
                                     value={
                                         data?.titleName || CONSTANT_DATA?.title
