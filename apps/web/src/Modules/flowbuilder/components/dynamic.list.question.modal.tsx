@@ -17,17 +17,20 @@ import {
     DynamicDefaultExampleQuestionList,
     DynamicDefaultExampleSendMessage,
     dynamicDefaultValueFormatter,
+    DynamicSetConditionExample,
 } from '../dynamic.node.script.example';
 
 const SetDynamicDataModal = ({
     data,
     getData,
-    max,
+    onlyApiConfig = false,
+    onlyScript = false,
     node_type,
 }: {
     getData: (data: any) => void;
     data: any;
-    max?: number;
+    onlyApiConfig?: boolean;
+    onlyScript?: boolean;
     node_type?: string;
 }) => {
     const [apiConfigScript, setApiConfigScript] = useState<any>(
@@ -52,37 +55,41 @@ const SetDynamicDataModal = ({
     return (
         <ModalContainer title={'Add Dynamic Node'}>
             <ModalBody className='overflow-y-auto gap-3 col-flex'>
-                <div className='overflow-hidden h-[400px]'>
-                    <Label label='API Config' required />
-                    <div className='overflow-y-auto'>
+                {!onlyScript && (
+                    <div className='overflow-hidden h-[400px]'>
+                        <Label label='API Config' required />
+                        <div className='overflow-y-auto'>
+                            <JsEditorComponent
+                                value={apiConfigScript}
+                                onChange={(val) => {
+                                    setApiConfigScript(val);
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {!onlyApiConfig && (
+                    <div className='h-[400px] col-flex gap-2'>
+                        <div className='flex gap-2 items-center'>
+                            <Label label='Response Formatter' required />
+                            <Button
+                                size='sm'
+                                outline
+                                onClick={() => openExampleModal(node_type)}
+                            >
+                                See Example
+                            </Button>
+                        </div>
                         <JsEditorComponent
-                            value={apiConfigScript}
+                            value={dataScript}
                             onChange={(val) => {
-                                setApiConfigScript(val);
+                                setDataScript(val);
                             }}
                         />
                     </div>
-                </div>
-                <div className='h-[400px] col-flex gap-2'>
-                    <div className='flex gap-2 items-center'>
-                        <Label label='Response Formatter' required />
-                        <Button
-                            size='sm'
-                            outline
-                            onClick={() => openExampleModal(node_type)}
-                        >
-                            See Section Example
-                        </Button>
-                    </div>
-                    <JsEditorComponent
-                        value={dataScript}
-                        onChange={(val) => {
-                            console.log(val);
+                )}
 
-                            setDataScript(val);
-                        }}
-                    />
-                </div>
                 <InputField
                     prefix='@'
                     label='Variable Name'
@@ -120,19 +127,22 @@ const SetDynamicDataModal = ({
 export const openDynamicDataModal = ({
     data,
     getData,
-    max,
+    onlyApiConfig,
+    onlyScript,
     node_type,
 }: {
     data?: any;
     getData?: any;
     node_type?: any;
-    max?: any;
+    onlyApiConfig?: boolean;
+    onlyScript?: boolean;
 }) => {
     return Modal.open({
         component: SetDynamicDataModal,
         modalSize: 'xl',
         props: {
-            max,
+            onlyApiConfig,
+            onlyScript,
             node_type,
             data,
             getData,
@@ -140,7 +150,7 @@ export const openDynamicDataModal = ({
     });
 };
 
-const openExampleModal = (node_type: string) => {
+export const openExampleModal = (node_type: string) => {
     return Modal.open({
         component: ExampleModal,
         modalSize: 'xl',
@@ -153,6 +163,7 @@ const ExampleModal = ({ node_type }: any) => {
         dynamic_send_message: DynamicDefaultExampleSendMessage,
         ask_question_list_dynamic: DynamicDefaultExampleQuestionList,
         ask_question_button_dynamic: DynamicDefaultExampleQuestionButton,
+        dynamic_set_condition: DynamicSetConditionExample,
     };
 
     return (

@@ -25,11 +25,11 @@ const FlowBuilderCard: React.FC<CardProps> = ({
                 color
             )}
         >
-            <div className='flex gap-2 items-center'>
+            <div className='flex gap-1 items-center text-sm'>
                 {icon}
                 <h3 className='font-bold'>{title}</h3>
             </div>
-            <p className='text-sm'>{description}</p>
+            <p className='text-xs'>{description}</p>
         </div>
     );
 };

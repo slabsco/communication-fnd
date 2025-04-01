@@ -16,12 +16,12 @@ const FlowBuilderOperatorsCard = ({
     return (
         <div
             onClick={onClick}
-            className='gap-1 justify-center items-center p-3 rounded transition-all cursor-pointer col-flex hover:bg-primary/10'
+            className='gap-1 justify-center items-center p-2 rounded transition-all cursor-pointer col-flex hover:bg-primary/10'
         >
-            <div className={cn('p-2 rounded-full bg-base-200', color)}>
+            <div className={cn('p-1 rounded-full bg-base-200', color)}>
                 {icon}
             </div>
-            <p className='text-sm font-medium text-center'>{title}</p>
+            <p className='text-xs font-medium text-center'>{title}</p>
         </div>
     );
 };

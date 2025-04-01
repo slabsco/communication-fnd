@@ -55,8 +55,16 @@ export const SetConditionNodeType = ({ data, id, type }: any) => {
                 )}
             </div>
             <FlowBuilderCommonTargetHandler />
-            <FlowBuilderCommonSourceHandler className='bottom-1/3 w-3 h-3 border-2 border-white bg-success' />
-            <FlowBuilderCommonSourceHandler className='top-1/3 w-3 h-3 border-2 border-white bg-error' />
+            <FlowBuilderCommonSourceHandler
+                validateFromSourceHandle
+                id={'condition-true'}
+                className='bottom-1/3 w-3 h-3 border-2 border-white bg-success'
+            />
+            <FlowBuilderCommonSourceHandler
+                validateFromSourceHandle
+                id='condition-false'
+                className='top-1/3 w-3 h-3 border-2 border-white bg-error'
+            />
         </CommonNodeComponentContainer>
     );
 };

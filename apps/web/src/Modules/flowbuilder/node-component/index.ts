@@ -12,3 +12,5 @@ export { StartingNodeType as start_node } from './starting.node.type';
 export { CommonDynamicNodeType as ask_question_list_dynamic } from './common.dynamic.node.type';
 export { CommonDynamicNodeType as dynamic_send_message } from './common.dynamic.node.type';
 export { CommonDynamicNodeType as ask_question_button_dynamic } from './common.dynamic.node.type';
+export { ApiRequestDynamicNodeType as dynamic_api_request } from './api.request.dynamic.node.type';
+export { SetConditionDynamicNodeType as dynamic_set_condition } from './set.condition.dynamic.node.type';

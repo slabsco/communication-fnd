@@ -57,6 +57,15 @@ export const DynamicDefaultExampleSendMessage = `{
     ]
 }`;
 
+export const DynamicSetConditionExample = `// globalVariables  => here you will get all the savedVariablesAnswer
+condition = 'true'
+
+if(condition){
+    condition = 'true'
+}else{
+    condition = 'false'
+}`;
+
 export const DynamicDefaultApiConfig = `
 // globalVariables  => here you will get all the savedVariablesAnswer
 apiConfig = {

@@ -1,19 +1,20 @@
-import { ReactNode, useMemo } from 'react';
+import { TimerIcon } from 'lucide-react';
+import { ReactNode, useMemo, useState } from 'react';
 
 import { IsUndefinedOrNull } from '@finnoto/core';
 import {
     Badge,
-    Button,
     cn,
     DropdownMenu,
     DropdownMenuActionProps,
     IconButton,
+    InputField,
 } from '@finnoto/design-system';
 
-import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
 import { useFlowBuilderApi } from '../flowbuilder.api.context';
 import { useFlowBuilder } from '../flowbuilder.context';
 import { generateIdFromTimestamp } from '../utils/flowbuilder.common.utils';
+import { FlowBuilderCommonSourceHandler } from './flowbuilder.common.source.handler';
 
 import { MoreIcon } from 'assets';
 
@@ -30,8 +31,10 @@ export const CommonNodeComponentContainer = ({
     actions?: DropdownMenuActionProps[];
     children: ReactNode;
 }) => {
-    const { addMultipleNodes, deleteNode, getNodeData, setStartingStep } =
+    const { addMultipleNodes, deleteNode, getNodeData, updateNodeData } =
         useFlowBuilder();
+
+    const [showInputTitle, setShowInputTitle] = useState(false);
 
     const { availableNodes } = useFlowBuilderApi();
 
@@ -47,6 +50,24 @@ export const CommonNodeComponentContainer = ({
         return data?.isStartingStep;
     }, [getNodeData, id]);
 
+    const insideActions = useMemo(() => {
+        if (!IsUndefinedOrNull(onlyActions))
+            return [
+                {
+                    name: onlyActions?.name,
+                    action: () => {
+                        onlyActions?.action?.();
+                    },
+                },
+            ];
+
+        return actions;
+    }, [actions, onlyActions]);
+
+    const handleTitleDoubleClick = () => {
+        setShowInputTitle(true);
+    };
+
     return (
         <div className=' text-white bg-white rounded-xl shadow-xl col-flex min-w-[200px] max-w-[400px] relative'>
             <div
@@ -58,16 +79,33 @@ export const CommonNodeComponentContainer = ({
                 <div className='flex gap-1 items-center'>
                     {CONSTANT_DATA?.icon}
                     <div className='flex flex-1 gap-3 items-center'>
-                        <p className='flex gap-1 items-center font-semibold'>
-                            {CONSTANT_DATA?.title}{' '}
-                            {/* <Tooltip
-                                asChild
-                                isArrow
-                                message={CONSTANT_DATA?.description}
+                        {showInputTitle ? (
+                            <div>
+                                <InputField
+                                    onMouseLeave={(e: any) => {
+                                        setTimeout(() => {
+                                            updateNodeData(id, {
+                                                ...data,
+                                                titleName: e?.target
+                                                    ?.value as any,
+                                            });
+                                            setShowInputTitle(false);
+                                        }, 2000);
+                                    }}
+                                    value={
+                                        data?.titleName || CONSTANT_DATA?.title
+                                    }
+                                />
+                            </div>
+                        ) : (
+                            <p
+                                className='flex gap-1 items-center font-semibold hover:cursor-text'
+                                onDoubleClick={handleTitleDoubleClick}
                             >
-                                <Icon isSvg source={ArcInfoSvgIcon} />
-                            </Tooltip> */}
-                        </p>
+                                {data?.titleName || CONSTANT_DATA?.title}{' '}
+                            </p>
+                        )}
+
                         {isStartingStep && (
                             <Badge
                                 label={'Starting Step'}
@@ -96,13 +134,7 @@ export const CommonNodeComponentContainer = ({
                                 ]);
                             },
                         },
-                        {
-                            name: 'Set Starting Step',
-                            visible: !isStartingStep,
-                            action: () => {
-                                setStartingStep(id);
-                            },
-                        },
+                        ...insideActions,
                         {
                             name: 'Delete',
                             action: () => {
@@ -119,39 +151,41 @@ export const CommonNodeComponentContainer = ({
                         shape='square'
                         icon={MoreIcon}
                         appearance='ghost'
+                        iconSize={28}
                         iconClass='text-white'
-                        size='xs'
+                        size='md'
                     />
                 </DropdownMenu>
             </div>
             {children}
-
-            <div className='overflow-hidden px-2 py-2 w-full'>
-                {!IsUndefinedOrNull(onlyActions) ? (
-                    <Button
-                        outline
-                        size='sm'
-                        wide
-                        className='w-full'
-                        onClick={() => {
-                            onlyActions?.action?.();
+            {type?.includes('ask_question') && (
+                <div className='relative p-1 bg-red-100'>
+                    <InputField
+                        type='number'
+                        onBlur={(val) => {
+                            updateNodeData(id, {
+                                ...data,
+                                timeout: +val,
+                            });
                         }}
-                    >
-                        {onlyActions?.name}
-                    </Button>
-                ) : (
-                    <DropdownActionButton
+                        value={data?.timeout || CONSTANT_DATA?.timeout}
                         size='sm'
-                        buttonProps={{
-                            wide: true,
-                            outline: true,
-                            className: 'w-full',
-                        }}
-                        hideOnNoAction
-                        actions={actions}
+                        prefix={
+                            <div className='flex gap-2 items-center text-xs text-black'>
+                                Timeout
+                                <TimerIcon size={12} />
+                            </div>
+                        }
+                        placeholder={'Ex: 20 min'}
+                        suffix={<p className='text-xs text-black'>Minutes</p>}
                     />
-                )}
-            </div>
+                    <FlowBuilderCommonSourceHandler
+                        validateFromSourceHandle
+                        id={`timeout`}
+                        className='w-3 h-3 bg-red-400 border-2 border-white'
+                    />
+                </div>
+            )}
         </div>
     );
 };

@@ -30,6 +30,7 @@ export const FlowBuilderCustomEdge = ({
 
     const isTrueCondition = id?.includes('condition-true');
     const isFalseCondition = id?.includes('condition-false');
+    const isTimeOut = id?.includes('timeout');
 
     // Handle delete functionality
     const handleDelete = () => {
@@ -47,9 +48,11 @@ export const FlowBuilderCustomEdge = ({
                         ? 'green'
                         : isFalseCondition
                         ? 'red'
-                        : '#A0A0A0', // Changed to blue color
+                        : isTimeOut
+                        ? 'red'
+                        : '#000000', // Changed to blue color
                     strokeWidth: 2,
-                    strokeDasharray: '4 4',
+                    // strokeDasharray: '4 4',
                 }}
             />
 
