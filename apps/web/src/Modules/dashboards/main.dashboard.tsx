@@ -47,7 +47,7 @@ const MainDashboard = () => {
                 />
             </div>
 
-            <div className='grid grid-cols-3 gap-4 justify-center'>
+            <div className='grid grid-cols-1 gap-4 justify-center sm:grid-cols-2 lg:grid-cols-3'>
                 <Card title='Phone Number Status'>
                     <div className='flex gap-2 items-center my-2'>
                         <div
@@ -129,7 +129,7 @@ const MainDashboard = () => {
                 </Card>
             </div>
 
-            <div className='grid grid-cols-2 gap-4'>
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
                 <Card title='Broadcast Stats'>
                     <BroadcastBarGraph />
                 </Card>
