@@ -1348,6 +1348,7 @@ const RenderUserMessageBubble = ({ message }) => {
                 )}
                 {renderComponent()}
             </div>
+
             {FormatDisplayDateStyled({
                 value: message?.created_at,
                 size: 'xs',
