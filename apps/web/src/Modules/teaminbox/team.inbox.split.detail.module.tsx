@@ -1225,8 +1225,6 @@ const RenderUserMessageBubble = ({ message }) => {
             method: 'markAsRead',
             methodParams: broadcastMessageid,
         });
-
-        if (success) RefetchGenericListing();
     };
 
     useEffect(() => {
