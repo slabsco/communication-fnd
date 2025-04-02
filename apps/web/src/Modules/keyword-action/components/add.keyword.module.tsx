@@ -101,7 +101,7 @@ const AddKeywordModule = ({
 
 export default AddKeywordModule;
 
-const openAddKeyword = ({ onAdd, initialValues }: any) => {
+export const openAddKeyword = ({ onAdd, initialValues }: any) => {
     Modal.open({
         component: AddKeywordModel,
         modalSize: 'xs',
