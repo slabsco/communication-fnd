@@ -1,4 +1,4 @@
-import { User2Icon } from 'lucide-react';
+import { AlertCircle, User2Icon } from 'lucide-react';
 import Link from 'next/link';
 
 import {
@@ -21,6 +21,7 @@ import {
     Modal,
     ModalBody,
     ModalContainer,
+    Tooltip,
 } from '@finnoto/design-system';
 
 import { EditSvgIcon, InfoCircleSvgIcon } from 'assets';
@@ -38,9 +39,8 @@ const BusinessProfileWhatsappInfoTab = () => {
 
     return (
         <div className='overflow-y-auto gap-3 px-3 py-5 w-full h-full col-flex'>
-            <RenderBusinessError businessInfo={businessInfo} />
             {!businessInfo?.verified_at && (
-                <div className='flex gap-2 items-center p-1 mb-3 rounded bg-error-dark text-error-content'>
+                <div className='flex gap-2 items-center p-1 mb-3 rounded bg-error text-error-content'>
                     <Icon source={InfoCircleSvgIcon} isSvg />
                     <p className='flex-1 text-sm'>
                         Your business is not verified. Please verify your
@@ -307,44 +307,36 @@ export const RenderBusinessError = ({ businessInfo }: any) => {
     const errors = getBusinessErrors(businessInfo);
 
     if (IsEmptyArray(errors)) return <></>;
+    return errors.map((item, index) => (
+        <BusinessErrorCard
+            key={index}
+            entityType={item.entity_type}
+            errors={item.errors}
+        />
+    ));
+};
+const BusinessErrorCard = ({ entityType, errors }) => {
+    if (entityType?.toLowerCase() === 'business') return <></>;
     return (
-        <div className='gap-1 p-3 rounded shadow col-flex bg-base-100'>
-            <h3 className='px-2 py-1 rounded text-warning bg-warning/20'>
-                (Note* This is the official message from the whatsapp!!)
-            </h3>
-            <div className='flex gap-2'>
-                {getBusinessErrors(businessInfo)?.map((err) => {
-                    return (
-                        <div
-                            key={err.id}
-                            className='flex-1 gap-2 items-center p-2 mb-3 rounded col-flex bg-error-dark/30 text-error'
-                        >
-                            <Icon source={InfoCircleSvgIcon} isSvg />
-                            <p>Entity Type: {err?.entity_type}</p>
+        <div className='p-4 w-full max-w-lg bg-white rounded-lg shadow-sm'>
+            <h2 className='mb-2 text-lg font-semibold'>
+                Error Entity Type: {entityType}
+            </h2>
 
-                            <ol className='list-item gap-1 col-flex'>
-                                {err?.errors.map((val) => {
-                                    return (
-                                        <li
-                                            key={val?.error_code}
-                                            className='flex-1 gap-1 p-1 text-sm bg-white rounded col-flex text-base-content'
-                                        >
-                                            <p className='p-1 rounded bg-error/90 text-error-content'>
-                                                PROBLEM:{' '}
-                                                {val?.error_description}
-                                            </p>
-                                            <p className='p-1 rounded bg-success/90 text-success-content'>
-                                                POSSIBLE SOLUTION:{' '}
-                                                {val?.possible_solution}
-                                            </p>
-                                        </li>
-                                    );
-                                })}
-                            </ol>
+            {errors.map((error, index) => (
+                <div key={index} className='space-y-3'>
+                    <div className='flex gap-2 items-center'>
+                        <Tooltip message={error.possible_solution}>
+                            <AlertCircle className='mt-1 w-5 h-5 text-red-500 shrink-0' />
+                        </Tooltip>
+                        <div className='flex gap-2 items-start'>
+                            <p className='text-red-500'>
+                                {error.error_description}
+                            </p>
                         </div>
-                    );
-                })}
-            </div>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 };

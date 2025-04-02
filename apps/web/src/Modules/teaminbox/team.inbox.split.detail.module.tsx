@@ -1,6 +1,7 @@
 'use client';
 
 import axios from 'axios';
+import { addHours } from 'date-fns';
 import EmojiPicker from 'emoji-picker-react';
 import {
     Check,
@@ -9,6 +10,7 @@ import {
     Contact,
     FileIcon,
     Info,
+    MessageCircle,
     Reply,
     User,
 } from 'lucide-react';
@@ -81,7 +83,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import ArcGenericSplitDetailComponent from '../../Components/ArcGenericSplitDetail/arcGenericSplitDetail.component';
 import { AsyncTemplateViewer } from '../broadcast/your-templates/components/TemplateViewer.component';
-import { YOUR_TEMPLATE_SUPPORTED_CONFIG } from '../broadcast/your-templates/components/YourTemplateEditor.button.component';
 import { MessageSectionPreview } from '../broadcast/your-templates/components/YourTemplatesPriview.component';
 import { openAddContactForm } from '../contact/add.contact.modal.form';
 import { openQuickReplySelect } from '../quickreply/quick.reply.select.list';
@@ -298,7 +299,47 @@ const RightSection = ({
                         </div>
                     </div>
 
-                    {/* Contact Info Section */}
+                    {/* Chat Section */}
+                    <div className='space-y-2'>
+                        <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
+                            <h3 className='flex gap-2 items-center font-medium'>
+                                <MessageCircle size={18} />
+                                Chat info
+                            </h3>
+                        </div>
+                        {/* Contact Details */}
+                        <div className='space-y-4'>
+                            {data?.expired_at ? (
+                                <div>
+                                    <label className='text-sm text-gray-500'>
+                                        Chat Expired At
+                                    </label>
+                                    <div>
+                                        {FormatDisplayDateStyled({
+                                            value: data?.expired_at as any,
+                                        })}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className='text-sm text-gray-500'>
+                                        Chat Expires at
+                                    </label>
+                                    <div>
+                                        {FormatDisplayDateStyled({
+                                            value: addHours(
+                                                new Date(
+                                                    data?.last_activity_at
+                                                ),
+                                                23
+                                            ) as any,
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    {/* Contact Section */}
                     <div className='space-y-2'>
                         <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
                             <h3 className='flex gap-2 items-center font-medium'>
@@ -306,7 +347,6 @@ const RightSection = ({
                                 Contact info
                             </h3>
                         </div>
-
                         {/* Contact Details */}
                         <div className='space-y-4'>
                             <div>

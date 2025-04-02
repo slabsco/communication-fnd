@@ -60,6 +60,20 @@ export const useBusinessUserHook = ({
             refetch?.(response);
         },
     });
+    const { mutate: reInviteUser } = useMutation({
+        mutationKey: ['invite_business_user'],
+        mutationFn: async (id: number) => {
+            const { response, success } = await FetchData({
+                className: BusinessUserInvitationController,
+                method: 'resend',
+                methodParams: id,
+            });
 
-    return { removeUser, inviteUser, removeBusinessUser };
+            if (!success) return toastBackendError(response);
+            Toast.success({ description: 'User Invited' });
+            refetch?.(response);
+        },
+    });
+
+    return { removeUser, inviteUser, removeBusinessUser, reInviteUser };
 };

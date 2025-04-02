@@ -123,7 +123,7 @@ const ScheduleBroadcastTemplateListModule = () => {
         ],
         actions: [
             {
-                name: 'Broadcast Message',
+                name: 'Send Broadcast',
                 type: 'create',
                 action: () => {
                     Navigation.navigate({
@@ -132,6 +132,21 @@ const ScheduleBroadcastTemplateListModule = () => {
                 },
             },
         ],
+        customNoData: {
+            enableAddNew: true,
+            title: 'No Broadcast Campaigns',
+            description:
+                'To send a new broadcast campaign, click the button below',
+            button: {
+                name: 'Send Broadcast',
+                appearance: 'primary',
+                onClick: () => {
+                    Navigation.navigate({
+                        url: SCHEDULE_BROADCAST_CREATION_ROUTE,
+                    });
+                },
+            },
+        },
     };
 
     return <GenericDocumentListingComponent {...props} />;

@@ -1,13 +1,20 @@
 import {
     Navigation,
     ObjectDto,
+    RefetchGenericListing,
+    useRecursiveFetch,
     WHATSAPP_TEMPLATE_CREATION_ROUTE,
     WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
-import { ConfirmUtil } from '@finnoto/design-system';
+import { Badge, ConfirmUtil } from '@finnoto/design-system';
+import {
+    BadgeInterface,
+    PolarisBadgeAppearance,
+} from '@finnoto/design-system/src/Components/Data-display/Badge/badge.types';
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../../Components/GenericDocumentListing/genericDocumentListing.types';
+import { WhatsappTemplateStatusEnum } from './enums/whatsapp.template.category.enum';
 import { useHandleTemplate } from './hooks/useHandleTemplate.hook';
 import { openImportYourTemplateModal } from './ImportYourTemplateModal';
 
@@ -15,6 +22,11 @@ import { CopySvgIcon, DeleteSvgIcon } from 'assets';
 
 const YourTemplatesListModule = () => {
     const { deleteTemplate } = useHandleTemplate();
+
+    useRecursiveFetch(RefetchGenericListing, {
+        delay: 1000,
+        repeat: Infinity,
+    });
     const props: GenericDocumentListingProps = {
         type: 'communication_template',
         name: 'Your Template List',
@@ -89,6 +101,14 @@ const YourTemplatesListModule = () => {
             {
                 name: 'status',
                 key: 'status',
+                renderValue: (temp) => {
+                    const { appearance } = GetTemplateStatusAppearance(
+                        temp.status_id
+                    );
+                    return (
+                        <Badge label={temp.status} appearance={appearance} />
+                    );
+                },
             },
             {
                 name: 'Language',
@@ -105,3 +125,26 @@ const YourTemplatesListModule = () => {
 };
 
 export default YourTemplatesListModule;
+
+export const GetTemplateStatusAppearance = (
+    status_id: number
+): { appearance: BadgeInterface['appearance'] } => {
+    switch (status_id) {
+        case WhatsappTemplateStatusEnum.APPROVED:
+            return {
+                appearance: 'success',
+            };
+        case WhatsappTemplateStatusEnum.REJECTED:
+            return {
+                appearance: 'error',
+            };
+        case WhatsappTemplateStatusEnum.PENDING:
+            return {
+                appearance: 'info',
+            };
+        default:
+            return {
+                appearance: 'base',
+            };
+    }
+};

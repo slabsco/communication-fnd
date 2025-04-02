@@ -27,9 +27,6 @@ export const useBusinessPreference = (options?: {
     });
 
     const { mutateAsync: verifyNumber } = useMutation({
-        onSuccess: () => {
-            refetchBusinessInfo();
-        },
         mutationFn: async (id: string) => {
             const { response, success } = await FetchData({
                 className: BusinessController,
@@ -37,8 +34,11 @@ export const useBusinessPreference = (options?: {
                 methodParams: id,
             });
 
-            if (success) return response;
-            return Promise.reject('Error');
+            if (success) {
+                refetchBusinessInfo();
+                return response;
+            }
+            return toastBackendError(response, response?.error?.error_user_msg);
         },
     });
 

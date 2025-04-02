@@ -8,7 +8,7 @@ import { openBusinessUserInviteModal } from './business.user.invite.modal';
 import { DeleteSvgIcon } from 'assets';
 
 const InviteUserListModule = () => {
-    const { removeUser } = useBusinessUserHook({
+    const { removeUser, reInviteUser } = useBusinessUserHook({
         refetch: () => {
             RefetchGenericListing();
         },
@@ -48,6 +48,21 @@ const InviteUserListModule = () => {
                             'Are you sure you want to remove this user? This action cannot be undone and will permanently remove the user from the system.',
                         isReverseAction: true,
                         onConfirmPress: () => removeUser(data?.id),
+                    });
+                },
+            },
+            {
+                name: 'Resend Invitation',
+                type: 'inner',
+                action: (data) => {
+                    ConfirmUtil({
+                        isArc: true,
+                        appearance: 'success',
+                        title: `Re invite user ?`,
+                        message:
+                            'Are you sure you want to re invite this user? This action cannot be undone ?',
+                        isReverseAction: false,
+                        onConfirmPress: () => reInviteUser(data?.id),
                     });
                 },
             },

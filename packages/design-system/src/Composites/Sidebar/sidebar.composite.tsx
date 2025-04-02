@@ -71,7 +71,7 @@ export const Sidebar = ({
                 <RenderMenus menus={menus} showIcon resolveUrl />
                 <div className='mt-auto'></div>
                 <RenderMenus menus={bottomMenus} showIcon resolveUrl />
-                {!isArc && <ThemeModeSwitch />}
+                {/* {!isArc && <ThemeModeSwitch />} */}
 
                 <Profilecomponent {...{ isSidebarExpand }} />
                 {isArc && !isSidebarExpand && (

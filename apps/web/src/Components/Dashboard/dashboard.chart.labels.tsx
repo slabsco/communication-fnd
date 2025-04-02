@@ -37,7 +37,7 @@ export const DashboardChartLabelItem = ({
     labelClassName,
 }: ILabelItemProps) => {
     return (
-        <div className='flex items-center gap-2' onClick={onClick}>
+        <div className='flex gap-2 items-center' onClick={onClick}>
             {color && (
                 <div
                     className={cn('w-3 h-3 rounded-full')}
@@ -48,13 +48,13 @@ export const DashboardChartLabelItem = ({
             )}
             <p
                 className={cn(
-                    'font-medium text-polaris-size-325 text-polaris-text',
+                    'flex gap-3 items-center font-medium capitalize text-polaris-size-325 text-polaris-text',
                     labelClassName
                 )}
             >
                 {label}
                 {rightValue && (
-                    <span className='font-normal text-xxs'>{rightValue}</span>
+                    <span className='text-xs font-medium'>{rightValue}</span>
                 )}
             </p>
         </div>
