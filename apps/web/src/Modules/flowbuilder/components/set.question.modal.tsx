@@ -14,6 +14,7 @@ import {
     FlowBuilderQuestionModalHeader,
 } from './flowbuilder.answer.options.component';
 import FlowBuilderMessageComponent from './flowbuilder.message.component';
+import { TimeOutFieldInput } from './set.button.question.modal';
 
 const SetQuestionModal = ({
     data,
@@ -29,12 +30,14 @@ const SetQuestionModal = ({
     const [variableName, setVariableName] = useState<string>(
         data?.variableName || ''
     );
+    const [timeout, setTimeout] = useState<number>(data?.timeout || '');
 
     const sendData = () => {
         getData({
             html,
             answer,
             variableName,
+            timeout,
         });
     };
 
@@ -76,6 +79,7 @@ const SetQuestionModal = ({
                         }}
                     />
                 </div>
+                <TimeOutFieldInput setTimeout={setTimeout} timeout={timeout} />
             </ModalBody>
             <ModalFooter className='py-4 justify'>
                 <div className='flex-1 gap-4 row-flex'>

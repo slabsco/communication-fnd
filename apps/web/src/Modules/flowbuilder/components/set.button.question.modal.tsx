@@ -1,3 +1,4 @@
+import { TimerIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -31,6 +32,7 @@ const SetButtonQuestionModal = ({
     const [variableName, setVariableName] = useState<string>(
         data?.variableName || ''
     );
+    const [timeout, setTimeout] = useState<number>(data?.timeout || '');
 
     const sendData = () => {
         getData({
@@ -39,6 +41,7 @@ const SetButtonQuestionModal = ({
             header,
             footer,
             variableName,
+            timeout,
         });
     };
 
@@ -100,6 +103,7 @@ const SetButtonQuestionModal = ({
                         }}
                     />
                 </div>
+                <TimeOutFieldInput setTimeout={setTimeout} timeout={timeout} />
             </ModalBody>
             <ModalFooter className='py-4 justify'>
                 <div className='flex-1 gap-4 row-flex'>
@@ -143,4 +147,33 @@ export const openSetButtonQuestionModal = ({
             getData,
         },
     });
+};
+
+export const TimeOutFieldInput = ({
+    timeout,
+    setTimeout,
+}: {
+    setTimeout: any;
+    timeout: number;
+}) => {
+    return (
+        <div className='gap-2 col-flex'>
+            <FlowBuilderQuestionModalHeader name={'Timeout'} />
+            <InputField
+                type='number'
+                onBlur={(val) => {
+                    setTimeout(+val);
+                }}
+                value={timeout}
+                prefix={
+                    <div className='flex gap-2 items-center text-black'>
+                        Timeout
+                        <TimerIcon size={12} />
+                    </div>
+                }
+                placeholder={'Ex: 20 min'}
+                suffix={<p className='text-black'>Minutes</p>}
+            />
+        </div>
+    );
 };

@@ -12,6 +12,7 @@ import {
 import { FlowBuilderQuestionModalHeader } from './flowbuilder.answer.options.component';
 import { FlowBuilderListAnswerOptions } from './flowbuilder.list.answer.options.component';
 import FlowBuilderMessageComponent from './flowbuilder.message.component';
+import { TimeOutFieldInput } from './set.button.question.modal';
 import { Section } from './set.question.modal';
 
 const SetListQuestionModal = ({
@@ -32,6 +33,8 @@ const SetListQuestionModal = ({
     const [buttonName, setButtonName] = useState<string>(
         data?.buttonName || ''
     );
+
+    const [timeout, setTimeout] = useState<number>(data?.timeout || '');
 
     const initialSections = data?.sections || [];
 
@@ -61,6 +64,7 @@ const SetListQuestionModal = ({
             sections,
             buttonName,
             variableName,
+            timeout,
         });
     };
 
@@ -128,6 +132,7 @@ const SetListQuestionModal = ({
                         Only {max} answer are allowed!
                     </div>
                 )}
+                <TimeOutFieldInput setTimeout={setTimeout} timeout={timeout} />
             </ModalBody>
             <ModalFooter className='py-4 justify'>
                 <div className='flex-1 gap-4 row-flex'>

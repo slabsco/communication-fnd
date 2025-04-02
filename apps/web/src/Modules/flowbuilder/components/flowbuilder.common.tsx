@@ -1,4 +1,3 @@
-import { TimerIcon } from 'lucide-react';
 import { ReactNode, useMemo, useState } from 'react';
 
 import { IsUndefinedOrNull } from '@finnoto/core';
@@ -158,27 +157,10 @@ export const CommonNodeComponentContainer = ({
                 </DropdownMenu>
             </div>
             {children}
-            {type?.includes('ask_question') && (
-                <div className='relative p-1 bg-red-100'>
-                    <InputField
-                        type='number'
-                        onBlur={(val) => {
-                            updateNodeData(id, {
-                                ...data,
-                                timeout: +val,
-                            });
-                        }}
-                        value={data?.timeout || CONSTANT_DATA?.timeout}
-                        size='sm'
-                        prefix={
-                            <div className='flex gap-2 items-center text-xs text-black'>
-                                Timeout
-                                <TimerIcon size={12} />
-                            </div>
-                        }
-                        placeholder={'Ex: 20 min'}
-                        suffix={<p className='text-xs text-black'>Minutes</p>}
-                    />
+            {data?.timeout > 0 && (
+                <div className='relative p-2 m-2 mt-0 bg-red-100 rounded text-primary'>
+                    Timeout:
+                    <span className='font-medium'>{data?.timeout} Minutes</span>
                     <FlowBuilderCommonSourceHandler
                         validateFromSourceHandle
                         id={`timeout`}

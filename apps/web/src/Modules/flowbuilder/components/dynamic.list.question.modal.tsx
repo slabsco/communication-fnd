@@ -19,6 +19,7 @@ import {
     dynamicDefaultValueFormatter,
     DynamicSetConditionExample,
 } from '../dynamic.node.script.example';
+import { TimeOutFieldInput } from './set.button.question.modal';
 
 const SetDynamicDataModal = ({
     data,
@@ -40,6 +41,8 @@ const SetDynamicDataModal = ({
         data?.dataScript || dynamicDefaultValueFormatter
     );
 
+    const [timeout, setTimeout] = useState<number>(data?.timeout || '');
+
     const [variableName, setVariableName] = useState<string>(
         data?.variableName || ''
     );
@@ -49,6 +52,7 @@ const SetDynamicDataModal = ({
             dataScript,
             apiConfigScript,
             variableName,
+            timeout,
         });
     };
 
@@ -100,6 +104,7 @@ const SetDynamicDataModal = ({
                         'Users Response will be saved on this variable Name'
                     }
                 />
+                <TimeOutFieldInput setTimeout={setTimeout} timeout={timeout} />
             </ModalBody>
             <ModalFooter className='py-4 justify'>
                 <div className='flex-1 gap-4 row-flex'>
