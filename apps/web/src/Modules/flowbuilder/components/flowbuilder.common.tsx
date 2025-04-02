@@ -60,7 +60,7 @@ export const CommonNodeComponentContainer = ({
                 },
             ];
 
-        return actions;
+        return actions || [];
     }, [actions, onlyActions]);
 
     const handleTitleDoubleClick = () => {
