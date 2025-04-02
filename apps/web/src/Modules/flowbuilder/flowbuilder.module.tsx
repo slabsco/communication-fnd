@@ -31,7 +31,7 @@ const FlowBuilderModule = ({
                     <div className='overflow-hidden gap-1 w-full h-full col-flex'>
                         <ArcBreadcrumbs
                             mainClassName='rounded py-4 rounded-none pb-2'
-                            title={'Configure Client'}
+                            title={name}
                             route={[
                                 { name: 'Home', link: HOME_ROUTE },
                                 { name: 'Chatbots', link: CHATBOT_LIST_ROUTE },
