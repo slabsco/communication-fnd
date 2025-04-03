@@ -1,16 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import {
+    Authentication,
     FormBuilderSubmitType,
     useFormBuilder,
-    useUserHook,
     useUserProfileHook,
 } from '@finnoto/core';
 import {
     Button,
-    Modal,
     ModalBody,
     ModalContainer,
+    SlidingPane,
 } from '@finnoto/design-system';
 
 import VerifyMobileOtp from '@Components/VerifyEmailMobileOtp/verifyMobileOtp.component';
@@ -33,7 +33,7 @@ const AddEditProfileMobile = ({ dialing_code, mobile }: any) => {
             placeholder: 'Enter Mobile',
             label: 'Mobile Number',
             required: true,
-            maxLength: 10,
+            max: 999999999999,
         },
         otp: {
             type: 'text',
@@ -48,9 +48,10 @@ const AddEditProfileMobile = ({ dialing_code, mobile }: any) => {
         { setError, reset }
     ) => {
         const response: any = await changeMobile({ ...values });
-        if (response?.sent_otp) setOtpSent(true);
+        if (response?.sent_otp) return setOtpSent(true);
 
-        Modal.close();
+        Authentication.refreshUserData();
+        SlidingPane.close();
     };
 
     const { getValues, renderFormFields, handleSubmit, watch, handleFormData } =
