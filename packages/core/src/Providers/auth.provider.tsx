@@ -260,7 +260,12 @@ export const AuthProvider = ({ children }: any) => {
     }, []);
 
     if (!isPublicRoute(pathname)) {
-        if (!userObj.loginCheckDone || !userObj.id || loading) {
+        if (
+            !userObj.loginCheckDone ||
+            !userObj.id ||
+            loading ||
+            isLoadingMenuDetail
+        ) {
             return <PageLoader />;
         }
 
