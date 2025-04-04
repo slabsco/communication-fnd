@@ -6,6 +6,7 @@ import {
     authenticateBusiness,
     BUSINESS_PROFILE_ROUTE,
     groupBusiness,
+    hasRoleIdentifierPresent,
     Navigation,
     PRODUCT_IDENTIFIER,
     useApp,
@@ -312,6 +313,7 @@ export const ArcHeaderPopover = ({ children }: any) => {
                 Navigation.navigate({ url: BUSINESS_PROFILE_ROUTE });
             },
             iconSize: 16,
+            visible: hasRoleIdentifierPresent('ua_team_manager'),
         },
         {
             name: 'Logout',

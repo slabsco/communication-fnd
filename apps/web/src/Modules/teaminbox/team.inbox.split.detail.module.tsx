@@ -614,7 +614,7 @@ const AddInboxModal = ({
     };
 
     const isAllAttributesFilled = useMemo(() => {
-        if (IsEmptyObject(templateData?.sample_contents)) return false;
+        if (IsEmptyObject(templateData?.sample_contents)) return true;
         if (IsEmptyObject(attributes)) return false;
 
         const sample_contents = Object.values(templateData?.sample_contents);

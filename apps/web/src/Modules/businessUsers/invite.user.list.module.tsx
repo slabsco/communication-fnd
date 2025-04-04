@@ -19,6 +19,7 @@ const InviteUserListModule = () => {
         table: [
             { name: 'Email', key: 'email' },
             { name: 'Invited At', key: 'created_at', type: 'date_time' },
+            { name: 'Role', key: 'role' },
             { name: 'Accepted At', key: 'accepted_at', type: 'date_time' },
             { name: 'Rejected At', key: 'rejected_at', type: 'date_time' },
         ],

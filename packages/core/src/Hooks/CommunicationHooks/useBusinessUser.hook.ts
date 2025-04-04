@@ -28,6 +28,28 @@ export const useBusinessUserHook = ({
             refetch?.(response);
         },
     });
+    const { mutate: reassignRole } = useMutation({
+        mutationKey: ['reassignROle'],
+
+        mutationFn: async ({
+            id,
+            role_id,
+        }: {
+            id: number;
+            role_id: number;
+        }) => {
+            const { response, success } = await FetchData({
+                className: BusinessUserController,
+                methodParams: { id, role_id },
+                method: 'reassignRole',
+            });
+
+            if (!success) return toastBackendError(response);
+            Toast.success({ description: 'Role Reassigned' });
+
+            refetch?.(response);
+        },
+    });
 
     const { mutate: removeBusinessUser } = useMutation({
         mutationKey: ['business_user_removal'],
@@ -49,6 +71,8 @@ export const useBusinessUserHook = ({
     const { mutate: inviteUser } = useMutation({
         mutationKey: ['invite_business_user'],
         mutationFn: async (values) => {
+            console.log({ values });
+
             const { response, success } = await FetchData({
                 className: BusinessUserInvitationController,
                 method: 'create',
@@ -75,5 +99,11 @@ export const useBusinessUserHook = ({
         },
     });
 
-    return { removeUser, inviteUser, removeBusinessUser, reInviteUser };
+    return {
+        removeUser,
+        inviteUser,
+        removeBusinessUser,
+        reInviteUser,
+        reassignRole,
+    };
 };

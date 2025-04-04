@@ -7,6 +7,7 @@ import { Badge, ConfirmUtil } from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../Components/GenericDocumentListing/genericDocumentListing.types';
+import { openBusinessUserReassignRoleModal } from './business.user.invite.modal';
 
 import { DeleteSvgIcon } from 'assets';
 
@@ -42,7 +43,17 @@ const BusinessUsersListModule = () => {
                 },
             },
             { name: 'Email', key: 'email' },
-            { name: 'Status', key: 'active', type: 'activate' },
+            {
+                name: 'Status',
+                key: 'active',
+                type: 'activate',
+                dynamicStatus: (status, item) => {
+                    if (isOwner(item.user_id)) return 'activate_badge';
+                    if (user.id === item?.user_id) return 'activate_badge';
+                    return 'activate';
+                },
+            },
+            { name: 'Role', key: 'role' },
             { name: 'Dialling Code', key: 'dialing_code' },
             { name: 'Mobile', key: 'mobile' },
         ],
@@ -54,6 +65,7 @@ const BusinessUsersListModule = () => {
                 isCancel: true,
                 visible: (data) => {
                     if (user.id === data?.user_id) return false;
+                    if (isOwner(data.user_id)) return false;
                     return true;
                 },
                 action: (data) => {
@@ -66,6 +78,18 @@ const BusinessUsersListModule = () => {
                         isReverseAction: true,
                         onConfirmPress: () => removeBusinessUser(data?.id),
                     });
+                },
+            },
+            {
+                name: 'Reassign Role',
+                type: 'inner',
+                visible: (data) => {
+                    if (user.id === data?.user_id) return false;
+                    if (isOwner(data.user_id)) return false;
+                    return true;
+                },
+                action: (data) => {
+                    openBusinessUserReassignRoleModal(data);
                 },
             },
         ],

@@ -104,7 +104,7 @@ export class User {
     }
 
     getProductId() {
-        return this.userObject?.auth_attributes?.product_id;
+        return this.userObject?.auth_attributes?.product_id || 1;
     }
 
     // reset access token
