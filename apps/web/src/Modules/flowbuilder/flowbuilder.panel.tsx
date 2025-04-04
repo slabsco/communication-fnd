@@ -1,0 +1,105 @@
+import { IsEmptyArray, SortArrayObjectBy } from '@finnoto/core';
+
+import FlowBuilderCard from './components/flowbuilder.card';
+import FlowBuilderOperatorsCard from './components/flowbuilder.pannel.operators';
+import { useFlowBuilderApi } from './flowbuilder.api.context';
+import { useFlowBuilder } from './flowbuilder.context';
+import { CreateNewNode } from './utils/flowbuilder.common.utils';
+
+const FlowBuilderPanel = () => {
+    const { addMultipleNodes, nodes } = useFlowBuilder();
+    const { availableNodes } = useFlowBuilderApi();
+
+    const {
+        main: mainComponent,
+        operators,
+        dynamicNode,
+    } = Object.entries(availableNodes).reduce(
+        (acc, [key, value]: any) => {
+            if (value?.type === 'main') acc.main.push(value);
+            if (value?.type === 'operators') acc.operators.push(value);
+            if (value?.type === 'dynamic') acc.dynamicNode.push(value);
+            return acc;
+        },
+        { main: [], operators: [], dynamicNode: [] }
+    );
+
+    const addNode = (component: any) => {
+        const lastNode = nodes[nodes?.length - 1];
+
+        const node = CreateNewNode({
+            component: component,
+            position: {
+                x: lastNode?.position?.x - 100,
+                y: lastNode?.position?.y - 200,
+            },
+        });
+
+        if (nodes?.length) return addMultipleNodes([node]);
+        addMultipleNodes([{ ...node } as any]);
+    };
+
+    return (
+        <div className='overflow-y-auto p-2 w-2/12 h-full bg-white rounded col-flex'>
+            <div className='gap-2 col-flex'>
+                {mainComponent?.map((val) => {
+                    return (
+                        <FlowBuilderCard
+                            color={val?.style.color}
+                            title={val?.title}
+                            icon={val?.icon}
+                            description={val?.description}
+                            key={val.identifier}
+                            onClick={() => {
+                                addNode(val?.identifier);
+                            }}
+                        />
+                    );
+                })}
+            </div>
+
+            {!IsEmptyArray(operators) && (
+                <div className='mt-2 border-t'>
+                    <h3 className='mt-1 text-base font-medium'>Operators</h3>
+                    <div className='grid grid-cols-2 gap-2 items-center mt-1'>
+                        {SortArrayObjectBy(operators, 'title', 'asc')?.map(
+                            (val) => {
+                                return (
+                                    <FlowBuilderOperatorsCard
+                                        icon={val?.icon}
+                                        key={val?.identifier}
+                                        onClick={() => addNode(val?.identifier)}
+                                        color={val?.style.color}
+                                        title={val?.title}
+                                    />
+                                );
+                            }
+                        )}
+                    </div>
+                </div>
+            )}
+            {!IsEmptyArray(dynamicNode) && (
+                <div className='mt-2 border-t'>
+                    <h3 className='mt-1 text-base font-medium'>Dynamic Node</h3>
+                    <div className='grid grid-cols-2 gap-2 items-center mt-1'>
+                        {SortArrayObjectBy(dynamicNode, 'title', 'asc')?.map(
+                            (val) => {
+                                return (
+                                    <FlowBuilderOperatorsCard
+                                        icon={val?.icon}
+                                        key={val?.identifier}
+                                        onClick={() => addNode(val?.identifier)}
+                                        color={val?.style.color}
+                                        title={val?.title}
+                                    />
+                                );
+                            }
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default FlowBuilderPanel;

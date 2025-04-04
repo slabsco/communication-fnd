@@ -76,6 +76,7 @@ export const AppProvider = ({ children }: any) => {
     );
 
     const basePath = useMemo(() => {
+        return '/';
         if (isExpense) {
             if (ExpenseRouteUtils.CheckVendorExpenseRoute(pathname)) {
                 return VENDOR_EXPENSE_DASHBOARD_ROUTE;

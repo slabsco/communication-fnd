@@ -36,6 +36,7 @@ export * from './Inputs/RichTextEditor/richTextEditor.component';
 export * from './Inputs/Button/polaris.action.button.component';
 export * from './Inputs/InputField/richTextInput.component';
 export * from './Inputs/InputField/mention.field.input.component';
+export * from './Inputs/InputField/js.editor.component';
 
 export * from './Inputs/DateRangeFilter';
 export * from './Inputs/DropdownMenu/selectable.dropdown.menu.component';

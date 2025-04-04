@@ -121,7 +121,7 @@ export const Popover = forwardRef(
                 <PopoverContent
                     className={cn(
                         {
-                            'w-[var(--radix-popper-anchor-width)] ': autoWidth,
+                            'w-[var(--radix-popper-anchor-width)]': autoWidth,
                         },
                         className
                     )}

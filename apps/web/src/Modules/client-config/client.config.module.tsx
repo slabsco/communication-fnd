@@ -61,7 +61,7 @@ const ClientConfigModule = () => {
                 route={[
                     { name: 'Home', link: HOME_ROUTE },
                     { name: 'Developers' },
-                    { name: 'Client Config' },
+                    { name: 'API Docs' },
                 ]}
             />
             <div className='flex-1 gap-4 p-4 rounded col-flex bg-polaris-bg-surface'>

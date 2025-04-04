@@ -33,8 +33,6 @@ export const useUserProfileHook = () => {
             mobile: string;
             dialing_code: string;
         }) => {
-            console.log({ values });
-
             const { response, success } = await FetchData({
                 className: UserProfileController,
                 method: 'verifyMobile',

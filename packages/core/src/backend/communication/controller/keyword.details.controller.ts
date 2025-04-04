@@ -51,4 +51,5 @@ export enum ActionTypeEnum {
     SEND_TEMPLATE_MESSAGE = 1122,
     SEND_DOCUMENT = 1123,
     SEND_IMAGE = 1124,
+    CHATBOT = 1125,
 }

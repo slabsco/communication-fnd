@@ -7,7 +7,7 @@ import { ObjectDto } from '../backend/Dtos';
 import { MenuController } from '../backend/meta/controllers/menu.controller';
 import { MetaBusinessController } from '../backend/meta/controllers/meta.business.controller';
 import { PublicRoutes, USER } from '../Constants';
-import { useOpenProperties } from '../Hooks';
+import { useMutation, useOpenProperties } from '../Hooks';
 import { useApp } from '../Hooks/useApp.hook';
 import { FetchData } from '../Hooks/useFetchData.hook';
 import { useInterval } from '../Hooks/useInterval.hook';
@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }: any) => {
     const { isReady, pathname, asPath } = useRouter();
 
     const [loading, setLoading] = useState(true);
-    const [isLoadingMenuDetail, setIsLoadingMenuDetail] = useState(true);
 
     const { user: userObj } = useUserHook();
     const {
@@ -112,8 +111,6 @@ export const AuthProvider = ({ children }: any) => {
     const getMenuId = useCallback(() => {
         let path: any = {};
 
-        console.log({ modules });
-
         modules.forEach((module: ObjectDto) => {
             if (path?.id) return;
             path = module.menus?.find(
@@ -128,22 +125,23 @@ export const AuthProvider = ({ children }: any) => {
         return null;
     }, [modules, pathname]);
 
-    const loadMenuDetails = async (menu_id: number) => {
-        setIsLoadingMenuDetail(true);
-        const { success, response } = await FetchData({
-            className: MenuController,
-            method: 'show',
-            methodParams: menu_id,
+    const { mutateAsync: loadMenuDetails, isLoading: isLoadingMenuDetail } =
+        useMutation({
+            cacheTime: Infinity,
+            mutationFn: async (menuId: number) => {
+                const { success, response } = await FetchData({
+                    className: MenuController,
+                    method: 'show',
+                    methodParams: menuId,
+                });
+
+                if (success) {
+                    setMenuDetails(response);
+                } else {
+                    setMenuDetails(null);
+                }
+            },
         });
-
-        if (success) {
-            setMenuDetails(response);
-        } else {
-            setMenuDetails(null);
-        }
-
-        setIsLoadingMenuDetail(false);
-    };
 
     const checkIsSameMenu = useCallback(
         (menu_id: number) => {
@@ -233,16 +231,11 @@ export const AuthProvider = ({ children }: any) => {
 
     useEffect(() => {
         if (!(isPublicRoute(pathname) || isMenuLoading || loading)) {
-            setIsLoadingMenuDetail(true);
-
             const menu_id = getMenuId();
-
-            console.log({ menu_id });
 
             if (menu_id) {
                 loadMenuDetails(menu_id);
             } else {
-                setIsLoadingMenuDetail(false);
                 setMenuDetails(null);
             }
         }
@@ -274,7 +267,48 @@ export const AuthProvider = ({ children }: any) => {
                     menu: checkIsSameMenu(menuDetails.id) ? menuDetails : null,
                 })
             ) : (
-                <div /> // TO-DO: Add error page for page not found!
+                <div className='flex flex-col justify-center items-center bg-gray-50 h-content-screen'>
+                    <div
+                        className='p-8 max-w-md text-center bg-white rounded-lg shadow-lg opacity-0 transition-opacity duration-500'
+                        style={{
+                            animation: 'fadeIn 0.5s forwards',
+                            animationDelay: '1s',
+                        }}
+                    >
+                        <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            className='mx-auto w-16 h-16 text-red-500'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            stroke='currentColor'
+                        >
+                            <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2}
+                                d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                            />
+                        </svg>
+                        <h2 className='mt-6 text-2xl font-bold text-gray-800'>
+                            Access Denied
+                        </h2>
+                        <p className='mt-2 text-gray-600'>
+                            You don&apos;t have permission to access this page.
+                        </p>
+                        <p className='mt-2 text-gray-600'>
+                            Please contact your administrator if you believe
+                            this is an error.
+                        </p>
+                        <button
+                            onClick={() =>
+                                Navigation.navigate({ url: basePath || '/' })
+                            }
+                            className='px-6 py-2 mt-6 text-white rounded-md transition-colors bg-primary hover:bg-primary-dark'
+                        >
+                            Go to Home
+                        </button>
+                    </div>
+                </div>
             );
 
         if (isExpense && IsObjectHaveKeys(ExpenseWrappers) && expenseType) {

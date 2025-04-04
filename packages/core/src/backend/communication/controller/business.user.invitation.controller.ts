@@ -12,6 +12,10 @@ export class BusinessUserInvitationController extends BaseModel {
         return this.post();
     }
 
+    async resend(id: number) {
+        this.api = `${this.endPoint}/${id}/re-invite`;
+        return this.post();
+    }
     async show(id: number) {
         this.api = `${this.endPoint}/${id}`;
         return this.get();

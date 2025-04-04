@@ -1,3 +1,4 @@
+import { AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
 import {
@@ -21,9 +22,7 @@ const LandingModule = () => {
             <h3 className='text-2xl font-semibold'>Welcome, {user.name} </h3>
             <div className='grid grid-cols-3 gap-4'>
                 <RenderFlowError user={user} businessInfo={businessInfo} />
-                <div className='col-span-2'>
-                    <RenderBusinessError businessInfo={businessInfo} />
-                </div>
+                <RenderBusinessError businessInfo={businessInfo} />
             </div>
         </Container>
     );
@@ -42,18 +41,18 @@ const RenderFlowError = ({
 
     if (!user?.business?.internal_access_token) {
         return (
-            <div className='gap-2 p-4 rounded shadow col-flex bg-warning/10'>
-                <p className='flex gap-2 items-center'>
-                    <Icon
-                        iconColor='text-warning'
-                        source={ArcWarningSvgIcon}
-                        size={40}
-                        isSvg
-                    />
-                    Please, onboard with the meta to create and use the whatsapp
-                    feature
-                </p>
-                <Button onClick={launchWhatsAppSignup} appearance='info'>
+            <div className='flex flex-col items-start p-4 w-full max-w-lg bg-white rounded-lg backdrop-blur-md'>
+                <div className='flex items-center space-x-3'>
+                    <AlertTriangle className='text-yellow-500' size={24} />
+                    <p className='font-semibold text-gray-900'>
+                        Please, onboard with the meta to create and use the
+                        whatsapp feature
+                    </p>
+                </div>
+                <Button
+                    onClick={launchWhatsAppSignup}
+                    className='px-4 py-2 mt-4 font-semibold text-white bg-green-600 rounded-lg transition hover:bg-green-700'
+                >
                     Login With Facebook
                 </Button>
             </div>
@@ -61,42 +60,21 @@ const RenderFlowError = ({
     }
 
     if (!businessInfo?.verified_at) {
-        return (
-            <div className='gap-2 p-4 rounded shadow col-flex bg-warning/10'>
-                <p className='flex gap-2 items-center'>
-                    <Icon
-                        iconColor='text-warning'
-                        source={ArcWarningSvgIcon}
-                        size={40}
-                        isSvg
-                    />
-                    Your business is not verified. Please verify your business
-                    to access all features.
-                </p>
-                <Link target='_blank' href={'https://business.facebook.com/'}>
-                    <Button appearance='success' size='xs'>
-                        Lets Verify
-                    </Button>
-                </Link>
-            </div>
-        );
+        return <VerificationAlert />;
     }
 
     if (!businessInfo?.phone_registered_at) {
         return (
-            <div className='gap-2 p-4 rounded shadow col-flex bg-warning/10'>
-                <p className='flex gap-2 items-center'>
-                    <Icon
-                        iconColor='text-warning'
-                        source={ArcWarningSvgIcon}
-                        size={40}
-                        isSvg
-                    />
-                    Your Number is not registered. Please register your number
-                    to access all features.
-                </p>
+            <div className='flex flex-col items-start p-4 w-full max-w-lg bg-white rounded-lg backdrop-blur-md'>
+                <div className='flex items-center space-x-3'>
+                    <AlertTriangle className='text-yellow-500' size={24} />
+                    <p className='font-semibold text-gray-900'>
+                        Your Number is not registered. Please register your
+                        number to access all features.
+                    </p>
+                </div>
                 <Link href={BUSINESS_PROFILE_ROUTE}>
-                    <Button appearance='info' size='xs'>
+                    <Button className='px-4 py-2 mt-4 font-semibold text-white bg-green-600 rounded-lg transition hover:bg-green-700'>
                         Go to Profile
                     </Button>
                 </Link>
@@ -115,6 +93,25 @@ const RenderFlowError = ({
             <Link className='w-full' href={WHATSAPP_TEMPLATE_LIST_ROUTE}>
                 <Button appearance='polaris-info' size='md' wide>
                     Lets Create the Template
+                </Button>
+            </Link>
+        </div>
+    );
+};
+
+const VerificationAlert = () => {
+    return (
+        <div className='flex flex-col items-start p-4 w-full max-w-lg bg-white rounded-lg backdrop-blur-md'>
+            <div className='flex items-center space-x-3'>
+                <AlertTriangle className='text-yellow-500' size={24} />
+                <p className='font-semibold text-gray-900'>
+                    Your business is not verified. Please verify your business
+                    to access all features.
+                </p>
+            </div>
+            <Link href={BUSINESS_PROFILE_ROUTE}>
+                <Button className='px-4 py-2 mt-4 font-semibold text-white bg-green-600 rounded-lg transition hover:bg-green-700'>
+                    Go to Profile
                 </Button>
             </Link>
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import axios from 'axios';
+import { addHours } from 'date-fns';
 import EmojiPicker from 'emoji-picker-react';
 import {
     Check,
@@ -9,6 +10,8 @@ import {
     Contact,
     FileIcon,
     Info,
+    MessageCircle,
+    Reply,
     User,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -84,6 +87,7 @@ import { MessageSectionPreview } from '../broadcast/your-templates/components/Yo
 import { openAddContactForm } from '../contact/add.contact.modal.form';
 import { openQuickReplySelect } from '../quickreply/quick.reply.select.list';
 import { addAssignee } from './add.assignee.form.util';
+import { openTriggerChatbotResponse } from './modal/TriggerChatbotResponse.modal';
 
 import {
     ArcMessageSvgIcon,
@@ -93,6 +97,7 @@ import {
     FileDownloadSvgIcon,
     MoreIcon,
     ReplySvgICon,
+    RobotSvgIcon,
 } from 'assets';
 
 const TeamInboxModuleDetail = () => {
@@ -294,7 +299,47 @@ const RightSection = ({
                         </div>
                     </div>
 
-                    {/* Contact Info Section */}
+                    {/* Chat Section */}
+                    <div className='space-y-2'>
+                        <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
+                            <h3 className='flex gap-2 items-center font-medium'>
+                                <MessageCircle size={18} />
+                                Chat info
+                            </h3>
+                        </div>
+                        {/* Contact Details */}
+                        <div className='space-y-4'>
+                            {data?.expired_at ? (
+                                <div>
+                                    <label className='text-sm text-gray-500'>
+                                        Chat Expired At
+                                    </label>
+                                    <div>
+                                        {FormatDisplayDateStyled({
+                                            value: data?.expired_at as any,
+                                        })}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className='text-sm text-gray-500'>
+                                        Chat Expires at
+                                    </label>
+                                    <div>
+                                        {FormatDisplayDateStyled({
+                                            value: addHours(
+                                                new Date(
+                                                    data?.last_activity_at
+                                                ),
+                                                23
+                                            ) as any,
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    {/* Contact Section */}
                     <div className='space-y-2'>
                         <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
                             <h3 className='flex gap-2 items-center font-medium'>
@@ -302,7 +347,6 @@ const RightSection = ({
                                 Contact info
                             </h3>
                         </div>
-
                         {/* Contact Details */}
                         <div className='space-y-4'>
                             <div>
@@ -398,6 +442,47 @@ const RenderMessageDetail = ({ data }: { data: { id: string } }) => {
     );
 };
 
+const RenderInteractiveMessage = ({ message }: { message: any }) => {
+    const interactive = message?.payload?.interactive;
+    if (!interactive) return;
+
+    return (
+        <div className='flex flex-row-reverse gap-2 items-end'>
+            <RenderSeenUnseen message={message} />
+            <div
+                className={cn(
+                    ' rounded-md p-3 shadow-md  w-[90%] self-end flex flex-col gap-1 text-black max-w-[50%] bg-green-200'
+                )}
+            >
+                <div className='flex flex-col gap-2'>
+                    <h3 className='font-bold'>{interactive?.header?.text}</h3>
+                    <span className='text-sm text-primary-950'>
+                        {interactive?.body?.text}
+                    </span>
+                </div>
+                <div className='flex items-end text-muted-foreground'>
+                    <span className='flex-1 text-xs text-base-secondary'>
+                        {interactive?.footer?.text}
+                    </span>
+                </div>
+                <div className='flex flex-col gap-2 mt-2 w-full'>
+                    {interactive?.action?.buttons?.map((btn) => {
+                        return (
+                            <div
+                                key={btn.reply.id}
+                                className='flex gap-2 justify-center items-center w-full text-xs text-center text-info'
+                            >
+                                <Reply size={14} />
+                                {btn.reply.title}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+            <MessageBubbleTimePopper message={message} />
+        </div>
+    );
+};
 const getData = (components: any[], type: string) => {
     if (!components?.length) return [];
     return components?.find((val) => val?.type === type)?.parameters || [];
@@ -449,22 +534,29 @@ const MessageItem = ({ message }: { message: any }) => {
                     <MessageBubbleTimePopper message={message} />
                 </div>
             ) : isSentBySystem ? (
-                <div className='flex flex-row-reverse gap-2 items-end'>
-                    {message?.is_error && (
-                        <Tooltip
-                            message={JSON.stringify(
-                                message.attributes?.errors?.[0]?.error_data
-                                    ?.details || message.response
+                <>
+                    {message?.payload?.interactive ? (
+                        <RenderInteractiveMessage message={message} />
+                    ) : (
+                        <div className='flex flex-row-reverse gap-2 items-end'>
+                            {message?.is_error && (
+                                <Tooltip
+                                    message={JSON.stringify(
+                                        message.attributes?.errors?.[0]
+                                            ?.error_data?.details ||
+                                            message.response
+                                    )}
+                                >
+                                    <Info size={14} color='red' />
+                                </Tooltip>
                             )}
-                        >
-                            <Info size={14} color='red' />
-                        </Tooltip>
-                    )}
 
-                    <RenderSeenUnseen message={message} />
-                    <RenderInnerTextMessage message={message} />
-                    <MessageBubbleTimePopper message={message} />
-                </div>
+                            <RenderSeenUnseen message={message} />
+                            <RenderInnerTextMessage message={message} />
+                            <MessageBubbleTimePopper message={message} />
+                        </div>
+                    )}{' '}
+                </>
             ) : (
                 <></>
             )}
@@ -522,7 +614,7 @@ const AddInboxModal = ({
     };
 
     const isAllAttributesFilled = useMemo(() => {
-        if (IsEmptyObject(templateData?.sample_contents)) return false;
+        if (IsEmptyObject(templateData?.sample_contents)) return true;
         if (IsEmptyObject(attributes)) return false;
 
         const sample_contents = Object.values(templateData?.sample_contents);
@@ -740,6 +832,23 @@ const MessageChat = ({ data }) => {
         setFiles,
     ]);
 
+    const triggerChatbotAction = useCallback(
+        async (chatbot_id: number) => {
+            const { success, response } = await FetchData({
+                className: TeamInboxController,
+                method: 'triggerChatbot',
+                methodParams: { id: data?.id, chatbot_id },
+            });
+
+            if (!success) return toastBackendError(response);
+
+            setInput('');
+            setFiles([]);
+            invalidateMessage();
+        },
+        [data?.id, invalidateMessage, setFiles]
+    );
+
     const handleKeyPress = useCallback(
         (e: KeyboardEvent) => {
             if (
@@ -854,6 +963,19 @@ const MessageChat = ({ data }) => {
                         onClick={sendTemplateMessage}
                         outline
                         appearance='polaris-transparent'
+                    />
+
+                    <IconButton
+                        name='Trigger Chatbot'
+                        icon={RobotSvgIcon}
+                        onClick={() => {
+                            openTriggerChatbotResponse({
+                                onTrigger: (id) => {
+                                    triggerChatbotAction(id);
+                                },
+                            });
+                        }}
+                        appearance='plain'
                     />
 
                     <CommonFileUploader
@@ -1043,7 +1165,12 @@ const RenderInnerTextMessage = ({ message }: any) => {
         return (
             <div className='flex flex-col gap-2'>
                 <span className='text-sm text-primary-950'>
-                    {payload?.text?.body}
+                    {payload?.text?.body?.split('\n')?.map((line, index) => (
+                        <span key={index}>
+                            {line}
+                            <br />
+                        </span>
+                    ))}
                 </span>
             </div>
         );
@@ -1098,8 +1225,6 @@ const RenderUserMessageBubble = ({ message }) => {
             method: 'markAsRead',
             methodParams: broadcastMessageid,
         });
-
-        if (success) RefetchGenericListing();
     };
 
     useEffect(() => {
@@ -1191,6 +1316,8 @@ const RenderUserMessageBubble = ({ message }) => {
             <span>
                 {message?.payload?.button?.text ||
                     message?.payload?.text?.body ||
+                    message?.payload?.interactive?.button_reply?.title ||
+                    message?.payload?.interactive?.list_reply?.title ||
                     'Unsupported Format'}
             </span>
         );
@@ -1210,8 +1337,18 @@ const RenderUserMessageBubble = ({ message }) => {
                         }}
                     ></div>
                 )}
+                {message?.parent_payload?.interactive && (
+                    <div
+                        className='h-[25px] overflow-hidden text-ellipsis whitespace-pre-line line-clamp-3 w-[200px] bg-primary/70 text-xs p-1 rounded text-primary-content'
+                        dangerouslySetInnerHTML={{
+                            __html: message?.parent_payload?.interactive?.body
+                                ?.text,
+                        }}
+                    ></div>
+                )}
                 {renderComponent()}
             </div>
+
             {FormatDisplayDateStyled({
                 value: message?.created_at,
                 size: 'xs',

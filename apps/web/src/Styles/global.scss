@@ -945,3 +945,11 @@ html {
 .react-terminal-line {
     @apply leading-3;
 }
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

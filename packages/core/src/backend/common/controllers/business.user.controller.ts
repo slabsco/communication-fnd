@@ -53,6 +53,11 @@ export class BusinessUserController extends CommonController {
         return this.get();
     }
 
+    async reassignRole({ id, role_id }: { role_id: number; id: number }) {
+        this.api = `${this.endPoint}/${id}/reassign-role/${role_id}`;
+        return this.post();
+    }
+
     async getUsers() {
         this.api = `${this.endPoint}`;
         return this.get();

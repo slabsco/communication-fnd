@@ -1,6 +1,5 @@
 import { BaseModel } from '../../../Models/base.models';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
-import { IdPayloadDto } from '../../common/dtos/id.payload.dto';
 import { AddAssigneePayloadDto } from '../dto/add.assignee.payload.dto';
 import {
     SendTeamInboxMessagePayloadDto,
@@ -51,6 +50,16 @@ export class TeamInboxController extends BaseModel {
         this.api = `${this.endPoint}/${id}/send-message`;
         this.bodyDto = SendTeamInboxSimpleMessagePayloadDto;
 
+        return this.post();
+    }
+    async triggerChatbot({
+        id,
+        chatbot_id,
+    }: {
+        id: number;
+        chatbot_id: number;
+    }) {
+        this.api = `${this.endPoint}/${id}/trigger-chatbot/${chatbot_id}`;
         return this.post();
     }
 
