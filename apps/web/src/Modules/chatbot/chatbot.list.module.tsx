@@ -16,10 +16,18 @@ const ChatbotListModule = () => {
             {
                 name: 'Name',
                 key: 'name',
-                url: (item) => `${CHATBOT_LIST_ROUTE}/${item.id}`,
+                url: (item) => {
+                    const version_id =
+                        item?.version_id || item?.attributes?.last_update_id;
+                    if (version_id)
+                        return `${CHATBOT_LIST_ROUTE}/${item.id}?version_id=${version_id}`;
+                    return `${CHATBOT_LIST_ROUTE}/${item.id}`;
+                },
             },
             { name: 'Description', key: 'description' },
             { name: 'active', key: 'active', type: 'activate' },
+            { name: 'Version Name', key: 'version_name' },
+            { name: 'Published At', key: 'published_at', type: 'date_time' },
             { name: 'Managed By', key: 'creator' },
         ],
         rowActions: [
