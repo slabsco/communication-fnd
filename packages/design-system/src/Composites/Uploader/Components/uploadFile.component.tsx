@@ -1,5 +1,6 @@
 'use client';
 
+import { Video } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { AccessManager, UserBusiness } from '@finnoto/core';
@@ -46,14 +47,19 @@ export const UplodedFile = ({
     return (
         <div className='flex overflow-hidden gap-4 justify-between items-center px-4 py-2 text-xs rounded border bg-base-100 border-base-300'>
             <div className='flex overflow-hidden gap-3 items-center'>
-                <Icon
-                    source={handleDocumentIcon(
-                        file?.document_url || file?.serverUrl
-                    )}
-                    isSvg
-                    size={20}
-                    iconColor='text-base-tertiary -mt-1'
-                />
+                {(file?.document_url || file?.serverUrl).includes('mp4') ? (
+                    <Video className='-mt-1 text-base-tertiary' />
+                ) : (
+                    <Icon
+                        source={handleDocumentIcon(
+                            file?.document_url || file?.serverUrl
+                        )}
+                        isSvg
+                        size={20}
+                        iconColor='text-base-tertiary -mt-1'
+                    />
+                )}
+
                 <div className='overflow-hidden font-medium text-left col-flex text-base-primary'>
                     <Typography className='overflow-hidden w-full text-xs truncate text-ellipsis'>
                         {file?.attributes?.name}

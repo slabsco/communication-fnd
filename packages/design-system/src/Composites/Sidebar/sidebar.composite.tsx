@@ -8,7 +8,6 @@ import AnimateHeight from 'react-animate-height';
 
 import {
     ARC_HOME_ROUTE,
-    BUSINESS_PROFILE_ROUTE,
     DASHBOARD_ROUTE,
     Ellipsis,
     EMPLOYEE_EXPENSE_DASHBOARD_ROUTE,
@@ -29,7 +28,6 @@ import { Icon } from '../../Components/Data-display/Icon/icon.component';
 import { Typography } from '../../Components/Data-display/Typography/typography.component';
 import * as FunctionsUtil from '../../Utils';
 import { cn, IsEmptyArray } from '../../Utils/common.ui.utils';
-import { ThemeModeSwitch } from './Components/themeSwitchMode.component';
 
 import * as Icons from 'assets';
 
@@ -101,17 +99,15 @@ export const SidebarBanner = (props: { className?: string }) => {
     return (
         <Link
             href={HOME_ROUTE}
-            className='flex items-center text-xl normal-case'
+            className='flex items-center mr-5 text-xl normal-case'
         >
             <div className={cn('', props.className)}>
                 <Image
                     src={'/logo.png'}
                     alt='Brand Logo'
-                    height={isArc ? ARC_LOGO_HEIGHT : 32}
-                    width={70}
+                    height={40}
+                    width={40}
                     style={{
-                        maxHeight: isArc ? ARC_LOGO_HEIGHT : 32,
-                        // maxWidth: 279,
                         objectFit: 'contain',
                         objectPosition: 'left',
                     }}
