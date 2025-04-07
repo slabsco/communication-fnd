@@ -1,7 +1,6 @@
 import { GetFileDetails } from '@finnoto/core';
 
 import { ImageViewer } from '../../Components';
-import { ResourceCarouselModalViewer } from '../../Components/Data-display/ResourceViewer/resourceCarouselModalViewer.component';
 import { Modal } from '../../Utils';
 
 import {

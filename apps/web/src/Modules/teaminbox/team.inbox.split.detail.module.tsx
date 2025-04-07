@@ -752,6 +752,8 @@ const DisplayAttributesField = ({
             </div>
         );
 
+    if (IsEmptyObject(data?.sample_contents)) return <></>;
+
     return (
         <div className='gap-2 items-center p-2 mt-4 w-full rounded col-flex bg-base-300'>
             {Object.entries(data?.sample_contents)?.map(([key, value]) => {
@@ -1154,6 +1156,22 @@ const RenderInnerTextMessage = ({ message }: any) => {
                             height='100%'
                         />
                     )}
+
+                    <span className='text-sm text-primary-950'>
+                        {payload?.document?.caption}
+                    </span>
+                </div>
+            );
+        }
+        if (!IsEmptyObject(payload?.video)) {
+            return (
+                <div className='flex flex-col gap-2'>
+                    <video
+                        src={payload?.video?.link}
+                        width='100%'
+                        height='100%'
+                        controls
+                    />
 
                     <span className='text-sm text-primary-950'>
                         {payload?.document?.caption}

@@ -1,5 +1,4 @@
 import { useList, useUpdateEffect } from 'react-use';
-import { Handle, Position } from 'reactflow';
 
 import { IsEmptyArray } from '@finnoto/core';
 import { TextareaField } from '@finnoto/design-system';
@@ -12,7 +11,7 @@ import { RenderMessagesComponent } from '../components/flowbuilder.render.messag
 import { useFlowBuilder } from '../flowbuilder.context';
 
 export const SendMessageNode = ({ data, id, type }: any) => {
-    const { updateNodeData, isValidCondition } = useFlowBuilder();
+    const { updateNodeData } = useFlowBuilder();
 
     const [component, { push, removeAt, updateAt }] = useList<any>(
         data?.data || []
@@ -56,12 +55,12 @@ export const SendMessageNode = ({ data, id, type }: any) => {
                         addComponent('image');
                     },
                 },
-                // {
-                //     name: 'Add Document',
-                //     action: () => {
-                //         addComponent('document');
-                //     },
-                // },
+                {
+                    name: 'Add Video',
+                    action: () => {
+                        addComponent('video');
+                    },
+                },
             ]}
         >
             <div className='gap-2 px-2 py-4 col-flex'>
@@ -96,6 +95,30 @@ export const SendMessageNode = ({ data, id, type }: any) => {
                                     'image/jpeg': [],
                                     'image/png': [],
                                 }}
+                                value={
+                                    value?.data?.document_url
+                                        ? [value?.data]
+                                        : []
+                                }
+                                onFileUpload={(data) => {
+                                    handleUpdateData(index, data?.[0]);
+                                }}
+                            />
+                        );
+                    }}
+                />
+                <RenderMessagesComponent
+                    component={component}
+                    removeAt={removeAt}
+                    type='video'
+                    element={(index, value) => {
+                        return (
+                            <SingleFileUploader
+                                maxSize={100}
+                                accept={{
+                                    'video/mp4': [],
+                                }}
+                                fileSupportText='MP4'
                                 value={
                                     value?.data?.document_url
                                         ? [value?.data]

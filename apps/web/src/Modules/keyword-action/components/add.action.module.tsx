@@ -280,6 +280,7 @@ const AddActionsModule = ({
                             title: 'Message',
                             placeholder: 'Add Message here',
                             label: 'Message',
+                            max: 2000,
                             required: true,
                         },
                     }}
