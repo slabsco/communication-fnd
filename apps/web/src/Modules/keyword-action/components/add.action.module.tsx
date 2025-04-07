@@ -334,6 +334,7 @@ const AddActionsModule = ({
                             controller: ChatbotFLowController,
                             label: 'Chatbot',
                             placeholder: 'Select chatbot',
+                            sublabelKey: 'version_name',
                             required: true,
                             autoSelectZeroth: true,
                         },
