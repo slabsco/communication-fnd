@@ -39,7 +39,7 @@ const TriggerChatbotResponse = ({
                     method='find'
                     size='sm'
                     autoSelectZeroth
-                    sublabelKey={'description'}
+                    sublabelKey={'version_name'}
                     onChange={(option) => {
                         setSelectedChatbotId(option?.value);
                     }}

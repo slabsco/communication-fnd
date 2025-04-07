@@ -77,7 +77,7 @@ export class ExpenseRouteUtils {
     }
 
     public static GetFrontendPath = (product_id: number) => {
-        return '/';
+        return HOME_ROUTE;
         if (product_id === PRODUCT_IDENTIFIER.VENDOR) {
             return VENDOR_EXPENSE_DASHBOARD_ROUTE;
         }

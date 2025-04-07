@@ -1,11 +1,20 @@
 import { useCallback } from 'react';
 
-import { CHATBOT_LIST_ROUTE, HOME_ROUTE, Navigation } from '@finnoto/core';
+import {
+    CHATBOT_LIST_ROUTE,
+    FormatDisplayDate,
+    HOME_ROUTE,
+    IsFunction,
+    Navigation,
+} from '@finnoto/core';
+import { ChatbotFLowController } from '@finnoto/core/src/backend/communication/controller/chatbot.flow.controller';
 import {
     ArcBreadcrumbs,
+    Badge,
     Button,
     ConfirmUtil,
     DropdownMenuActionProps,
+    ReferenceSelectBox,
 } from '@finnoto/design-system';
 
 import { FlowBuilderApiProvider } from './flowbuilder.api.context';
@@ -14,60 +23,104 @@ import FlowBuilderMain from './flowbuilder.main';
 import FlowBuilderPanel from './flowbuilder.panel';
 
 const FlowBuilderModule = ({
-    rawJsonData,
-    name,
+    versionDetail,
     onSave,
+    data,
     extraActions,
 }: {
-    rawJsonData: any;
-    name: string;
+    versionDetail: any;
+    data?: any;
     onSave: (data: any) => Promise<void>;
     extraActions?: DropdownMenuActionProps[];
 }) => {
     return (
         <FlowBuilderApiProvider>
             <div className='flex overflow-hidden gap-3 items-center p-3 w-full h-content-screen'>
-                <FlowBuilderProvider rawJsonData={rawJsonData}>
+                <FlowBuilderProvider
+                    rawJsonData={versionDetail?.raw_react_flow}
+                >
                     <div className='overflow-hidden gap-1 w-full h-full col-flex'>
                         <ArcBreadcrumbs
                             mainClassName='rounded py-4 rounded-none pb-2'
-                            title={name}
+                            title={versionDetail?.name}
                             route={[
                                 { name: 'Home', link: HOME_ROUTE },
-                                { name: 'Chatbots', link: CHATBOT_LIST_ROUTE },
-                                { name: name },
-                            ]}
-                            actions={[
                                 {
-                                    name: 'Export Json',
-                                    action: () => {
-                                        const data = rawJsonData;
-
-                                        const jsonData = JSON.stringify(
-                                            data,
-                                            null,
-                                            2
-                                        );
-                                        const blob = new Blob([jsonData], {
-                                            type: 'application/json',
-                                        });
-                                        const url = URL.createObjectURL(blob);
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = 'flow_data.json';
-                                        document.body.appendChild(a);
-                                        a.click();
-                                        document.body.removeChild(a);
-                                        URL.revokeObjectURL(url);
-                                    },
+                                    name: 'Chatbots',
+                                    link: CHATBOT_LIST_ROUTE,
                                 },
+                                { name: versionDetail?.name },
+                            ]}
+                            rightComponent={
+                                <div className='flex gap-3 items-center'>
+                                    {data?.version_id === versionDetail?.id && (
+                                        <Badge
+                                            label={'Active Flow'}
+                                            appearance='success'
+                                        />
+                                    )}
+                                    {versionDetail?.published_at && (
+                                        <Badge
+                                            label={`Published at: ${FormatDisplayDate(
+                                                versionDetail?.published_at,
+                                                true
+                                            )}`}
+                                            appearance='info'
+                                        />
+                                    )}
+
+                                    <ReferenceSelectBox
+                                        value={versionDetail?.id}
+                                        placeholder='Select version'
+                                        autoSelectZeroth
+                                        width={200}
+                                        size='sm'
+                                        onChange={(opt) => {
+                                            Navigation.search({
+                                                version_id: opt.value,
+                                            });
+                                        }}
+                                        isClearable={false}
+                                        controller={ChatbotFLowController}
+                                        method='findVersions'
+                                        methodParams={data?.id}
+                                    />
+                                </div>
+                            }
+                            actions={[
+                                // {
+                                //     name: 'Export Json',
+                                //     action: () => {
+                                //         const jsonData = JSON.stringify(
+                                //             versionDetail?.raw_react_flow,
+                                //             null,
+                                //             2
+                                //         );
+                                //         const blob = new Blob([jsonData], {
+                                //             type: 'application/json',
+                                //         });
+                                //         const url = URL.createObjectURL(blob);
+                                //         const a = document.createElement('a');
+                                //         a.href = url;
+                                //         a.download = 'flow_data.json';
+                                //         document.body.appendChild(a);
+                                //         a.click();
+                                //         document.body.removeChild(a);
+                                //         URL.revokeObjectURL(url);
+                                //     },
+                                // },
                                 ...extraActions,
                             ]}
                         />
+
                         <FlowBuilderMain />
                         <ActionComponent
-                            rawJsonData={rawJsonData}
-                            onSave={onSave}
+                            rawJsonData={versionDetail?.raw_react_flow}
+                            onSave={
+                                !versionDetail?.published_at
+                                    ? onSave
+                                    : undefined
+                            }
                         />
                     </div>
                     <FlowBuilderPanel />
@@ -121,19 +174,21 @@ const ActionComponent: React.FC<{
                 Back
             </Button>
 
-            <Button
-                defaultMinWidth
-                size='sm'
-                progress
-                appearance='success'
-                onClick={async (next) => {
-                    const data = getAllData();
-                    await onSave?.(data);
-                    next();
-                }}
-            >
-                Save
-            </Button>
+            {IsFunction(onSave) && (
+                <Button
+                    defaultMinWidth
+                    size='sm'
+                    progress
+                    appearance='success'
+                    onClick={async (next) => {
+                        const data = getAllData();
+                        await onSave?.(data);
+                        next();
+                    }}
+                >
+                    Save
+                </Button>
+            )}
         </div>
     );
 };

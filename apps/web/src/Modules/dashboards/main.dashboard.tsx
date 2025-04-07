@@ -1,4 +1,4 @@
-import { CheckCircle, HeartPulse, MessageCircle } from 'lucide-react';
+import { CheckCircle, HeartPulse, Link2, MessageCircle } from 'lucide-react';
 import { useMemo } from 'react';
 
 import {
@@ -61,7 +61,7 @@ const MainDashboard = () => {
                         >
                             <CheckCircle />
                             <p className='flex-1'>Connected</p>
-                            {!businessInfo?.phone_registered_at && (
+                            {!businessInfo?.phone_registered_at ? (
                                 <Button
                                     onClick={async (next) => {
                                         await verifyNumber(
@@ -75,17 +75,32 @@ const MainDashboard = () => {
                                 >
                                     Connect Number
                                 </Button>
+                            ) : (
+                                <div className='flex gap-3 items-center p-1 rounded bg-base-200'>
+                                    <IconButton
+                                        size='xs'
+                                        onClick={() => {
+                                            CopyToClipBoard(
+                                                businessInfo?.default_mobile
+                                            );
+                                        }}
+                                        name='Copy Mobile'
+                                        icon={CopySvgIcon}
+                                        outline
+                                    />
+                                </div>
                             )}
                         </div>
                     </div>
                     {businessInfo?.default_mobile && (
-                        <div className='flex gap-3 items-center p-1 rounded bg-base-200'>
-                            {businessInfo?.default_mobile || '-'}
+                        <div className='flex gap-2 items-center p-1 rounded bg-base-200'>
+                            <Link2 /> wa.me/{businessInfo?.default_mobile}{' '}
                             <IconButton
                                 size='xs'
+                                name='Copy Message link'
                                 onClick={() => {
                                     CopyToClipBoard(
-                                        businessInfo?.default_mobile
+                                        `https://wa.me/${businessInfo?.default_mobile}?text=Hello%20there!`
                                     );
                                 }}
                                 icon={CopySvgIcon}
@@ -146,7 +161,7 @@ export default MainDashboard;
 const ExpiredActiveCard = () => {
     const { data, isLoading } = useFetchReport('teaminbox.stats.report.data');
 
-    const chartLabels = useMemo(() => ['Expired', 'Active'], []);
+    const chartLabels = useMemo(() => ['Active', 'Expired'], []);
 
     const chartFinalData = [
         { name: 'Count', data: [data?.[0]?.count, data?.[1]?.count] },
@@ -154,8 +169,8 @@ const ExpiredActiveCard = () => {
 
     const colors = useMemo(
         () => [
-            arcChartColors.error, // Error messages
             arcChartColors.success, // Delivered messages
+            arcChartColors.error, // Error messages
         ],
         []
     );

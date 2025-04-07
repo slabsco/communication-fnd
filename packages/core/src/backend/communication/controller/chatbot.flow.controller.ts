@@ -4,6 +4,7 @@ import { StringSearchDto } from '../../common/dtos/string.search.dto';
 import {
     ChatbotFlowRawJson,
     CreateChatbotFlowDto,
+    CreateChatbotVersionDto,
 } from '../dto/create.chatbot.flow.dto';
 
 export class ChatbotFLowController extends BaseModel {
@@ -21,6 +22,11 @@ export class ChatbotFLowController extends BaseModel {
         return this.get();
     }
 
+    async showVersion(id: number) {
+        this.api = `${this.endPoint}/${id}/version-detail`;
+        return this.get();
+    }
+
     async create() {
         this.api = `${this.endPoint}`;
         this.bodyDto = CreateChatbotFlowDto;
@@ -28,8 +34,31 @@ export class ChatbotFLowController extends BaseModel {
         return this.post();
     }
 
+    async createVersion(id: number) {
+        this.api = `${this.endPoint}/${id}/create-version`;
+        this.bodyDto = CreateChatbotVersionDto;
+
+        return this.post();
+    }
+
+    async publishVersion(id: number) {
+        this.api = `${this.endPoint}/${id}/publish-version`;
+        return this.post();
+    }
+
+    async assignPublishedVersion(id: number) {
+        this.api = `${this.endPoint}/${id}/assign-publish`;
+        return this.post();
+    }
+
     async find() {
         this.api = `${this.endPoint}/find`;
+        this.bodyDto = StringSearchDto;
+
+        return this.post();
+    }
+    async findVersions(id: number) {
+        this.api = `${this.endPoint}/${id}/find-version`;
         this.bodyDto = StringSearchDto;
 
         return this.post();
@@ -44,6 +73,10 @@ export class ChatbotFLowController extends BaseModel {
 
     async remove(id: number) {
         this.api = `${this.endPoint}/${id}`;
+        return this.delete();
+    }
+    async removeVersion(id: number) {
+        this.api = `${this.endPoint}/${id}/delete-version`;
         return this.delete();
     }
 

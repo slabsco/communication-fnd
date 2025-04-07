@@ -6,7 +6,7 @@ import { IsEmptyArray } from '@finnoto/design-system';
 import { ObjectDto } from '../backend/Dtos';
 import { MenuController } from '../backend/meta/controllers/menu.controller';
 import { MetaBusinessController } from '../backend/meta/controllers/meta.business.controller';
-import { PublicRoutes, USER } from '../Constants';
+import { HOME_ROUTE, PublicRoutes, USER } from '../Constants';
 import { useMutation, useOpenProperties } from '../Hooks';
 import { useApp } from '../Hooks/useApp.hook';
 import { FetchData } from '../Hooks/useFetchData.hook';
@@ -217,10 +217,9 @@ export const AuthProvider = ({ children }: any) => {
                             return;
                     }
 
-                    ExpenseRouteUtils.fixPortalPath(
-                        data.auth_attributes?.product_id,
-                        pathname
-                    );
+                    Navigation.navigate({
+                        url: HOME_ROUTE,
+                    });
                 }
 
                 setLoading(false);
@@ -301,7 +300,7 @@ export const AuthProvider = ({ children }: any) => {
                         </p>
                         <button
                             onClick={() =>
-                                Navigation.navigate({ url: basePath || '/' })
+                                Navigation.navigate({ url: HOME_ROUTE })
                             }
                             className='px-6 py-2 mt-6 text-white rounded-md transition-colors bg-primary hover:bg-primary-dark'
                         >
