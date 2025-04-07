@@ -300,7 +300,7 @@ export const AuthProvider = ({ children }: any) => {
                         </p>
                         <button
                             onClick={() =>
-                                Navigation.navigate({ url: basePath || '/' })
+                                Navigation.navigate({ url: HOME_ROUTE })
                             }
                             className='px-6 py-2 mt-6 text-white rounded-md transition-colors bg-primary hover:bg-primary-dark'
                         >
