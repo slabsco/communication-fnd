@@ -6,7 +6,7 @@ import { IsEmptyArray } from '@finnoto/design-system';
 import { ObjectDto } from '../backend/Dtos';
 import { MenuController } from '../backend/meta/controllers/menu.controller';
 import { MetaBusinessController } from '../backend/meta/controllers/meta.business.controller';
-import { HOME_ROUTE, PublicRoutes, USER } from '../Constants';
+import { PublicRoutes, USER } from '../Constants';
 import { useMutation, useOpenProperties } from '../Hooks';
 import { useApp } from '../Hooks/useApp.hook';
 import { FetchData } from '../Hooks/useFetchData.hook';
@@ -199,27 +199,8 @@ export const AuthProvider = ({ children }: any) => {
                 }
 
                 if (!isPublicRoute(pathname) && data) {
-                    startProductValidation({
-                        business_id: data.meta_business_id,
-                        product_id: data.auth_attributes?.product_id,
-                    });
-
-                    const pathProductId =
-                        ExpenseRouteUtils.GetPortalTypeId(pathname);
-
-                    if (data.auth_attributes?.product_id !== pathProductId) {
-                        if (
-                            await checkProductMismatch(
-                                data.business,
-                                pathProductId
-                            )
-                        )
-                            return;
-                    }
-
-                    Navigation.navigate({
-                        url: HOME_ROUTE,
-                    });
+                    if (pathname === '/')
+                        ExpenseRouteUtils.fixPortalPath(1, pathname);
                 }
 
                 setLoading(false);
@@ -300,7 +281,7 @@ export const AuthProvider = ({ children }: any) => {
                         </p>
                         <button
                             onClick={() =>
-                                Navigation.navigate({ url: HOME_ROUTE })
+                                Navigation.navigate({ url: basePath || '/' })
                             }
                             className='px-6 py-2 mt-6 text-white rounded-md transition-colors bg-primary hover:bg-primary-dark'
                         >
