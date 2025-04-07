@@ -1,7 +1,7 @@
 /**
  * Dashboard routes constants for business
  */
-export const HOME_ROUTE = '/'; // home
+export const HOME_ROUTE = '/landing'; // home
 export const DASHBOARD_ROUTE = 'r';
 export const ARC_HOME_ROUTE = '/arc';
 export const PAYMENT_HOME_ROUTE = '/payment';
