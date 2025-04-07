@@ -161,7 +161,7 @@ export default MainDashboard;
 const ExpiredActiveCard = () => {
     const { data, isLoading } = useFetchReport('teaminbox.stats.report.data');
 
-    const chartLabels = useMemo(() => ['Expired', 'Active'], []);
+    const chartLabels = useMemo(() => ['Active', 'Expired'], []);
 
     const chartFinalData = [
         { name: 'Count', data: [data?.[0]?.count, data?.[1]?.count] },
@@ -169,8 +169,8 @@ const ExpiredActiveCard = () => {
 
     const colors = useMemo(
         () => [
-            arcChartColors.error, // Error messages
             arcChartColors.success, // Delivered messages
+            arcChartColors.error, // Error messages
         ],
         []
     );
