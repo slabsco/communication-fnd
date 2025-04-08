@@ -8,11 +8,13 @@ import {
 import {
     Breadcrumbs,
     Button,
+    ConfirmUtil,
     Container,
     PageLoader,
 } from '@finnoto/design-system';
 
 import YourTemplateEditor from './components/YourTemplateEditor.component';
+import { WhatsappTemplateStatusEnum } from './enums/whatsapp.template.category.enum';
 import { useHandleTemplate } from './hooks/useHandleTemplate.hook';
 
 export default function YourTemplateCreationModule() {
@@ -56,6 +58,23 @@ export default function YourTemplateCreationModule() {
                         appearance={'primary'}
                         progress
                         onClick={async (next) => {
+                            if (
+                                defaultData?.status_id ===
+                                WhatsappTemplateStatusEnum.APPROVED
+                            ) {
+                                return ConfirmUtil({
+                                    isReverseAction: true,
+                                    appearance: 'warning',
+                                    isArc: true,
+                                    title: 'Edit Template !!',
+                                    onConfirmPress: async () => {
+                                        await ref?.current?.handleSubmit?.();
+                                        next();
+                                    },
+                                    message:
+                                        'Are you sure want to edit the template ?. this action is irreversible, this might effect your current flow with the chatbot and other actions. We recommend you to create the new template instead',
+                                });
+                            }
                             await ref?.current?.handleSubmit?.();
                             next();
                         }}
