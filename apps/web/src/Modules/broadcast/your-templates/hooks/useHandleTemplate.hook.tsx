@@ -110,5 +110,6 @@ export const ConvertRawApiDataIntoFormSuitable = (apiResponse: any) => {
         button_configurations: apiResponse?.button_configurations,
         sample_contents: apiResponse?.sample_contents,
         id: apiResponse?.id,
+        status_id: apiResponse?.status_id,
     };
 };

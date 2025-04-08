@@ -22,7 +22,7 @@ import YourTemplateEditor from './components/YourTemplateEditor.component';
 import { WhatsappTemplateStatusEnum } from './enums/whatsapp.template.category.enum';
 import { useHandleTemplate } from './hooks/useHandleTemplate.hook';
 
-import { CopySvgIcon, DeleteSvgIcon } from 'assets';
+import { CopySvgIcon, DeleteSvgIcon, EditSvgIcon } from 'assets';
 
 const YourTemplatesDetailModule = () => {
     const { id } = useFetchParams();
@@ -30,6 +30,7 @@ const YourTemplatesDetailModule = () => {
     const { deleteTemplate } = useHandleTemplate();
 
     useEffect(() => {
+        if (response?.status_id !== WhatsappTemplateStatusEnum.REJECTED) return;
         const log = response?.log || response?.logs;
 
         const last = log?.length;
@@ -70,9 +71,7 @@ const YourTemplatesDetailModule = () => {
             />
             <div className='flex gap-3 justify-between items-center'>
                 <Badge
-                    label={`${response?.status?.name} (You cannot Edit, or delete the
-                        template once it is send for the processing, please
-                        create the new one to proceeded)`}
+                    label={`${response?.status?.name} (View Only mode)`}
                     appearance={isRejected ? 'error' : 'success'}
                 />
                 <div className='flex gap-2 items-center'>
@@ -89,6 +88,16 @@ const YourTemplatesDetailModule = () => {
                     <DropdownActionButton
                         actions={[
                             {
+                                name: 'Edit',
+                                key: 'edit',
+                                icon: EditSvgIcon,
+                                action: () => {
+                                    Navigation.navigate({
+                                        url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${id}`,
+                                    });
+                                },
+                            },
+                            {
                                 name: 'Duplicate',
                                 key: 'duplicate',
                                 icon: CopySvgIcon,
@@ -98,6 +107,7 @@ const YourTemplatesDetailModule = () => {
                                     });
                                 },
                             },
+
                             {
                                 name: 'Delete',
                                 key: 'delete',
@@ -128,7 +138,7 @@ const YourTemplatesDetailModule = () => {
             <YourTemplateEditor
                 key={defaultData?.name}
                 defaultValues={defaultData}
-                // onSubmit={() => {}}
+                onSubmit={async () => {}}
             />
         </Container>
     );

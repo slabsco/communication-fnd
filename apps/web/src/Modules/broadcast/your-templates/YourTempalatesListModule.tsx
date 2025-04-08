@@ -7,10 +7,7 @@ import {
     WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
 import { Badge, ConfirmUtil } from '@finnoto/design-system';
-import {
-    BadgeInterface,
-    PolarisBadgeAppearance,
-} from '@finnoto/design-system/src/Components/Data-display/Badge/badge.types';
+import { BadgeInterface } from '@finnoto/design-system/src/Components/Data-display/Badge/badge.types';
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../../Components/GenericDocumentListing/genericDocumentListing.types';
@@ -18,7 +15,7 @@ import { WhatsappTemplateStatusEnum } from './enums/whatsapp.template.category.e
 import { useHandleTemplate } from './hooks/useHandleTemplate.hook';
 import { openImportYourTemplateModal } from './ImportYourTemplateModal';
 
-import { CopySvgIcon, DeleteSvgIcon } from 'assets';
+import { CopySvgIcon, DeleteSvgIcon, EditSvgIcon } from 'assets';
 
 const YourTemplatesListModule = () => {
     const { deleteTemplate } = useHandleTemplate();
@@ -60,6 +57,16 @@ const YourTemplatesListModule = () => {
                 action: (row: any) => {
                     Navigation.navigate({
                         url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${row.id}&is_duplicate=true`,
+                    });
+                },
+            },
+            {
+                name: 'Edit',
+                key: 'edit',
+                icon: EditSvgIcon,
+                action: (row: any) => {
+                    Navigation.navigate({
+                        url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${row.id}`,
                     });
                 },
             },

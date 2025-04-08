@@ -8,7 +8,10 @@ import {
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { RichTextEditor, SelectBox } from '@finnoto/design-system';
 
-import { WhatsappTemplateCategoryEnum } from '../enums/whatsapp.template.category.enum';
+import {
+    WhatsappTemplateCategoryEnum,
+    WhatsappTemplateStatusEnum,
+} from '../enums/whatsapp.template.category.enum';
 import YourTemplateEditorButton from './YourTemplateEditor.button.component';
 import YourTemplateEditorDisplaySampleContent from './YourTemplateEditor.display.sample.content';
 import YourTemplateEditorBroadcast from './YourTemplateEditorBroadcastTitle';
@@ -32,6 +35,8 @@ const YourTemplateEditor = forwardRef(
         const [configuration, setConfiguration] = useState<any>(
             defaultValues?.button_configurations
         );
+
+        console.log({ defaultValues });
 
         const formSchema: FormBuilderFormSchema = {
             name: {
@@ -64,6 +69,7 @@ const YourTemplateEditor = forwardRef(
                 labelKey: 'name',
                 sublabelKey: 'code',
                 required: true,
+                disabled: defaultValues?.language_id,
             },
         };
 
@@ -111,6 +117,10 @@ const YourTemplateEditor = forwardRef(
                         {renderFormFields('name')}
                         <div className='flex flex-col gap-2'>
                             <SelectBox
+                                isDisabled={
+                                    defaultValues?.status_id ===
+                                    WhatsappTemplateStatusEnum.APPROVED
+                                }
                                 isSearchable={false}
                                 label='Category'
                                 value={watch?.('category_id')}
