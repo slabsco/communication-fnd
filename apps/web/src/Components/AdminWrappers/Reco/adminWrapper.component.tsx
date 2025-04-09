@@ -1,10 +1,11 @@
 'use client';
 
-import { useApp, useMenu, useUserHook } from '@finnoto/core';
-import { Button, cn, Sidebar } from '@finnoto/design-system';
+import { useApp, useMenu } from '@finnoto/core';
+import { cn, Sidebar } from '@finnoto/design-system';
 
 import { SpotlightSearch } from '@Components/Spotlight/spotlightSearch.component';
 
+import { SocketProvider } from '../../../Utils/socket/socket.context.main';
 import ArcHeader from '../Components/arc.header.component';
 
 const AdminWrapper = ({ children }: any) => {
@@ -27,7 +28,7 @@ const AdminWrapper = ({ children }: any) => {
                         expanded: isSidebarExpand,
                     })}
                 >
-                    {children}
+                    <SocketProvider>{children}</SocketProvider>
                 </article>
             </div>
             {/* <GlobalActivityLog /> */}

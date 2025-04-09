@@ -7,14 +7,13 @@ import {
     useOnBoardBusinessWithMeta,
     WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
-import { Button, Container, Icon, PageLoader } from '@finnoto/design-system';
+import { Button, Container, PageLoader } from '@finnoto/design-system';
 
 import { RenderBusinessError } from '../businessProfile/business.profile.whatsapp.info.tab';
 
-import { ArcWarningSvgIcon } from 'assets';
-
 const LandingModule = () => {
     const { user, businessInfo, isBusinessInfoLoading } = useLandingPage();
+
     if (isBusinessInfoLoading) return <PageLoader />;
 
     return (
