@@ -1,5 +1,5 @@
 import { ArrowLeft } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
     HOME_ROUTE,
@@ -55,6 +55,14 @@ const YourTemplatesDetailModule = () => {
     const isRejected =
         response?.status_id === WhatsappTemplateStatusEnum.REJECTED;
 
+    const isEditAble = useMemo(() => {
+        return [
+            WhatsappTemplateStatusEnum.REJECTED,
+            WhatsappTemplateStatusEnum.APPROVED,
+            WhatsappTemplateStatusEnum.PAUSED,
+        ].includes(response.status_id);
+    }, [response.status_id]);
+
     return (
         <Container className='overflow-hidden gap-5 p-5 col-flex h-content-screen'>
             <Breadcrumbs
@@ -72,7 +80,14 @@ const YourTemplatesDetailModule = () => {
             <div className='flex gap-3 justify-between items-center'>
                 <Badge
                     label={`${response?.status?.name} (View Only mode)`}
-                    appearance={isRejected ? 'error' : 'success'}
+                    appearance={
+                        isRejected
+                            ? 'error'
+                            : response?.status_id ===
+                              WhatsappTemplateStatusEnum.PENDING
+                            ? 'info'
+                            : 'success'
+                    }
                 />
                 <div className='flex gap-2 items-center'>
                     <Button
@@ -91,6 +106,7 @@ const YourTemplatesDetailModule = () => {
                                 name: 'Edit',
                                 key: 'edit',
                                 icon: EditSvgIcon,
+                                visible: isEditAble,
                                 action: () => {
                                     Navigation.navigate({
                                         url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${id}`,

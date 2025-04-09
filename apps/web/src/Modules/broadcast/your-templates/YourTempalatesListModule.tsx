@@ -64,6 +64,13 @@ const YourTemplatesListModule = () => {
                 name: 'Edit',
                 key: 'edit',
                 icon: EditSvgIcon,
+                visible: (row) => {
+                    return [
+                        WhatsappTemplateStatusEnum.REJECTED,
+                        WhatsappTemplateStatusEnum.APPROVED,
+                        WhatsappTemplateStatusEnum.PAUSED,
+                    ].includes(row.status_id);
+                },
                 action: (row: any) => {
                     Navigation.navigate({
                         url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${row.id}`,
