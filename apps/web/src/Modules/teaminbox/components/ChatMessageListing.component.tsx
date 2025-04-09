@@ -1,9 +1,7 @@
 import { SearchIcon } from 'lucide-react';
-import { useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-import { FetchData, useFetchParams } from '@finnoto/core';
-import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
+import { useFetchParams } from '@finnoto/core';
 import {
     Avatar,
     Badge,
@@ -14,58 +12,30 @@ import {
     Loading,
 } from '@finnoto/design-system';
 
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-
+import { useTeamInboxMessageListing } from '../hooks/useTeamInboxMessageListing.hook';
 import { navigateToTeamInboxDetail } from '../utils/teaminbox.utils';
+import { openAddInbox } from './add.inbox.modal';
 
 import { AddSvgIcon } from 'assets';
 
-const PAGE_LIMIT = 20;
-
 const ChatMessageListingComponent = () => {
-    const queryClient = useQueryClient();
-
-    const [search, setSearch] = useState<string>('');
-
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-        useInfiniteQuery({
-            queryKey: ['team_inbox_chat_list', search],
-            queryFn: async ({ pageParam = 1 }) => {
-                const filters: any = {
-                    limit: PAGE_LIMIT,
-                    page: pageParam,
-                };
-
-                if (search?.length > 3) filters.search = search;
-
-                const { success, response } = await FetchData({
-                    className: TeamInboxController,
-                    method: 'list',
-                    methodParams: 1,
-                    classParams: filters,
-                });
-
-                if (!success) throw new Error('Failed to fetch messages');
-                return {
-                    data: response?.records ?? [],
-                    page: response?.stats?.page + 1,
-                    totalPages: Math.ceil(response?.stats?.total / PAGE_LIMIT),
-                };
-            },
-            getNextPageParam: (lastPage) =>
-                lastPage.page <= lastPage.totalPages
-                    ? lastPage.page
-                    : undefined,
-        });
-
-    const flatData = data?.pages.flatMap((item) => item.data) ?? [];
+    const {
+        setSearch,
+        search,
+        flatData,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading,
+        fetchMessage,
+    } = useTeamInboxMessageListing();
 
     return (
-        <div className='overflow-hidden col-span-3 h-full rounded-lg col-flex p- bg-base-100'>
+        <div className='overflow-hidden w-full h-full rounded-lg col-flex bg-base-100 lg:col-span-3'>
             <div className='flex gap-2 items-center px-3 py-2'>
                 <InputField
                     placeholder={'Search here'}
-                    className='flex-1'
+                    className='flex-1 min-w-0'
                     value={search}
                     onDebounceChange={(val) => {
                         setSearch(val);
@@ -79,6 +49,11 @@ const ChatMessageListingComponent = () => {
                     outline
                     iconSize={24}
                     appearance='info'
+                    onClick={() => {
+                        openAddInbox({
+                            callback: () => {},
+                        });
+                    }}
                 />
             </div>
             <div className='overflow-y-auto flex-1 p-1' id='scrollableDiv'>
@@ -114,7 +89,7 @@ const ChatMessageListingComponent = () => {
                     }
                     scrollableTarget='scrollableDiv'
                     refreshFunction={() => {
-                        queryClient.invalidateQueries(['team_inbox_chat_list']);
+                        fetchMessage();
                     }}
                     pullDownToRefresh
                     pullDownToRefreshThreshold={50}
@@ -142,13 +117,16 @@ export default ChatMessageListingComponent;
 
 const Card = ({ data }: { data: any }) => {
     const { id } = useFetchParams();
-    const isActive = data?.id === id;
+    const isActive = data?.id === +id;
 
     return (
         <div
-            onClick={() => navigateToTeamInboxDetail(data.id)}
+            onClick={() => {
+                data.attributes = { ...data.attributes, unread_count: 0 };
+                navigateToTeamInboxDetail(data.id);
+            }}
             className={cn(
-                'flex gap-3 items-start p-2 mb-2 transition-all cursor-pointer hover:shadow',
+                'flex gap-3 items-start p-2 mb-2 rounded transition-all cursor-pointer hover:shadow',
                 {
                     'bg-secondary text-secondary-content': isActive,
                 }

@@ -1,15 +1,20 @@
-import { useRouter } from 'next/router';
 import { createContext, useContext } from 'react';
+import { useEffectOnce, useUpdateEffect } from 'react-use';
 
-import { FetchData, useFetchParams, useQueryClient } from '@finnoto/core';
+import {
+    FetchData,
+    Navigation,
+    TEAM_INBOX_SPLIT_LIST,
+    useFetchParams,
+} from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 
-import { useInfiniteQuery } from '@tanstack/react-query';
-
-import { useSocket } from '../../../Utils/socket/socket.context.main';
+import { useQuery } from '@tanstack/react-query';
 
 interface TeamInboxContextType {
     teamInboxId?: number;
+    currentInboxDetail?: any;
+    isLoading?: boolean;
 }
 
 const TeamInboxContext = createContext<TeamInboxContextType>({});
@@ -21,23 +26,27 @@ export const TeamInboxProvider = ({
 }: {
     children: React.ReactNode;
 }) => {
-    const { pathname } = useRouter();
     const { id: teamInboxId } = useFetchParams();
-    const { subscribeEvent } = useSocket();
 
-    const query = useQueryClient();
+    const { data: response, isLoading } = useQuery({
+        cacheTime: Infinity,
+        queryKey: ['team_inbox_detail', +teamInboxId],
+        queryFn: async () => {
+            const { success, response } = await FetchData({
+                className: TeamInboxController,
+                method: 'show',
+                methodParams: teamInboxId,
+            });
 
-    // useEffectOnce(() => {
-    //     if (!pathname.includes('team-inbox')) return;
-    //     subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, (data) => {
-    //         if (data?.team_inbox_id === +teamInboxId) {
-    //             query.invalidateQueries(['team_inbox_messages', teamInboxId]);
-    //         }
-    //     });
-    // });
+            if (!success) throw new Error('Failed to fetch messages');
+            return response;
+        },
+    });
 
     return (
-        <TeamInboxContext.Provider value={{ teamInboxId }}>
+        <TeamInboxContext.Provider
+            value={{ teamInboxId, currentInboxDetail: response, isLoading }}
+        >
             {children}
         </TeamInboxContext.Provider>
     );

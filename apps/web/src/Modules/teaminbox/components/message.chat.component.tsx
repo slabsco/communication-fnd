@@ -15,7 +15,6 @@ import {
     Button,
     CommonFileUploader,
     IconButton,
-    Modal,
     openResourceViewerModal,
     Popover,
 } from '@finnoto/design-system';
@@ -78,7 +77,8 @@ export const MessageChat = ({ data }) => {
 
         setInput('');
         setFiles([]);
-    }, [data?.id, files, input, isSendButtonDisabled, setFiles]);
+        queryClient.invalidateQueries(['team_inbox_message_list', +data.id]);
+    }, [data?.id, files, input, isSendButtonDisabled, queryClient, setFiles]);
 
     const triggerChatbotAction = useCallback(
         async (chatbot_id: number) => {
@@ -173,7 +173,7 @@ export const MessageChat = ({ data }) => {
     };
 
     return (
-        <div className='sticky right-0 bottom-0 left-0 gap-1 col-flex'>
+        <div className='sticky right-0 bottom-0 left-0 gap-1 p-2 rounded col-flex bg-base-100'>
             <ChatTextareaComponent
                 input={input}
                 setInput={setInput}

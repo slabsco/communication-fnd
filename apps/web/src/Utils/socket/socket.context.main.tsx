@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, {
     createContext,
     useContext,
@@ -7,7 +8,17 @@ import React, {
 } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-import { ACCESS_TOKEN, GetItem, UserBusiness } from '@finnoto/core';
+import {
+    ACCESS_TOKEN,
+    GetItem,
+    Navigation,
+    TEAM_INBOX_SPLIT_LIST,
+    UserBusiness,
+} from '@finnoto/core';
+import { Toast } from '@finnoto/design-system';
+
+import { NEW_MESSAGE_RECEIVED_SOCKET_EVENT } from '../../Constants/socket.constant';
+import { useNotificationSound } from '../../Modules/teaminbox/hooks/useNotificationSound.hook';
 
 interface SocketContextType {
     socket: Socket | null;
@@ -35,6 +46,9 @@ interface SocketProviderProps {
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const socketRef = useRef<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
+
+    const { playSound } = useNotificationSound();
+    const { pathname } = useRouter();
 
     const SOCKET_SERVER_URL = UserBusiness.getBusinessAPIUrl();
 
@@ -105,6 +119,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         socketRef.current?.emit(event, data);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const subscribeEvent = (
         event: string,
         callback: (...args: any[]) => void
@@ -112,12 +127,39 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         socketRef.current?.on(event, callback);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const unsubscribeEvent = (
         event: string,
         callback: (...args: any[]) => void
     ) => {
         socketRef.current?.off(event, callback);
     };
+
+    useEffect(() => {
+        if (pathname.includes('team-inbox')) return;
+        const showMessageToast = ({ team_inbox_id, payload }) => {
+            playSound();
+
+            Toast.info({
+                delay: 5,
+                onClick: () => {
+                    Navigation.navigate({
+                        url: `${TEAM_INBOX_SPLIT_LIST}/${team_inbox_id}`,
+                    });
+                },
+                title: 'New Message Received !',
+                description: `${payload?.contact?.name} sent a message!!`,
+            });
+        };
+
+        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, showMessageToast);
+        return () => {
+            unsubscribeEvent(
+                NEW_MESSAGE_RECEIVED_SOCKET_EVENT,
+                showMessageToast
+            );
+        };
+    }, [subscribeEvent, unsubscribeEvent, pathname, playSound]);
 
     return (
         <SocketContext.Provider

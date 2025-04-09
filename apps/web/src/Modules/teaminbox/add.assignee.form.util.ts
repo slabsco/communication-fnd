@@ -3,7 +3,11 @@ import { BusinessUserController } from '@finnoto/core/src/backend/common/control
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import { ApiSchema, ModalFormUtil, Toast } from '@finnoto/design-system';
 
-export const addAssignee = (teamInboxId: number, initial_data?: any) => {
+export const addAssignee = (
+    teamInboxId: number,
+    initial_data?: any,
+    callback?: () => void
+) => {
     const schema: FormBuilderFormSchema = {
         assignee_id: {
             type: 'reference_select',
@@ -24,7 +28,7 @@ export const addAssignee = (teamInboxId: number, initial_data?: any) => {
             Toast.success({
                 description: 'Added Assignee!!',
             });
-            RefetchGenericListing();
+            callback?.();
         },
     };
 

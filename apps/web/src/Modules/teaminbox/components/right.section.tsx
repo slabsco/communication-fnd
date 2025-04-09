@@ -1,7 +1,7 @@
 import { addHours } from 'date-fns';
 import { Contact, MessageCircle, User } from 'lucide-react';
 
-import { IsEmptyArray } from '@finnoto/core';
+import { IsEmptyArray, IsEmptyObject, useQueryClient } from '@finnoto/core';
 import {
     Avatar,
     Button,
@@ -10,14 +10,17 @@ import {
 } from '@finnoto/design-system';
 
 import { addAssignee } from '../add.assignee.form.util';
+import { useTeamInbox } from '../context/teaminbox.context.main';
 
 export const RightSection = ({
-    data,
+    data = {},
     isLoading,
 }: {
     data: any;
     isLoading?: boolean;
 }) => {
+    const query = useQueryClient();
+    if (IsEmptyObject(data)) return <></>;
     return (
         <div className='col-span-1 h-full rounded border bg-polaris-bg-surface'>
             {isLoading && (
@@ -57,7 +60,18 @@ export const RightSection = ({
                                             size='xs'
                                             outline
                                             onClick={() =>
-                                                addAssignee(data?.id, data)
+                                                addAssignee(
+                                                    data?.id,
+                                                    data,
+                                                    () => {
+                                                        query.invalidateQueries(
+                                                            [
+                                                                'team_inbox_detail',
+                                                                data.id,
+                                                            ]
+                                                        );
+                                                    }
+                                                )
                                             }
                                         >
                                             Change Assignee

@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { FileIcon, Link } from 'lucide-react';
+import { FileIcon } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 
 import {

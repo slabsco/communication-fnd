@@ -1,0 +1,108 @@
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useState } from 'react';
+import { useUpdateEffect } from 'react-use';
+
+import {
+    FetchData,
+    Navigation,
+    TEAM_INBOX_SPLIT_LIST,
+    useFetchParams,
+} from '@finnoto/core';
+import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
+
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+
+import { NEW_MESSAGE_RECEIVED_SOCKET_EVENT } from '../../../Constants/socket.constant';
+import { useSocket } from '../../../Utils/socket/socket.context.main';
+import { useNotificationSound } from './useNotificationSound.hook';
+
+export const useTeamInboxMessageListing = () => {
+    const [search, setSearch] = useState<string>('');
+    const queryClient = useQueryClient();
+    const { id: teamInboxId } = useFetchParams();
+    const { pathname } = useRouter();
+    const { playSound } = useNotificationSound();
+
+    const { subscribeEvent, unsubscribeEvent } = useSocket();
+    const PAGE_LIMIT = 20;
+
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+        useInfiniteQuery({
+            queryKey: ['team_inbox_chat_list', search],
+            queryFn: async ({ pageParam = 1 }) => {
+                const filters: any = {
+                    limit: PAGE_LIMIT,
+                    page: pageParam,
+                };
+
+                if (search?.length > 3) filters.search = search;
+
+                const { success, response } = await FetchData({
+                    className: TeamInboxController,
+                    method: 'list',
+                    methodParams: 1,
+                    classParams: filters,
+                });
+
+                if (!success) throw new Error('Failed to fetch messages');
+                return {
+                    data: response?.records ?? [],
+                    page: response?.stats?.page + 1,
+                    totalPages: Math.ceil(response?.stats?.total / PAGE_LIMIT),
+                };
+            },
+            getNextPageParam: (lastPage) =>
+                lastPage.page <= lastPage.totalPages
+                    ? lastPage.page
+                    : undefined,
+        });
+
+    const fetchMessage = useCallback(() => {
+        queryClient.invalidateQueries(['team_inbox_chat_list', search]);
+    }, [queryClient, search]);
+
+    const flatData = data?.pages.flatMap((item) => item.data) ?? [];
+
+    useUpdateEffect(() => {
+        if (teamInboxId) return;
+
+        Navigation.navigate({
+            url: `${TEAM_INBOX_SPLIT_LIST}/${flatData?.[0]?.id}`,
+        });
+    }, [data, teamInboxId]);
+
+    useEffect(() => {
+        const fetchDataFromSocket = ({ team_inbox_id }) => {
+            if (team_inbox_id !== +teamInboxId) {
+                fetchMessage();
+                playSound();
+            }
+        };
+
+        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
+
+        return () => {
+            unsubscribeEvent(
+                NEW_MESSAGE_RECEIVED_SOCKET_EVENT,
+                fetchDataFromSocket
+            );
+        };
+    }, [
+        teamInboxId,
+        fetchMessage,
+        playSound,
+        subscribeEvent,
+        unsubscribeEvent,
+    ]);
+
+    return {
+        setSearch,
+        search,
+        flatData,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading,
+        fetchMessage,
+    };
+};
