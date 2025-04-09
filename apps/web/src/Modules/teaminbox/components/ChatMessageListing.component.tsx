@@ -27,6 +27,8 @@ const ChatMessageListingComponent = () => {
         hasNextPage,
         isFetchingNextPage,
         isLoading,
+        queryClient,
+        teamInboxId,
         fetchMessage,
     } = useTeamInboxMessageListing();
 
@@ -51,7 +53,12 @@ const ChatMessageListingComponent = () => {
                     appearance='info'
                     onClick={() => {
                         openAddInbox({
-                            callback: () => {},
+                            callback: () => {
+                                queryClient.invalidateQueries([
+                                    'team_inbox_message_list',
+                                    +teamInboxId,
+                                ]);
+                            },
                         });
                     }}
                 />

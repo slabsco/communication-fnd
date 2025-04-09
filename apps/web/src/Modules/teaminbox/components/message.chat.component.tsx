@@ -92,8 +92,12 @@ export const MessageChat = ({ data }) => {
 
             setInput('');
             setFiles([]);
+            queryClient.invalidateQueries([
+                'team_inbox_message_list',
+                data?.id,
+            ]);
         },
-        [data?.id, setFiles]
+        [data?.id, queryClient, setFiles]
     );
 
     const handleKeyPress = useCallback(
@@ -116,7 +120,12 @@ export const MessageChat = ({ data }) => {
         openAddInbox({
             contact_id: data?.contact_id,
             disableContact: true,
-            callback: () => {},
+            callback: () => {
+                queryClient.invalidateQueries([
+                    'team_inbox_message_list',
+                    +data?.id,
+                ]);
+            },
         });
     };
 

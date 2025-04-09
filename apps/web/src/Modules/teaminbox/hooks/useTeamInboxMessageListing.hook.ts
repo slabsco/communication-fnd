@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState } from 'react';
-import { useUpdateEffect } from 'react-use';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
     FetchData,
@@ -61,15 +60,19 @@ export const useTeamInboxMessageListing = () => {
         queryClient.invalidateQueries(['team_inbox_chat_list', search]);
     }, [queryClient, search]);
 
-    const flatData = data?.pages.flatMap((item) => item.data) ?? [];
+    const flatData = useMemo(() => {
+        return data?.pages.flatMap((item) => item.data) ?? [];
+    }, [data]);
 
-    useUpdateEffect(() => {
+    useEffect(() => {
         if (teamInboxId) return;
 
-        Navigation.navigate({
-            url: `${TEAM_INBOX_SPLIT_LIST}/${flatData?.[0]?.id}`,
-        });
-    }, [data, teamInboxId]);
+        if (flatData?.[0]?.id) {
+            Navigation.navigate({
+                url: `${TEAM_INBOX_SPLIT_LIST}/${flatData?.[0]?.id}`,
+            });
+        }
+    }, [data, flatData, teamInboxId]);
 
     useEffect(() => {
         const fetchDataFromSocket = ({ team_inbox_id }) => {
@@ -102,7 +105,9 @@ export const useTeamInboxMessageListing = () => {
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
+        teamInboxId,
         isLoading,
         fetchMessage,
+        queryClient,
     };
 };
