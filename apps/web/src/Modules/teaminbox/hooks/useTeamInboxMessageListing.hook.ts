@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
@@ -19,19 +18,22 @@ export const useTeamInboxMessageListing = () => {
     const [search, setSearch] = useState<string>('');
     const queryClient = useQueryClient();
     const { id: teamInboxId } = useFetchParams();
-    const { pathname } = useRouter();
+
     const { playSound } = useNotificationSound();
+
+    const [assignToMe, setAssignToMe] = useState<boolean>(false);
 
     const { subscribeEvent, unsubscribeEvent } = useSocket();
     const PAGE_LIMIT = 20;
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
         useInfiniteQuery({
-            queryKey: ['team_inbox_chat_list', search],
+            queryKey: ['team_inbox_chat_list', search, assignToMe],
             queryFn: async ({ pageParam = 1 }) => {
                 const filters: any = {
                     limit: PAGE_LIMIT,
                     page: pageParam,
+                    assign_me: assignToMe,
                 };
 
                 if (search?.length > 3) filters.search = search;
@@ -57,8 +59,12 @@ export const useTeamInboxMessageListing = () => {
         });
 
     const fetchMessage = useCallback(() => {
-        queryClient.invalidateQueries(['team_inbox_chat_list', search]);
-    }, [queryClient, search]);
+        queryClient.invalidateQueries([
+            'team_inbox_chat_list',
+            search,
+            assignToMe,
+        ]);
+    }, [assignToMe, queryClient, search]);
 
     const flatData = useMemo(() => {
         return data?.pages.flatMap((item) => item.data) ?? [];
@@ -109,5 +115,7 @@ export const useTeamInboxMessageListing = () => {
         isLoading,
         fetchMessage,
         queryClient,
+        assignToMe,
+        setAssignToMe,
     };
 };

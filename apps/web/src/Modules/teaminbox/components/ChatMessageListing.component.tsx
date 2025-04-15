@@ -30,38 +30,57 @@ const ChatMessageListingComponent = () => {
         queryClient,
         teamInboxId,
         fetchMessage,
+        setAssignToMe,
+        assignToMe,
     } = useTeamInboxMessageListing();
 
     return (
         <div className='overflow-hidden w-full h-full rounded-lg col-flex bg-base-100 lg:col-span-3'>
-            <div className='flex gap-2 items-center px-3 py-2'>
-                <InputField
-                    placeholder={'Search here'}
-                    className='flex-1 min-w-0'
-                    value={search}
-                    onDebounceChange={(val) => {
-                        setSearch(val);
-                    }}
-                    prefix={<SearchIcon size={14} />}
-                />
-                <IconButton
-                    icon={AddSvgIcon}
-                    name='New Message'
-                    size='lg'
-                    outline
-                    iconSize={24}
-                    appearance='info'
-                    onClick={() => {
-                        openAddInbox({
-                            callback: () => {
-                                queryClient.invalidateQueries([
-                                    'team_inbox_message_list',
-                                    +teamInboxId,
-                                ]);
-                            },
-                        });
-                    }}
-                />
+            <div className='gap-2 px-3 py-2 col-flex'>
+                <div className='flex gap-2 items-center'>
+                    <InputField
+                        placeholder={'Search here'}
+                        className='flex-1 min-w-0'
+                        value={search}
+                        onDebounceChange={(val) => {
+                            setSearch(val);
+                        }}
+                        prefix={<SearchIcon size={14} />}
+                    />
+                    <IconButton
+                        icon={AddSvgIcon}
+                        name='New Message'
+                        size='lg'
+                        outline
+                        iconSize={24}
+                        appearance='info'
+                        onClick={() => {
+                            openAddInbox({
+                                callback: () => {
+                                    queryClient.invalidateQueries([
+                                        'team_inbox_message_list',
+                                        +teamInboxId,
+                                    ]);
+                                },
+                            });
+                        }}
+                    />
+                </div>
+                <div className='flex gap-3 items-center p-1 rounded bg-base-200'>
+                    Filters:
+                    <div
+                        onClick={() => setAssignToMe((prev) => !prev)}
+                        className={cn(
+                            'px-2 py-1 text-sm text-center rounded border transition-all cursor-pointer bg-base-100 hover:bg-primary hover:text-primary-content hover:border-primary',
+                            {
+                                'bg-primary text-primary-content border-primary':
+                                    assignToMe,
+                            }
+                        )}
+                    >
+                        Assigned to me
+                    </div>
+                </div>
             </div>
             <div className='overflow-y-auto flex-1 p-1' id='scrollableDiv'>
                 <InfiniteScroll
