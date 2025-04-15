@@ -94,6 +94,8 @@ export const useTeamInboxChatListing = () => {
                 (val) => val?.id === message_id
             );
 
+            console.log({ team_inbox_id });
+
             if (findDataIndex !== -1) {
                 queryClient.setQueryData(
                     ['team_inbox_message_list', +teamInboxId],
