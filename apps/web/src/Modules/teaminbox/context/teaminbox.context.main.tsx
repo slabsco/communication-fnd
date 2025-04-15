@@ -1,12 +1,6 @@
 import { createContext, useContext } from 'react';
-import { useEffectOnce, useUpdateEffect } from 'react-use';
 
-import {
-    FetchData,
-    Navigation,
-    TEAM_INBOX_SPLIT_LIST,
-    useFetchParams,
-} from '@finnoto/core';
+import { FetchData, useFetchParams } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 
 import { useQuery } from '@tanstack/react-query';
@@ -32,6 +26,7 @@ export const TeamInboxProvider = ({
         cacheTime: Infinity,
         queryKey: ['team_inbox_detail', +teamInboxId],
         queryFn: async () => {
+            if (!teamInboxId) return;
             const { success, response } = await FetchData({
                 className: TeamInboxController,
                 method: 'show',

@@ -2,8 +2,8 @@
 
 import { ReactNode } from 'react';
 
-import { HOME_ROUTE } from '@finnoto/core';
-import { Breadcrumbs } from '@finnoto/design-system';
+import { HOME_ROUTE, useFetchParams } from '@finnoto/core';
+import { Breadcrumbs, PageLoader } from '@finnoto/design-system';
 
 import ChatMessageDetailComponent from './components/chat.message.detail.component';
 import ChatMessageInfoSection from './components/chat.message.info.section';
@@ -11,11 +11,20 @@ import ChatMessageListingComponent from './components/ChatMessageListing.compone
 import { TeamInboxProvider } from './context/teaminbox.context.main';
 
 const TeamInboxModuleDetail = () => {
+    const { id: team_inbox_id } = useFetchParams();
     return (
         <Container>
             <ChatMessageListingComponent />
-            <ChatMessageDetailComponent />
-            <ChatMessageInfoSection />
+            {!team_inbox_id ? (
+                <div className='col-span-9'>
+                    <PageLoader />
+                </div>
+            ) : (
+                <>
+                    <ChatMessageDetailComponent />
+                    <ChatMessageInfoSection />
+                </>
+            )}
         </Container>
     );
 };
