@@ -43,8 +43,6 @@ const FileUploaderComponent = ({
                 type: file?.type,
                 size: file?.size,
             });
-
-            console.log('File uploaded successfully:', data);
         } catch (error) {
             console.error('Error uploading file:', error);
         }

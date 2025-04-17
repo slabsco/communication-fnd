@@ -32,8 +32,6 @@ import { CopySvgIcon } from 'assets';
 const MainDashboard = () => {
     const { businessInfo, verifyNumber } = useBusinessPreference();
 
-    console.log({ businessInfo });
-
     return (
         <Container className='flex overflow-hidden relative flex-col gap-5 py-6 h-content-screen'>
             <div className='flex justify-between items-center'>

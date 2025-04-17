@@ -82,6 +82,8 @@ export const useTeamInboxMessageListing = () => {
 
     useEffect(() => {
         const fetchDataFromSocket = ({ team_inbox_id }) => {
+            console.log({ team_inbox_id });
+
             if (team_inbox_id !== +teamInboxId) {
                 fetchMessage();
                 playSound();

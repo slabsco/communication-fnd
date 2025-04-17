@@ -36,8 +36,6 @@ const YourTemplateEditor = forwardRef(
             defaultValues?.button_configurations
         );
 
-        console.log({ defaultValues });
-
         const formSchema: FormBuilderFormSchema = {
             name: {
                 type: 'text',

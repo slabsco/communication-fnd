@@ -283,8 +283,6 @@ const EditForm = ({
     type = 'text',
     handleSubmit,
 }: any) => {
-    console.log({ keyName });
-
     return (
         <ModalContainer title={`Update ${name}`}>
             <ModalBody>

@@ -83,8 +83,6 @@ export async function UploadImagesToServer({
         signal,
     });
 
-    console.log({ result });
-
     const uploadedImages: any = [];
     if (!IsEmptyObject(result) && !IsEmptyArray(result.data)) {
         if (source === 'analysable_document') {

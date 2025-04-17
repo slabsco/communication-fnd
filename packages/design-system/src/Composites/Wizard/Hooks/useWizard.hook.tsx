@@ -50,8 +50,6 @@ export const useWizard = ({ onSubmit, steps, onComplete, offset }) => {
         async (response?: any) => {
             const activeKey = activeWizardStep?.key;
 
-            console.log({ response });
-
             if (typeof response === 'object') {
                 onSubmit(response, activeKey);
             }

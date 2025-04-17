@@ -71,8 +71,6 @@ export const useBusinessUserHook = ({
     const { mutate: inviteUser } = useMutation({
         mutationKey: ['invite_business_user'],
         mutationFn: async (values) => {
-            console.log({ values });
-
             const { response, success } = await FetchData({
                 className: BusinessUserInvitationController,
                 method: 'create',

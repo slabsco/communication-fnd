@@ -204,7 +204,6 @@ export function useNodesMeasuredEffect(callback: () => void): void {
         includeHiddenNodes: true,
     });
 
-    console.log({ nodesInitialized });
     return useEffect(() => {
         // make sure that the callback is only executed once
         if (nodesInitialized) {

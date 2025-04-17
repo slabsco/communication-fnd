@@ -82,8 +82,6 @@ export async function ProcessUploadData({
         return [];
     }
 
-    console.log({ result });
-
     // attach serverUrl property to each image object
     result.forEach((imageUrl, index) => {
         imagesArray[index].id = imageUrl.id;

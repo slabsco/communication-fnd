@@ -21,6 +21,7 @@ import {
 } from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
+import { getErrorMessageTeamInbox } from '../../teaminbox/utils/teaminbox.utils';
 import { openTemplateViewer } from '../your-templates/components/TemplateViewer.component';
 import { useScheduleBroadCastDetail } from './hooks/useScheduleBroadcastDetail.hook';
 
@@ -67,7 +68,7 @@ const ScheduleBroadcastDetailModule = () => {
                         {!isSuccess && (
                             <Tooltip
                                 asChild
-                                message={data?.response?.error?.message}
+                                message={getErrorMessageTeamInbox(data)}
                             >
                                 <div className='cursor-pointer'>
                                     <Icon
@@ -186,6 +187,7 @@ const ScheduleBroadcastDetailModule = () => {
                     searchMethod='messages'
                     searchMethodParams={id}
                     name='Scheduled Broadcast Lists'
+                    tableWrapperClassName='overflow-hidden'
                     rowActions={[
                         {
                             name: 'Preview',
@@ -223,7 +225,7 @@ const getSampleContent = (data: any) => {
     );
 
     const parameters = [
-        ...(body.parameters || []),
+        ...(body?.parameters || []),
         ...(title?.parameters || []),
     ];
 

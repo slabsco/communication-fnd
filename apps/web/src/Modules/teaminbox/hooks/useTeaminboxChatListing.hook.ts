@@ -62,18 +62,6 @@ export const useTeamInboxChatListing = () => {
         return data?.pages.flatMap((item) => item.data) ?? [];
     }, [data?.pages]);
 
-    useEffectOnce(() => {
-        const div = scrollableDivRef.current;
-        if (!div) return;
-
-        const handleScroll = () => {
-            console.log('ScrollTop:', div.scrollTop);
-        };
-
-        div.addEventListener('scroll', handleScroll);
-        return () => div.removeEventListener('scroll', handleScroll);
-    });
-
     useEffect(() => {
         const fetchDataFromSocket = ({ team_inbox_id }) => {
             if (team_inbox_id === +teamInboxId) fetchMessage();
