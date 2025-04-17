@@ -125,9 +125,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         event: string,
         callback: (...args: any[]) => void
     ) => {
-        socketRef.current?.on(event, (args) => {
-            callback(args);
-        });
+        socketRef.current?.on(event, callback);
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
