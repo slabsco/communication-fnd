@@ -125,9 +125,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         event: string,
         callback: (...args: any[]) => void
     ) => {
-        socketRef.current?.on(event, () => {
-            console.log({ event });
-            callback();
+        socketRef.current?.on(event, (args) => {
+            callback(args);
         });
     };
 
