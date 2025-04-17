@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, {
     createContext,
+    useCallback,
     useContext,
     useEffect,
     useRef,
@@ -124,7 +125,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         event: string,
         callback: (...args: any[]) => void
     ) => {
-        socketRef.current?.on(event, callback);
+        socketRef.current?.on(event, () => {
+            console.log({ event });
+            callback();
+        });
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -135,9 +139,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         socketRef.current?.off(event, callback);
     };
 
-    useEffect(() => {
-        if (pathname.includes('team-inbox')) return;
-        const showMessageToast = ({ team_inbox_id, payload }) => {
+    const showMessageToast = useCallback(
+        ({ team_inbox_id, payload }) => {
             playSound();
 
             Toast.info({
@@ -150,7 +153,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                 title: 'New Message Received !',
                 description: `${payload?.contact?.name} sent a message!!`,
             });
-        };
+        },
+        [playSound]
+    );
+
+    useEffect(() => {
+        if (pathname.includes('team-inbox')) return;
 
         subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, showMessageToast);
         return () => {
@@ -159,7 +167,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                 showMessageToast
             );
         };
-    }, [subscribeEvent, unsubscribeEvent, pathname, playSound]);
+    }, [
+        subscribeEvent,
+        unsubscribeEvent,
+        pathname,
+        playSound,
+        showMessageToast,
+    ]);
 
     return (
         <SocketContext.Provider
