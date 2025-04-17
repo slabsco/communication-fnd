@@ -80,18 +80,20 @@ export const useTeamInboxMessageListing = () => {
         }
     }, [data, flatData, teamInboxId]);
 
-    useEffect(() => {
-        const fetchDataFromSocket = ({ team_inbox_id }) => {
+    const fetchDataFromSocket = useCallback(
+        ({ team_inbox_id }) => {
             console.log({ team_inbox_id });
 
             if (team_inbox_id !== +teamInboxId) {
                 fetchMessage();
                 playSound();
             }
-        };
+        },
+        [teamInboxId, fetchMessage, playSound]
+    );
 
+    useEffect(() => {
         subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
-
         return () => {
             unsubscribeEvent(
                 NEW_MESSAGE_RECEIVED_SOCKET_EVENT,
@@ -104,6 +106,7 @@ export const useTeamInboxMessageListing = () => {
         playSound,
         subscribeEvent,
         unsubscribeEvent,
+        fetchDataFromSocket,
     ]);
 
     return {
