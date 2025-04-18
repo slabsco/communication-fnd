@@ -53,13 +53,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
     const SOCKET_SERVER_URL = UserBusiness.getBusinessAPIUrl();
 
-    const authenticateSocket = async (deviceIdentifier?: string) => {
-        if (!socketRef.current) return;
+    const authenticateSocket = useCallback(
+        async (deviceIdentifier?: string) => {
+            if (!socketRef.current) return;
 
-        const USER_TOKEN = GetItem(ACCESS_TOKEN, false);
+            const USER_TOKEN = GetItem(ACCESS_TOKEN, false);
 
-        try {
-            await new Promise<void>((resolve, reject) => {
+            return new Promise<void>((resolve, reject) => {
                 socketRef.current?.emit(
                     'login',
                     {
@@ -67,7 +67,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                         u_device_identifier: deviceIdentifier,
                     },
                     (response: any) => {
-                        if (response.error) {
+                        if (response?.error) {
+                            console.error(
+                                'Socket authentication failed:',
+                                response.error
+                            );
                             reject(response.error);
                         } else {
                             console.log('Socket authentication successful');
@@ -76,65 +80,58 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                     }
                 );
             });
-        } catch (error) {
-            console.error('Socket authentication failed:', error);
-            throw error;
-        }
-    };
+        },
+        []
+    );
+
+    const initializeSocket = useCallback(() => {
+        socketRef.current = io(SOCKET_SERVER_URL, {
+            transports: ['websocket'],
+            autoConnect: false,
+        });
+
+        socketRef.current.on('connect', () => {
+            setIsConnected(true);
+            authenticateSocket();
+            console.log('Socket connected:', socketRef.current?.id);
+        });
+
+        socketRef.current.on('disconnect', () => {
+            setIsConnected(false);
+            console.log('Socket disconnected');
+        });
+
+        socketRef.current.on('connect_error', (err) => {
+            console.error('Socket connection error:', err);
+        });
+
+        socketRef.current.connect();
+    }, [SOCKET_SERVER_URL, authenticateSocket]);
 
     useEffect(() => {
-        const initializeSocket = () => {
-            socketRef.current = io(SOCKET_SERVER_URL, {
-                transports: ['websocket'],
-                autoConnect: false,
-            });
-
-            socketRef.current.on('connect', () => {
-                setIsConnected(true);
-                authenticateSocket();
-                console.log('Socket connected:', socketRef.current?.id);
-            });
-
-            socketRef.current.on('disconnect', () => {
-                setIsConnected(false);
-                console.log('Socket disconnected');
-            });
-
-            socketRef.current.on('connect_error', (err) => {
-                console.error('Socket connection error:', err);
-            });
-
-            socketRef.current.connect();
-        };
-
         initializeSocket();
-
         return () => {
-            if (socketRef.current) {
-                socketRef.current.disconnect();
-            }
+            socketRef.current?.disconnect();
         };
-    }, [SOCKET_SERVER_URL]);
+    }, [initializeSocket]);
 
-    const emitEvent = (event: string, data: any) => {
+    const emitEvent = useCallback((event: string, data: any) => {
         socketRef.current?.emit(event, data);
-    };
+    }, []);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const subscribeEvent = (
-        event: string,
-        callback: (...args: any[]) => void
-    ) => {
-        socketRef.current?.on(event, callback);
-    };
+    const subscribeEvent = useCallback(
+        (event: string, callback: (...args: any[]) => void) => {
+            socketRef.current?.on(event, callback);
+        },
+        []
+    );
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const unsubscribeEvent = (
-        event: string,
-        callback: (...args: any[]) => void
-    ) => {
-        socketRef.current?.off(event, callback);
-    };
+    const unsubscribeEvent = useCallback(
+        (event: string, callback: (...args: any[]) => void) => {
+            socketRef.current?.off(event, callback);
+        },
+        []
+    );
 
     const showMessageToast = useCallback(
         ({ team_inbox_id, payload }) => {
@@ -147,8 +144,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                         url: `${TEAM_INBOX_SPLIT_LIST}/${team_inbox_id}`,
                     });
                 },
-                title: 'New Message Received !',
-                description: `${payload?.contact?.name} sent a message!!`,
+                title: 'New Message Received!',
+                description: `${payload?.contact?.name} sent a message!`,
             });
         },
         [playSound]
@@ -164,13 +161,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                 showMessageToast
             );
         };
-    }, [
-        subscribeEvent,
-        unsubscribeEvent,
-        pathname,
-        playSound,
-        showMessageToast,
-    ]);
+    }, [pathname, subscribeEvent, unsubscribeEvent, showMessageToast]);
 
     return (
         <SocketContext.Provider

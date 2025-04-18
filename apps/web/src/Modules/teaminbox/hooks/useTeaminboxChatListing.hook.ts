@@ -13,7 +13,6 @@ import { useSocket } from '../../../Utils/socket/socket.context.main';
 
 export const useTeamInboxChatListing = () => {
     const { id: teamInboxId } = useFetchParams();
-
     const PAGE_LIMIT = 20;
 
     const { subscribeEvent, unsubscribeEvent } = useSocket();
@@ -25,7 +24,7 @@ export const useTeamInboxChatListing = () => {
             cacheTime: Infinity,
             queryKey: ['team_inbox_message_list', +teamInboxId],
             queryFn: async ({ pageParam = 1 }) => {
-                const filters: any = {
+                const filters = {
                     limit: PAGE_LIMIT,
                     page: pageParam,
                 };
@@ -38,10 +37,13 @@ export const useTeamInboxChatListing = () => {
                 });
 
                 if (!success) throw new Error('Failed to fetch messages');
+
                 return {
                     data: response?.records ?? [],
-                    page: response?.stats?.page + 1,
-                    totalPages: Math.ceil(response?.stats?.total / PAGE_LIMIT),
+                    page: (response?.stats?.page ?? 0) + 1,
+                    totalPages: Math.ceil(
+                        (response?.stats?.total ?? 0) / PAGE_LIMIT
+                    ),
                 };
             },
             getNextPageParam: (lastPage) =>
@@ -50,6 +52,10 @@ export const useTeamInboxChatListing = () => {
                     : undefined,
         });
 
+    const flatData = useMemo(() => {
+        return data?.pages.flatMap((page) => page.data) ?? [];
+    }, [data?.pages]);
+
     const fetchMessage = useCallback(() => {
         queryClient.invalidateQueries([
             'team_inbox_message_list',
@@ -57,19 +63,15 @@ export const useTeamInboxChatListing = () => {
         ]);
     }, [queryClient, teamInboxId]);
 
-    const flatData = useMemo(() => {
-        return data?.pages.flatMap((item) => item.data) ?? [];
-    }, [data?.pages]);
-
     const updateData = useCallback(
         ({
             team_inbox_id,
             message_id,
             message_payload,
         }: {
+            team_inbox_id: number;
             message_id: number;
             message_payload: any;
-            team_inbox_id: number;
         }) => {
             if (team_inbox_id !== +teamInboxId) return;
 
@@ -92,16 +94,18 @@ export const useTeamInboxChatListing = () => {
     );
 
     const fetchDataFromSocket = useCallback(
-        ({ team_inbox_id }) => {
+        ({ team_inbox_id }: { team_inbox_id: number }) => {
             if (team_inbox_id === +teamInboxId) {
                 fetchMessage();
             }
         },
         [fetchMessage, teamInboxId]
     );
+
     useEffect(() => {
         subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
         subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
+
         return () => {
             unsubscribeEvent(
                 NEW_MESSAGE_RECEIVED_SOCKET_EVENT,
@@ -109,16 +113,8 @@ export const useTeamInboxChatListing = () => {
             );
             unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
         };
-    }, [
-        teamInboxId,
-        fetchMessage,
-        subscribeEvent,
-        unsubscribeEvent,
-        flatData,
-        queryClient,
-        updateData,
-        fetchDataFromSocket,
-    ]);
+    }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket, updateData]);
+
     return {
         scrollableDivRef,
         fetchNextPage,

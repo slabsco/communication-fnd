@@ -15,28 +15,29 @@ import { useSocket } from '../../../Utils/socket/socket.context.main';
 import { useNotificationSound } from './useNotificationSound.hook';
 
 export const useTeamInboxMessageListing = () => {
-    const [search, setSearch] = useState<string>('');
-    const queryClient = useQueryClient();
+    const [search, setSearch] = useState('');
+    const [assignToMe, setAssignToMe] = useState(false);
+
     const { id: teamInboxId } = useFetchParams();
-
-    const { playSound } = useNotificationSound();
-
-    const [assignToMe, setAssignToMe] = useState<boolean>(false);
-
     const { subscribeEvent, unsubscribeEvent } = useSocket();
+    const { playSound } = useNotificationSound();
+    const queryClient = useQueryClient();
+
     const PAGE_LIMIT = 20;
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
         useInfiniteQuery({
             queryKey: ['team_inbox_chat_list', search, assignToMe],
             queryFn: async ({ pageParam = 1 }) => {
-                const filters: any = {
+                const filters: Record<string, any> = {
                     limit: PAGE_LIMIT,
                     page: pageParam,
                     assign_me: assignToMe,
                 };
 
-                if (search?.length > 3) filters.search = search;
+                if (search.length > 3) {
+                    filters.search = search;
+                }
 
                 const { success, response } = await FetchData({
                     className: TeamInboxController,
@@ -46,17 +47,25 @@ export const useTeamInboxMessageListing = () => {
                 });
 
                 if (!success) throw new Error('Failed to fetch messages');
+
                 return {
                     data: response?.records ?? [],
-                    page: response?.stats?.page + 1,
-                    totalPages: Math.ceil(response?.stats?.total / PAGE_LIMIT),
+                    page: (response?.stats?.page ?? 0) + 1,
+                    totalPages: Math.ceil(
+                        (response?.stats?.total ?? 0) / PAGE_LIMIT
+                    ),
                 };
             },
             getNextPageParam: (lastPage) =>
                 lastPage.page <= lastPage.totalPages
                     ? lastPage.page
                     : undefined,
+            cacheTime: Infinity,
         });
+
+    const flatData = useMemo(() => {
+        return data?.pages.flatMap((page) => page.data) ?? [];
+    }, [data?.pages]);
 
     const fetchMessage = useCallback(() => {
         queryClient.invalidateQueries([
@@ -64,63 +73,49 @@ export const useTeamInboxMessageListing = () => {
             search,
             assignToMe,
         ]);
-    }, [assignToMe, queryClient, search]);
-
-    const flatData = useMemo(() => {
-        return data?.pages.flatMap((item) => item.data) ?? [];
-    }, [data]);
-
-    useEffect(() => {
-        if (teamInboxId) return;
-
-        if (flatData?.[0]?.id) {
-            Navigation.navigate({
-                url: `${TEAM_INBOX_SPLIT_LIST}/${flatData?.[0]?.id}`,
-            });
-        }
-    }, [data, flatData, teamInboxId]);
+    }, [queryClient, search, assignToMe]);
 
     const fetchDataFromSocket = useCallback(
-        ({ team_inbox_id }) => {
-            console.log({ team_inbox_id });
-
+        ({ team_inbox_id }: { team_inbox_id: number }) => {
             if (team_inbox_id !== +teamInboxId) {
                 fetchMessage();
                 playSound();
             }
         },
-        [teamInboxId, fetchMessage, playSound]
+        [fetchMessage, playSound, teamInboxId]
     );
 
     useEffect(() => {
+        if (!teamInboxId && flatData.length > 0) {
+            Navigation.navigate({
+                url: `${TEAM_INBOX_SPLIT_LIST}/${flatData[0].id}`,
+            });
+        }
+    }, [flatData, teamInboxId]);
+
+    useEffect(() => {
         subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
+
         return () => {
             unsubscribeEvent(
                 NEW_MESSAGE_RECEIVED_SOCKET_EVENT,
                 fetchDataFromSocket
             );
         };
-    }, [
-        teamInboxId,
-        fetchMessage,
-        playSound,
-        subscribeEvent,
-        unsubscribeEvent,
-        fetchDataFromSocket,
-    ]);
+    }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket]);
 
     return {
-        setSearch,
         search,
+        setSearch,
+        assignToMe,
+        setAssignToMe,
         flatData,
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
-        teamInboxId,
         isLoading,
         fetchMessage,
         queryClient,
-        assignToMe,
-        setAssignToMe,
+        teamInboxId,
     };
 };
