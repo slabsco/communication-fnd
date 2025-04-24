@@ -1,7 +1,8 @@
 import { SearchIcon } from 'lucide-react';
+import { useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-import { useFetchParams } from '@finnoto/core';
+import { useFetchParams, useRecursiveFetch } from '@finnoto/core';
 import {
     Avatar,
     Badge,
@@ -33,6 +34,14 @@ const ChatMessageListingComponent = () => {
         setAssignToMe,
         assignToMe,
     } = useTeamInboxMessageListing();
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchMessage();
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [queryClient, search, assignToMe, fetchMessage]);
 
     return (
         <div className='overflow-hidden w-full h-full rounded-lg col-flex bg-base-100 lg:col-span-3'>

@@ -1,7 +1,12 @@
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { FetchData, useFetchParams, useQueryClient } from '@finnoto/core';
+import {
+    FetchData,
+    useFetchParams,
+    useQueryClient,
+    useRecursiveFetch,
+} from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -65,6 +70,8 @@ export const useTeamInboxChatListing = () => {
         ]);
     }, [queryClient, teamInboxId]);
 
+    useRecursiveFetch(fetchMessage, { repeat: Infinity, delay: 2000 });
+
     const updateData = useCallback(
         ({
             team_inbox_id,
@@ -104,28 +111,28 @@ export const useTeamInboxChatListing = () => {
         [fetchMessage, teamInboxId]
     );
 
-    useEffect(() => {
-        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
-        subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
+    // useEffect(() => {
+    //     subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
+    //     subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
 
-        return () => {
-            if (pathname.includes('team-inbox')) return;
-            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
-            unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
-        };
-    }, [
-        subscribeEvent,
-        unsubscribeEvent,
-        fetchDataFromSocket,
-        updateData,
-        pathname,
-    ]);
+    //     return () => {
+    //         unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
+    //         unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
+    //     };
+    // }, [
+    //     subscribeEvent,
+    //     unsubscribeEvent,
+    //     fetchDataFromSocket,
+    //     updateData,
+    //     pathname,
+    // ]);
 
     return {
         scrollableDivRef,
         fetchNextPage,
         flatData,
         hasNextPage,
+        fetchMessage,
         isFetchingNextPage,
         isLoading,
     };

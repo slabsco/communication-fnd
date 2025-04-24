@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { Loading } from '@finnoto/design-system';
@@ -13,7 +14,16 @@ export const ChatMessageListingMain = () => {
         hasNextPage,
         isFetchingNextPage,
         isLoading,
+        fetchMessage,
     } = useTeamInboxChatListing();
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchMessage();
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [fetchMessage]);
 
     return (
         <div

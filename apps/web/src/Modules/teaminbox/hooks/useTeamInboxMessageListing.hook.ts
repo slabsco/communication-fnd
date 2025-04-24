@@ -10,7 +10,6 @@ import { TeamInboxController } from '@finnoto/core/src/backend/communication/con
 
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
-import { NEW_MESSAGE_RECEIVED_SOCKET_EVENT } from '../../../Constants/socket.constant';
 import { useSocket } from '../../../Utils/socket/socket.context.main';
 import { useNotificationSound } from './useNotificationSound.hook';
 
@@ -60,7 +59,6 @@ export const useTeamInboxMessageListing = () => {
                 lastPage.page <= lastPage.totalPages
                     ? lastPage.page
                     : undefined,
-            cacheTime: Infinity,
         });
 
     const flatData = useMemo(() => {
@@ -93,13 +91,13 @@ export const useTeamInboxMessageListing = () => {
         }
     }, [flatData, teamInboxId]);
 
-    useEffect(() => {
-        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
+    // useEffect(() => {
+    //     subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
 
-        return () => {
-            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
-        };
-    }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket]);
+    //     return () => {
+    //         unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
+    //     };
+    // }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket]);
 
     return {
         search,
