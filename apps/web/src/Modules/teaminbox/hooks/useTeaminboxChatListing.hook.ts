@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { FetchData, useFetchParams, useQueryClient } from '@finnoto/core';
@@ -18,6 +19,7 @@ export const useTeamInboxChatListing = () => {
     const { subscribeEvent, unsubscribeEvent } = useSocket();
     const queryClient = useQueryClient();
     const scrollableDivRef = useRef<HTMLDivElement>(null);
+    const { pathname } = useRouter();
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
         useInfiniteQuery({
@@ -107,13 +109,17 @@ export const useTeamInboxChatListing = () => {
         subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
 
         return () => {
-            unsubscribeEvent(
-                NEW_MESSAGE_RECEIVED_SOCKET_EVENT,
-                fetchDataFromSocket
-            );
-            unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
+            if (pathname.includes('team-inbox')) return;
+            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
+            unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
         };
-    }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket, updateData]);
+    }, [
+        subscribeEvent,
+        unsubscribeEvent,
+        fetchDataFromSocket,
+        updateData,
+        pathname,
+    ]);
 
     return {
         scrollableDivRef,

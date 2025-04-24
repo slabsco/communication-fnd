@@ -97,10 +97,7 @@ export const useTeamInboxMessageListing = () => {
         subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
 
         return () => {
-            unsubscribeEvent(
-                NEW_MESSAGE_RECEIVED_SOCKET_EVENT,
-                fetchDataFromSocket
-            );
+            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
         };
     }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket]);
 

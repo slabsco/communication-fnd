@@ -5,7 +5,6 @@ import React, {
     useContext,
     useEffect,
     useRef,
-    useState,
 } from 'react';
 import { io, Socket } from 'socket.io-client';
 
@@ -22,20 +21,11 @@ import { NEW_MESSAGE_RECEIVED_SOCKET_EVENT } from '../../Constants/socket.consta
 import { useNotificationSound } from '../../Modules/teaminbox/hooks/useNotificationSound.hook';
 
 interface SocketContextType {
-    socket: Socket | null;
-    isConnected: boolean;
-    emitEvent: (event: string, data: any) => void;
     subscribeEvent: (event: string, callback: (...args: any[]) => void) => void;
-    unsubscribeEvent: (
-        event: string,
-        callback: (...args: any[]) => void
-    ) => void;
+    unsubscribeEvent: (event: string) => any;
 }
 
 const SocketContext = createContext<SocketContextType>({
-    socket: null,
-    isConnected: false,
-    emitEvent: () => {},
     subscribeEvent: () => {},
     unsubscribeEvent: () => {},
 });
@@ -46,7 +36,6 @@ interface SocketProviderProps {
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const socketRef = useRef<Socket | null>(null);
-    const [isConnected, setIsConnected] = useState(false);
 
     const { playSound } = useNotificationSound();
     const { pathname } = useRouter();
@@ -91,13 +80,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         });
 
         socketRef.current.on('connect', () => {
-            setIsConnected(true);
             authenticateSocket();
             console.log('Socket connected:', socketRef.current?.id);
         });
 
         socketRef.current.on('disconnect', () => {
-            setIsConnected(false);
             console.log('Socket disconnected');
         });
 
@@ -115,23 +102,16 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         };
     }, [initializeSocket]);
 
-    const emitEvent = useCallback((event: string, data: any) => {
-        socketRef.current?.emit(event, data);
-    }, []);
-
     const subscribeEvent = useCallback(
         (event: string, callback: (...args: any[]) => void) => {
-            socketRef.current?.on(event, callback);
+            return socketRef.current?.on(event, callback);
         },
         []
     );
 
-    const unsubscribeEvent = useCallback(
-        (event: string, callback: (...args: any[]) => void) => {
-            socketRef.current?.off(event, callback);
-        },
-        []
-    );
+    const unsubscribeEvent = useCallback((event: string) => {
+        socketRef.current?.off(event);
+    }, []);
 
     const showMessageToast = useCallback(
         ({ team_inbox_id, payload }) => {
@@ -156,19 +136,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
         subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, showMessageToast);
         return () => {
-            unsubscribeEvent(
-                NEW_MESSAGE_RECEIVED_SOCKET_EVENT,
-                showMessageToast
-            );
+            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
         };
-    }, [pathname, subscribeEvent, unsubscribeEvent, showMessageToast]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pathname]);
 
     return (
         <SocketContext.Provider
             value={{
-                socket: socketRef.current,
-                isConnected,
-                emitEvent,
                 subscribeEvent,
                 unsubscribeEvent,
             }}
