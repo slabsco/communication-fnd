@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 
 import {
     FormBuilderFormSchema,
@@ -6,9 +6,15 @@ import {
     useFormBuilder,
 } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
-import { RichTextEditor, SelectBox } from '@finnoto/design-system';
+import {
+    CheckBox,
+    InputField,
+    RichTextEditor,
+    SelectBox,
+} from '@finnoto/design-system';
 
 import {
+    BUTTON_CONFIG_TYPE,
     WhatsappTemplateCategoryEnum,
     WhatsappTemplateStatusEnum,
 } from '../enums/whatsapp.template.category.enum';
@@ -36,6 +42,10 @@ const YourTemplateEditor = forwardRef(
             defaultValues?.button_configurations
         );
 
+        const [authConfig, setAuthConfig] = useState<any>(
+            defaultValues?.auth_config
+        );
+
         const formSchema: FormBuilderFormSchema = {
             name: {
                 type: 'text',
@@ -51,7 +61,7 @@ const YourTemplateEditor = forwardRef(
             },
             body: {
                 type: 'text',
-                required: true,
+                required: false,
             },
             category_id: {
                 type: 'select',
@@ -93,11 +103,16 @@ const YourTemplateEditor = forwardRef(
                         title,
                         button_configurations: configuration,
                         sample_contents: sampleContent,
+                        authConfig,
                     },
                     opt
                 );
             },
         });
+
+        const isAuthenticationTemplate =
+            watch('category_id') ===
+            WhatsappTemplateCategoryEnum.AUTHENTICATION;
 
         useImperativeHandle(
             ref,
@@ -145,58 +160,102 @@ const YourTemplateEditor = forwardRef(
                             {renderFormFields('language_id')}
                         </div>
                     </div>
-                    <div className='flex flex-col gap-2'>
-                        <hr className='my-4 border-t border-gray-300' />
-                        <YourTemplateEditorBroadcast
-                            defaultValue={title}
-                            getCurrentValue={(data) => {
-                                setTitle(data);
-                            }}
-                        />
-                    </div>
+                    {!isAuthenticationTemplate && (
+                        <div className='flex flex-col gap-2'>
+                            <hr className='my-4 border-t border-gray-300' />
+                            <YourTemplateEditorBroadcast
+                                defaultValue={title}
+                                getCurrentValue={(data) => {
+                                    setTitle(data);
+                                }}
+                            />
+                        </div>
+                    )}
 
-                    <div>
-                        <hr className='my-4 border-t border-gray-300' />
-                        <RichTextEditor
-                            features={['bold', 'italic', 'underline']}
-                            labelProps={{ label: 'Body', required: true }}
-                            error={errors['body']}
-                            html={watch?.('body') || defaultValues?.body}
-                            getHtml={(html) => {
-                                handleFormData('body', html);
-                            }}
-                            enablePreview={false}
-                        />
-                    </div>
-                    <div>
-                        <hr className='my-4 border-t border-gray-300' />
-                        {renderFormFields('footer')}
-                    </div>
+                    {!isAuthenticationTemplate ? (
+                        <>
+                            <div>
+                                <hr className='my-4 border-t border-gray-300' />
+                                <RichTextEditor
+                                    features={['bold', 'italic', 'underline']}
+                                    labelProps={{
+                                        label: 'Body',
+                                        required: true,
+                                    }}
+                                    error={errors['body']}
+                                    html={
+                                        watch?.('body') || defaultValues?.body
+                                    }
+                                    getHtml={(html) => {
+                                        handleFormData('body', html);
+                                    }}
+                                    enablePreview={false}
+                                />
+                            </div>
+                            <div>
+                                <hr className='my-4 border-t border-gray-300' />
+                                {renderFormFields('footer')}
+                            </div>
 
-                    <YourTemplateEditorButton
-                        configuration={configuration}
-                        setConfiguration={setConfiguration}
-                    />
-                    <div className='flex flex-col'></div>
-                    <YourTemplateEditorDisplaySampleContent
-                        defaultVal={sampleContent}
-                        title={title}
-                        body={watch?.('body') || defaultValues?.body}
-                        onBodyChange={(key, value) => {
-                            setSampleContent((prev) => ({
-                                ...prev,
-                                [key]: value,
-                            }));
+                            <YourTemplateEditorButton
+                                configuration={configuration}
+                                setConfiguration={setConfiguration}
+                            />
+                            <YourTemplateEditorDisplaySampleContent
+                                defaultVal={sampleContent}
+                                title={title}
+                                body={watch?.('body') || defaultValues?.body}
+                                onBodyChange={(key, value) => {
+                                    setSampleContent((prev) => ({
+                                        ...prev,
+                                        [key]: value,
+                                    }));
+                                }}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <AuthenticationTemplateConfiguration
+                                authConfig={authConfig}
+                                setAuthConfig={setAuthConfig}
+                            />
+                            <YourTemplateEditorDisplaySampleContent
+                                defaultVal={sampleContent}
+                                title={title}
+                                body={
+                                    '{{code}} is your verification code. For your security, do not share this code.'
+                                }
+                                onBodyChange={(key, value) => {
+                                    setSampleContent((prev) => ({
+                                        [key]: value,
+                                    }));
+                                }}
+                            />
+                        </>
+                    )}
+                </div>
+                {isAuthenticationTemplate ? (
+                    <YourTemplatesPreview
+                        sampleContent={sampleContent}
+                        footer={`This code expires in ${authConfig?.expiryTIme} minutes.`}
+                        body={`{{code}} is your verification code. ${
+                            authConfig?.showSecurityMessage
+                                ? 'For your security, do not share this code.'
+                                : ''
+                        } `}
+                        configuration={{
+                            [BUTTON_CONFIG_TYPE.COPY_CODE]: 'Copy Code',
                         }}
                     />
-                </div>
-                <YourTemplatesPreview
-                    sampleContent={sampleContent}
-                    footer={watch?.('footer')}
-                    title={title}
-                    body={watch?.('body')}
-                    configuration={configuration}
-                />
+                ) : (
+                    <YourTemplatesPreview
+                        sampleContent={sampleContent}
+                        footer={watch?.('footer')}
+                        title={title}
+                        body={watch?.('body')}
+                        configuration={configuration}
+                    />
+                )}
             </div>
         );
     }
@@ -216,4 +275,80 @@ export const ConvertRawApiDataIntoFormSuitable = (apiResponse: any) => {
         sample_contents: apiResponse?.sample_contents,
         id: apiResponse?.id,
     };
+};
+
+export const AuthenticationTemplateConfiguration = ({
+    authConfig,
+    setAuthConfig,
+}: {
+    setAuthConfig: (val) => void;
+    authConfig: any;
+}) => {
+    const updateValue = (val: any) => {
+        setAuthConfig((prev = {}) => ({
+            ...prev,
+            ...val,
+        }));
+    };
+
+    const defaultValue = useMemo(() => {
+        const commonMessage = `{{code}} is your verification code.`;
+        if (authConfig?.showSecurityMessage)
+            return `${commonMessage}  For your security, do not share this code.`;
+        return commonMessage;
+    }, [authConfig]);
+    return (
+        <div>
+            <hr className='my-4 border-t border-gray-300' />
+            <div className='gap-2 col-flex'>
+                <div className='grid grid-cols-2 gap-3 items-center'>
+                    <InputField
+                        disabled
+                        label='Body'
+                        required
+                        value={defaultValue}
+                    />
+                    {authConfig?.includeExpiryTime && (
+                        <div className='grid grid-cols-2 gap-4 items-center'>
+                            <InputField
+                                label='Footer'
+                                disabled
+                                required
+                                value={`This code expires in ${authConfig?.expiryTIme} minutes.`}
+                            />
+                            <InputField
+                                required
+                                label='Time'
+                                value={authConfig?.expiryTIme}
+                                onChange={(_time) =>
+                                    updateValue({ expiryTIme: _time })
+                                }
+                                suffix='Minutes'
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <div className='flex gap-3 items-center'>
+                    <CheckBox
+                        rightLabel='Show Security Message'
+                        checked={authConfig?.showSecurityMessage}
+                        onChange={(_val) =>
+                            updateValue({ showSecurityMessage: _val })
+                        }
+                    />
+                    <CheckBox
+                        rightLabel='Include Expiry Time'
+                        checked={authConfig?.includeExpiryTime}
+                        onChange={(_val) =>
+                            updateValue({
+                                includeExpiryTime: _val,
+                                expiryTIme: 10,
+                            })
+                        }
+                    />
+                </div>
+            </div>
+        </div>
+    );
 };

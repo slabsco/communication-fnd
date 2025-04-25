@@ -34,7 +34,7 @@ export class WhatsappTemplateCreationDto extends IdPayloadDto {
     };
 
     @Expose()
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     body: string;
 
@@ -50,4 +50,8 @@ export class WhatsappTemplateCreationDto extends IdPayloadDto {
     @Expose()
     @IsOptional()
     sample_contents: { [key: string]: string | number };
+
+    @Expose()
+    @IsOptional()
+    authConfig?: any;
 }
