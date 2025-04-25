@@ -19,7 +19,10 @@ import {
 
 import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
 import YourTemplateEditor from './components/YourTemplateEditor.component';
-import { WhatsappTemplateStatusEnum } from './enums/whatsapp.template.category.enum';
+import {
+    WhatsappTemplateCategoryEnum,
+    WhatsappTemplateStatusEnum,
+} from './enums/whatsapp.template.category.enum';
 import { useHandleTemplate } from './hooks/useHandleTemplate.hook';
 
 import { CopySvgIcon, DeleteSvgIcon, EditSvgIcon } from 'assets';
@@ -56,12 +59,16 @@ const YourTemplatesDetailModule = () => {
         response?.status_id === WhatsappTemplateStatusEnum.REJECTED;
 
     const isEditAble = useMemo(() => {
+        if (
+            response.category_id === WhatsappTemplateCategoryEnum.AUTHENTICATION
+        )
+            return false;
         return [
             WhatsappTemplateStatusEnum.REJECTED,
             WhatsappTemplateStatusEnum.APPROVED,
             WhatsappTemplateStatusEnum.PAUSED,
         ].includes(response.status_id);
-    }, [response.status_id]);
+    }, [response.category_id, response.status_id]);
 
     return (
         <Container className='overflow-hidden gap-5 p-5 col-flex h-content-screen'>

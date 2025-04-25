@@ -43,7 +43,7 @@ const YourTemplateEditor = forwardRef(
         );
 
         const [authConfig, setAuthConfig] = useState<any>(
-            defaultValues?.auth_config
+            defaultValues?.authConfig
         );
 
         const formSchema: FormBuilderFormSchema = {
@@ -218,6 +218,7 @@ const YourTemplateEditor = forwardRef(
                             <AuthenticationTemplateConfiguration
                                 authConfig={authConfig}
                                 setAuthConfig={setAuthConfig}
+                                handleFormData={handleFormData}
                             />
                             <YourTemplateEditorDisplaySampleContent
                                 defaultVal={sampleContent}
@@ -237,7 +238,10 @@ const YourTemplateEditor = forwardRef(
                 {isAuthenticationTemplate ? (
                     <YourTemplatesPreview
                         sampleContent={sampleContent}
-                        footer={`This code expires in ${authConfig?.expiryTIme} minutes.`}
+                        footer={
+                            authConfig?.expiryTIme &&
+                            `This code expires in ${authConfig?.expiryTIme} minutes.`
+                        }
                         body={`{{code}} is your verification code. ${
                             authConfig?.showSecurityMessage
                                 ? 'For your security, do not share this code.'
@@ -280,9 +284,11 @@ export const ConvertRawApiDataIntoFormSuitable = (apiResponse: any) => {
 export const AuthenticationTemplateConfiguration = ({
     authConfig,
     setAuthConfig,
+    handleFormData,
 }: {
     setAuthConfig: (val) => void;
     authConfig: any;
+    handleFormData: any;
 }) => {
     const updateValue = (val: any) => {
         setAuthConfig((prev = {}) => ({
@@ -340,12 +346,19 @@ export const AuthenticationTemplateConfiguration = ({
                     <CheckBox
                         rightLabel='Include Expiry Time'
                         checked={authConfig?.includeExpiryTime}
-                        onChange={(_val) =>
+                        onChange={(_val) => {
+                            if (_val) {
+                                return updateValue({
+                                    includeExpiryTime: _val,
+                                    expiryTIme: 10,
+                                });
+                            }
+
                             updateValue({
-                                includeExpiryTime: _val,
-                                expiryTIme: 10,
-                            })
-                        }
+                                includeExpiryTime: false,
+                                expiryTIme: null,
+                            });
+                        }}
                     />
                 </div>
             </div>

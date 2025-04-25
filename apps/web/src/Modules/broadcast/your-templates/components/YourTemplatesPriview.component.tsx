@@ -154,7 +154,7 @@ export const MessageSectionPreview = ({
                         key={key}
                         className='flex gap-2 justify-center items-center w-full text-xs text-center text-info'
                     >
-                        {getValues?.icon} {getValues?.name}
+                        {getValues?.icon} {val || getValues?.name}
                     </div>
                 );
             }

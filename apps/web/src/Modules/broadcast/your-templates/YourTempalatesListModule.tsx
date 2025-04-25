@@ -11,7 +11,10 @@ import { BadgeInterface } from '@finnoto/design-system/src/Components/Data-displ
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../../Components/GenericDocumentListing/genericDocumentListing.types';
-import { WhatsappTemplateStatusEnum } from './enums/whatsapp.template.category.enum';
+import {
+    WhatsappTemplateCategoryEnum,
+    WhatsappTemplateStatusEnum,
+} from './enums/whatsapp.template.category.enum';
 import { useHandleTemplate } from './hooks/useHandleTemplate.hook';
 import { openImportYourTemplateModal } from './ImportYourTemplateModal';
 
@@ -65,6 +68,12 @@ const YourTemplatesListModule = () => {
                 key: 'edit',
                 icon: EditSvgIcon,
                 visible: (row) => {
+                    if (
+                        row.category_id ===
+                        WhatsappTemplateCategoryEnum.AUTHENTICATION
+                    )
+                        return false;
+
                     return [
                         WhatsappTemplateStatusEnum.REJECTED,
                         WhatsappTemplateStatusEnum.APPROVED,
