@@ -177,7 +177,6 @@ export const MessageChat = ({ data }) => {
             mobile: data?.contact?.mobile,
             ...attributes,
         });
-
         setInput((prev) => `${prev} ${withVariable}`);
     };
 
