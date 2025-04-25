@@ -109,7 +109,7 @@ const KeywordActionListModule = () => {
                     ConfirmUtil({
                         isArc: true,
                         appearance: 'error',
-                        title: 'Delete Contact',
+                        title: 'Delete Keyword Action?',
                         message:
                             'Are you sure you want to delete this keywords? This action cannot be undone and will permanently remove the keywords action.',
                         isReverseAction: true,
