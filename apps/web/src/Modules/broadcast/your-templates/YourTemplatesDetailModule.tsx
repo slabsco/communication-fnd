@@ -34,8 +34,8 @@ const YourTemplatesDetailModule = () => {
 
     useEffect(() => {
         if (response?.status_id !== WhatsappTemplateStatusEnum.REJECTED) return;
-        const log = response?.log || response?.logs;
 
+        const log = response?.log || response?.logs;
         const last = log?.length;
         const error = log?.[last - 1]?.response?.error;
         if (!error) return;
