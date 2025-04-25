@@ -93,9 +93,4 @@ export class CommonListFilterDto {
     @IsBoolean()
     @Expose()
     active?: boolean;
-
-    @IsOptional()
-    @IsBoolean()
-    @Expose()
-    assign_me?: boolean;
 }

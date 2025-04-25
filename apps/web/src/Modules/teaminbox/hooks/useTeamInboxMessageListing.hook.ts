@@ -10,12 +10,14 @@ import { TeamInboxController } from '@finnoto/core/src/backend/communication/con
 
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
+import { NEW_MESSAGE_RECEIVED_SOCKET_EVENT } from '../../../Constants/socket.constant';
 import { useSocket } from '../../../Utils/socket/socket.context.main';
 import { useNotificationSound } from './useNotificationSound.hook';
 
 export const useTeamInboxMessageListing = () => {
     const [search, setSearch] = useState('');
     const [assignToMe, setAssignToMe] = useState(false);
+    const [status_id, setStatusId] = useState<any>();
 
     const { id: teamInboxId } = useFetchParams();
     const { subscribeEvent, unsubscribeEvent } = useSocket();
@@ -26,12 +28,13 @@ export const useTeamInboxMessageListing = () => {
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
         useInfiniteQuery({
-            queryKey: ['team_inbox_chat_list', search, assignToMe],
+            queryKey: ['team_inbox_chat_list', search, assignToMe, status_id],
             queryFn: async ({ pageParam = 1 }) => {
                 const filters: Record<string, any> = {
                     limit: PAGE_LIMIT,
                     page: pageParam,
                     assign_me: assignToMe,
+                    status_id,
                 };
 
                 if (search.length > 3) {
@@ -70,8 +73,9 @@ export const useTeamInboxMessageListing = () => {
             'team_inbox_chat_list',
             search,
             assignToMe,
+            status_id,
         ]);
-    }, [queryClient, search, assignToMe]);
+    }, [queryClient, search, assignToMe, status_id]);
 
     const fetchDataFromSocket = useCallback(
         ({ team_inbox_id }: { team_inbox_id: number }) => {
@@ -91,13 +95,13 @@ export const useTeamInboxMessageListing = () => {
         }
     }, [flatData, teamInboxId]);
 
-    // useEffect(() => {
-    //     subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
+    useEffect(() => {
+        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
 
-    //     return () => {
-    //         unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
-    //     };
-    // }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket]);
+        return () => {
+            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
+        };
+    }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket]);
 
     return {
         search,
@@ -112,5 +116,7 @@ export const useTeamInboxMessageListing = () => {
         fetchMessage,
         queryClient,
         teamInboxId,
+        status_id,
+        setStatusId,
     };
 };

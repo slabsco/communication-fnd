@@ -1,17 +1,23 @@
+import { id } from 'date-fns/locale';
+
 import { BaseModel } from '../../../Models/base.models';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
-import { AddAssigneePayloadDto } from '../dto/add.assignee.payload.dto';
+import {
+    AddAssigneePayloadDto,
+    TeamInboxUpdateStatusDto,
+} from '../dto/add.assignee.payload.dto';
 import {
     SendTeamInboxMessagePayloadDto,
     SendTeamInboxSimpleMessagePayloadDto,
 } from '../dto/send.team.inbox.message.payload.dto';
+import { TeamInboxListFilterDto } from '../dto/teaminbox.list.filter.dto';
 
 export class TeamInboxController extends BaseModel {
     protected endPoint = 'api/b/team-inbox';
 
     async list() {
         this.api = `${this.endPoint}/search`;
-        this.bodyDto = CommonListFilterDto;
+        this.bodyDto = TeamInboxListFilterDto;
 
         return this.post();
     }
@@ -31,6 +37,12 @@ export class TeamInboxController extends BaseModel {
     async addAssignee(id: number) {
         this.api = `${this.endPoint}/${id}/add-assignee`;
         this.bodyDto = AddAssigneePayloadDto;
+
+        return this.post();
+    }
+    async changeStatus(id: number) {
+        this.api = `${this.endPoint}/${id}/update-status`;
+        this.bodyDto = TeamInboxUpdateStatusDto;
 
         return this.post();
     }

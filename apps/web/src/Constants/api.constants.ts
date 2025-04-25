@@ -10,8 +10,7 @@ const IsProductionDb = () => {
 };
 const END_POINT: any = {
     prod: 'https://wapi.dartinbox.in/',
-    // uat: 'https://sndebug.finnoto.cloud/',
-    uat: 'https://wapi.dartinbox.in/',
+    uat: 'https://sndebug.finnoto.cloud/',
 
     // uat: 'http://10.190.208.37:4000/',
     // uat: 'https://debug.bizryt.dev/',

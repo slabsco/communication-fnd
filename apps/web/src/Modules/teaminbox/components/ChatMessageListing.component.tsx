@@ -2,7 +2,7 @@ import { SearchIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-import { useFetchParams, useRecursiveFetch } from '@finnoto/core';
+import { useFetchParams } from '@finnoto/core';
 import {
     Avatar,
     Badge,
@@ -11,11 +11,14 @@ import {
     IconButton,
     InputField,
     Loading,
+    SelectBox,
 } from '@finnoto/design-system';
 
+import { TeamInboxStatusTypeEnum } from '../../broadcast/your-templates/enums/whatsapp.template.category.enum';
 import { useTeamInboxMessageListing } from '../hooks/useTeamInboxMessageListing.hook';
 import { navigateToTeamInboxDetail } from '../utils/teaminbox.utils';
 import { openAddInbox } from './add.inbox.modal';
+import { DisplayTeamInboxStatus } from './chat.message.detail.component';
 
 import { AddSvgIcon } from 'assets';
 
@@ -33,6 +36,8 @@ const ChatMessageListingComponent = () => {
         fetchMessage,
         setAssignToMe,
         assignToMe,
+        status_id,
+        setStatusId,
     } = useTeamInboxMessageListing();
 
     useEffect(() => {
@@ -75,8 +80,8 @@ const ChatMessageListingComponent = () => {
                         }}
                     />
                 </div>
-                <div className='flex gap-3 items-center p-1 rounded bg-base-200'>
-                    Filters:
+                <div className='flex gap-1 items-center p-1 rounded bg-base-200'>
+                    <span className='mr-2'>Filters:</span>
                     <div
                         onClick={() => setAssignToMe((prev) => !prev)}
                         className={cn(
@@ -89,6 +94,39 @@ const ChatMessageListingComponent = () => {
                     >
                         Assigned to me
                     </div>
+                    <SelectBox
+                        width={150}
+                        placeholder='Select Status'
+                        size='sm'
+                        isClearable
+                        value={status_id}
+                        onChange={(_option) => {
+                            setStatusId(_option?.value);
+                        }}
+                        options={[
+                            {
+                                label: 'Solved',
+                                value: TeamInboxStatusTypeEnum.SOLVED,
+                            },
+                            {
+                                label: 'Pending',
+                                value: TeamInboxStatusTypeEnum.PENDING,
+                            },
+                            {
+                                label: 'Open',
+                                value: TeamInboxStatusTypeEnum.OPEN,
+                            },
+
+                            {
+                                label: 'Expired',
+                                value: TeamInboxStatusTypeEnum.EXPIRED,
+                            },
+                            {
+                                label: 'Only Broadcast',
+                                value: TeamInboxStatusTypeEnum.ONLY_BROADCAST,
+                            },
+                        ]}
+                    />
                 </div>
             </div>
             <div className='overflow-y-auto flex-1 p-1' id='scrollableDiv'>
@@ -205,9 +243,7 @@ const Card = ({ data }: { data: any }) => {
                     </span>
                 </div>
             </div>
-            {data?.expired_at && (
-                <Badge label={'Expired'} size='sm' appearance='error' />
-            )}
+            <DisplayTeamInboxStatus currentInboxDetail={data} />
         </div>
     );
 };

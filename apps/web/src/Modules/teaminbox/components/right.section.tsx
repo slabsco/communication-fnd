@@ -4,6 +4,7 @@ import { Contact, MessageCircle, User } from 'lucide-react';
 import { IsEmptyArray, IsEmptyObject, useQueryClient } from '@finnoto/core';
 import {
     Avatar,
+    Badge,
     Button,
     FormatDisplayDateStyled,
     Loading,
@@ -85,7 +86,14 @@ export const RightSection = ({
                                 <Button
                                     size='xs'
                                     outline
-                                    onClick={() => addAssignee(data?.id, data)}
+                                    onClick={() =>
+                                        addAssignee(data?.id, data, () => {
+                                            query.invalidateQueries([
+                                                'team_inbox_detail',
+                                                data.id,
+                                            ]);
+                                        })
+                                    }
                                 >
                                     Add Assignee
                                 </Button>

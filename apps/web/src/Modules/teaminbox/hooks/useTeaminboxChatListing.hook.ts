@@ -111,21 +111,21 @@ export const useTeamInboxChatListing = () => {
         [fetchMessage, teamInboxId]
     );
 
-    // useEffect(() => {
-    //     subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
-    //     subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
+    useEffect(() => {
+        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
+        subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
 
-    //     return () => {
-    //         unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
-    //         unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
-    //     };
-    // }, [
-    //     subscribeEvent,
-    //     unsubscribeEvent,
-    //     fetchDataFromSocket,
-    //     updateData,
-    //     pathname,
-    // ]);
+        return () => {
+            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
+            unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
+        };
+    }, [
+        subscribeEvent,
+        unsubscribeEvent,
+        fetchDataFromSocket,
+        updateData,
+        pathname,
+    ]);
 
     return {
         scrollableDivRef,
