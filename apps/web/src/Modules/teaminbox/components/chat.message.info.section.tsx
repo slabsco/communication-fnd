@@ -3,6 +3,7 @@ import { RightSection } from './right.section';
 
 const ChatMessageInfoSection = () => {
     const { currentInboxDetail, isLoading } = useTeamInbox();
+    if (!currentInboxDetail) return <></>;
     return (
         <div className='hidden col-span-12 h-full rounded-lg lg:block bg-base-100 lg:col-span-2'>
             <RightSection data={currentInboxDetail} isLoading={isLoading} />

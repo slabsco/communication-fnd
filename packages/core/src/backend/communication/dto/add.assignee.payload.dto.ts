@@ -1,10 +1,10 @@
 import { Expose } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class AddAssigneePayloadDto {
     @Expose()
-    @IsNotEmpty()
-    assignee_id: number;
+    @IsOptional()
+    assignee_id?: number;
 }
 
 export class TeamInboxUpdateStatusDto {

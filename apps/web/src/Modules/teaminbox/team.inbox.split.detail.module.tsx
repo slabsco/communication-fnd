@@ -8,23 +8,17 @@ import { Breadcrumbs, PageLoader } from '@finnoto/design-system';
 import ChatMessageDetailComponent from './components/chat.message.detail.component';
 import ChatMessageInfoSection from './components/chat.message.info.section';
 import ChatMessageListingComponent from './components/ChatMessageListing.component';
-import { TeamInboxProvider } from './context/teaminbox.context.main';
+import {
+    TeamInboxProvider,
+    useTeamInbox,
+} from './context/teaminbox.context.main';
 
 const TeamInboxModuleDetail = () => {
-    const { id: team_inbox_id } = useFetchParams();
     return (
         <Container>
             <ChatMessageListingComponent />
-            {!team_inbox_id ? (
-                <div className='col-span-9'>
-                    <PageLoader />
-                </div>
-            ) : (
-                <>
-                    <ChatMessageDetailComponent />
-                    <ChatMessageInfoSection />
-                </>
-            )}
+            <ChatMessageDetailComponent />
+            <ChatMessageInfoSection />
         </Container>
     );
 };

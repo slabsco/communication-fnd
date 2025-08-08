@@ -1,6 +1,11 @@
 import { FetchData, toastBackendError, useQueryClient } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
-import { Badge, ConfirmUtil } from '@finnoto/design-system';
+import {
+    Badge,
+    ConfirmUtil,
+    Loading,
+    NoDataFound,
+} from '@finnoto/design-system';
 
 import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
 import { TeamInboxStatusTypeEnum } from '../../broadcast/your-templates/enums/whatsapp.template.category.enum';
@@ -9,7 +14,7 @@ import { ChatMessageListingMain } from './chat.message.main.listing';
 import { MessageChat } from './message.chat.component';
 
 const ChatMessageDetailComponent = () => {
-    const { currentInboxDetail } = useTeamInbox();
+    const { currentInboxDetail, isLoading } = useTeamInbox();
 
     const query = useQueryClient();
 
@@ -44,7 +49,16 @@ const ChatMessageDetailComponent = () => {
             onConfirmPress: () => handleUpdateStatus(status_id),
         });
     };
-
+    if (!currentInboxDetail || isLoading)
+        return (
+            <div className='col-span-7 centralize'>
+                {isLoading ? (
+                    <Loading size='lg' type='spinner' color='primary' />
+                ) : (
+                    <NoDataFound />
+                )}
+            </div>
+        );
     return (
         <div className='overflow-hidden col-span-12 gap-2 h-full lg:col-span-7 col-flex'>
             <div className='flex gap-2 justify-between items-center px-3 py-2 rounded bg-base-100'>

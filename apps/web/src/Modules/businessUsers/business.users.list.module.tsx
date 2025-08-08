@@ -8,6 +8,7 @@ import { Badge, ConfirmUtil } from '@finnoto/design-system';
 import GenericDocumentListingComponent from '../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../Components/GenericDocumentListing/genericDocumentListing.types';
 import { openBusinessUserReassignRoleModal } from './business.user.invite.modal';
+import { setManager } from './set.manager.form.util';
 
 import { DeleteSvgIcon } from 'assets';
 
@@ -54,6 +55,7 @@ const BusinessUsersListModule = () => {
                 },
             },
             { name: 'Role', key: 'role' },
+            { name: 'Manager', key: 'manager_name' },
             { name: 'Dialling Code', key: 'dialing_code' },
             { name: 'Mobile', key: 'mobile' },
         ],
@@ -90,6 +92,55 @@ const BusinessUsersListModule = () => {
                 },
                 action: (data) => {
                     openBusinessUserReassignRoleModal(data);
+                },
+            },
+            {
+                name: 'Set Manager',
+                type: 'inner',
+                visible: (data) => {
+                    if (user.id === data?.user_id) return false;
+                    if (isOwner(data.user_id)) return false;
+                    return true;
+                },
+                action: (data) => {
+                    setManager(
+                        data.id,
+                        {
+                            assignee_id: data?.manager_id,
+                        },
+                        RefetchGenericListing
+                    );
+                },
+            },
+        ],
+        tabFilterKey: 'role',
+        tabs: [
+            {
+                title: 'Chat Agents',
+                key: 'chat_agent',
+                customFilterValue: {
+                    role: 'Chat Agent',
+                },
+            },
+            {
+                title: 'Agent Managers',
+                key: 'agent_manager',
+                customFilterValue: {
+                    role: 'Agent Manager',
+                },
+            },
+            {
+                title: 'Editors',
+                key: 'editor',
+                customFilterValue: {
+                    role: 'Editor',
+                },
+            },
+            {
+                title: 'Admin',
+                key: 'admin',
+                customFilterValue: {
+                    role: 'Admin',
                 },
             },
         ],

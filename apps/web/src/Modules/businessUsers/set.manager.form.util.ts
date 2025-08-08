@@ -1,10 +1,9 @@
 import { FormBuilderFormSchema } from '@finnoto/core';
 import { BusinessUserController } from '@finnoto/core/src/backend/common/controllers/business.user.controller';
-import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import { ApiSchema, ModalFormUtil, Toast } from '@finnoto/design-system';
 
-export const addAssignee = (
-    teamInboxId: number,
+export const setManager = (
+    buId: number,
     initial_data?: any,
     callback?: () => void
 ) => {
@@ -12,8 +11,8 @@ export const addAssignee = (
         assignee_id: {
             type: 'reference_select',
             controller: BusinessUserController,
-            label: 'Assignee',
-            placeholder: 'Select Assignee',
+            label: 'Manager',
+            placeholder: 'Select Manager',
             required: false,
             labelKey: 'name',
             sublabelKey: 'email',
@@ -22,19 +21,19 @@ export const addAssignee = (
     };
 
     const apiSchema: ApiSchema = {
-        controller: TeamInboxController,
-        method: 'addAssignee',
-        methodParams: teamInboxId,
+        controller: BusinessUserController,
+        method: 'addManager',
+        methodParams: buId,
         onSuccess: () => {
             Toast.success({
-                description: 'Added Assignee!!',
+                description: 'Manager Changed!!',
             });
             callback?.();
         },
     };
 
     return new ModalFormUtil(schema, apiSchema).process({
-        title: 'Set Assignee',
+        title: 'Set Manager',
         modal_type: 'slidingPanel',
         slidingPanelProps: {},
         formBuilderProps: {

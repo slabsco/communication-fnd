@@ -11,6 +11,7 @@ import {
     toastBackendError,
     useFormBuilder,
 } from '@finnoto/core';
+import { BusinessUserController } from '@finnoto/core/src/backend/common/controllers/business.user.controller';
 import { ContactController } from '@finnoto/core/src/backend/communication/controller/contact.controller';
 import {
     Button,
@@ -57,6 +58,15 @@ const AddContactForm = ({
             required: true,
             maxLength: 10,
         },
+        managed_by: {
+            type: 'reference_select',
+            controller: BusinessUserController,
+            label: 'Manager',
+            placeholder: 'Select Manager',
+            required: false,
+            labelKey: 'name',
+            sublabelKey: 'email',
+        },
     };
 
     const onSubmit: FormBuilderSubmitType = async (values, { setError }) => {
@@ -87,6 +97,7 @@ const AddContactForm = ({
         initValues: {
             name: initial_data?.display_name || initial_data?.name,
             mobile: initial_data?.mobile,
+            managed_by: initial_data?.managed_by,
             dialing_code: initial_data?.dialing_code,
         },
         onSubmit,
@@ -103,6 +114,7 @@ const AddContactForm = ({
 
                 {renderFormFields('dialing_code')}
                 {renderFormFields('mobile')}
+                {renderFormFields('managed_by')}
 
                 <div className='gap-2 mt-2 col-flex'>
                     <div className='max-h-[200px] col-flex gap-2 overflow-y-auto '>
