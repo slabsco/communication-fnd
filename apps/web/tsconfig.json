@@ -1,7 +1,6 @@
 {
     "extends": "tsconfig/nextjs.json",
     "compilerOptions": {
-        "skipLibCheck": true,
         "baseUrl": ".",
         "plugins": [
             {
@@ -19,7 +18,9 @@
             "@Types/*": ["src/Types/*"],
             "@ExpenseModules/*": ["src/ExpenseModules/*"]
         },
-        "isolatedModules": true
+        "isolatedModules": true,
+        "skipLibCheck": true,
+        "noEmit": true
     },
     "include": [
         "next-env.d.ts",
