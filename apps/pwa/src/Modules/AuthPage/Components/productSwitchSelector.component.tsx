@@ -26,10 +26,10 @@ import {
 } from 'assets';
 
 export const ProductThemesColor = {
-    [PRODUCT_IDENTIFIER.RECO]: '#0AE287' || recoLightTheme.primary, // reco
-    [PRODUCT_IDENTIFIER.VENDOR]: '#FB7E15' || vendorLightTheme.primary, // Expense Vendor
-    [PRODUCT_IDENTIFIER.EMPLOYEE]: '#15FBED' || employeeLightTheme.primary, // Employee Portal
-    [PRODUCT_IDENTIFIER.FINOPS]: '#FB153E' || finopsLightTheme.primary, // finOps Portal
+    [PRODUCT_IDENTIFIER.RECO]: '#0AE287', // reco
+    [PRODUCT_IDENTIFIER.VENDOR]: '#FB7E15', // Expense Vendor
+    [PRODUCT_IDENTIFIER.EMPLOYEE]: '#15FBED', // Employee Portal
+    [PRODUCT_IDENTIFIER.FINOPS]: '#FB153E', // finOps Portal
 };
 
 export const ProductDescription = {
@@ -108,7 +108,7 @@ export const NewProductCard = ({
                     />
                 )}
                 <div className='col-flex'>
-                    <p className='text-sm font-medium hover-productcard-color '>
+                    <p className='text-sm font-medium hover-productcard-color'>
                         {name}
                     </p>
                     <span className='text-xs text-base-tertiary hover-productcard-desc'>
