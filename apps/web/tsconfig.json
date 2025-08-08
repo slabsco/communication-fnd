@@ -1,6 +1,7 @@
 {
     "extends": "tsconfig/nextjs.json",
     "compilerOptions": {
+        "skipLibCheck": true,
         "baseUrl": ".",
         "plugins": [
             {
@@ -20,6 +21,12 @@
         },
         "isolatedModules": true
     },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../../packages/core/src/Utils/genericDefinition.utils.ts"],
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        ".next/types/**/*.ts",
+        "../../packages/core/src/Utils/genericDefinition.utils.ts"
+    ],
     "exclude": ["node_modules"]
 }
