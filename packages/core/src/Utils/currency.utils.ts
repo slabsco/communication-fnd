@@ -20,16 +20,15 @@ export function FormatCurrency({
 }) {
     if (noDecimal) {
         return new Intl.NumberFormat(region, {
-            style,
-            currency,
+            style: style as 'decimal' | 'currency' | 'percent',
+            currency: currency,
             maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
-            // maximumFractionDigits: 2,
             minimumFractionDigits: 0,
         }).format(amount);
     }
 
     return new Intl.NumberFormat(region, {
-        style,
+        style: style as 'decimal' | 'currency' | 'percent',
         currency: currency,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
