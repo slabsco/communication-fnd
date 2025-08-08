@@ -18,8 +18,15 @@
             "@Types/*": ["src/Types/*"],
             "@ExpenseModules/*": ["src/ExpenseModules/*"]
         },
-        "isolatedModules": true
+        "isolatedModules": true,
+        "typeRoots": ["./node_modules/@types", "./src/types"]
     },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../../packages/core/src/Utils/genericDefinition.utils.ts"],
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        ".next/types/**/*.ts",
+        "../../packages/core/src/Utils/genericDefinition.utils.ts"
+    ],
     "exclude": ["node_modules"]
 }
