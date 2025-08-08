@@ -19,6 +19,11 @@ export class AddContactDto extends IdPayloadDto {
     dialing_code: number;
 
     @Expose()
+    @IsNumber()
+    @IsOptional()
+    managed_by?: number;
+
+    @Expose()
     @IsOptional()
     custom_attributes: { [key: string]: string }[];
 }

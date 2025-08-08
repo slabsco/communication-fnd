@@ -1,4 +1,5 @@
 import { user } from '../../../Models/User';
+import { AddAssigneePayloadDto } from '../../communication/dto/add.assignee.payload.dto';
 import { BusinessUserListFilterDto } from '../dtos/business.user.list.filter.dto';
 import { StringSearchDto } from '../dtos/string.search.dto';
 import { UserRoleAssignmentDto } from '../dtos/user.role.assignment.dto';
@@ -35,6 +36,12 @@ export class BusinessUserController extends CommonController {
 
     async activate(id: number) {
         this.api = `${this.endPoint}/${id}/activate`;
+        return this.post();
+    }
+    async addManager(id: number) {
+        this.api = `${this.endPoint}/${id}/set-manager`;
+        this.bodyDto = AddAssigneePayloadDto;
+
         return this.post();
     }
 
