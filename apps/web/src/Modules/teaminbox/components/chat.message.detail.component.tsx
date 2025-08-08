@@ -15,7 +15,6 @@ import { MessageChat } from './message.chat.component';
 
 const ChatMessageDetailComponent = () => {
     const { currentInboxDetail, isLoading } = useTeamInbox();
-
     const query = useQueryClient();
 
     const handleUpdateStatus = async (status_id: TeamInboxStatusTypeEnum) => {
