@@ -2,16 +2,13 @@
 
 import { ReactNode } from 'react';
 
-import { HOME_ROUTE, useFetchParams } from '@finnoto/core';
-import { Breadcrumbs, PageLoader } from '@finnoto/design-system';
+import { HOME_ROUTE } from '@finnoto/core';
+import { Breadcrumbs } from '@finnoto/design-system';
 
 import ChatMessageDetailComponent from './components/chat.message.detail.component';
 import ChatMessageInfoSection from './components/chat.message.info.section';
 import ChatMessageListingComponent from './components/ChatMessageListing.component';
-import {
-    TeamInboxProvider,
-    useTeamInbox,
-} from './context/teaminbox.context.main';
+import { TeamInboxProvider } from './context/teaminbox.context.main';
 
 const TeamInboxModuleDetail = () => {
     return (
