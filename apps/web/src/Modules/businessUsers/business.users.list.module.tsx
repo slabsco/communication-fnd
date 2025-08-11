@@ -1,4 +1,6 @@
 import {
+    INVITE_USER_ROUTE,
+    Navigation,
     RefetchGenericListing,
     useBusinessUserHook,
     useUserHook,
@@ -10,7 +12,7 @@ import { GenericDocumentListingProps } from '../../Components/GenericDocumentLis
 import { openBusinessUserReassignRoleModal } from './business.user.invite.modal';
 import { setManager } from './set.manager.form.util';
 
-import { DeleteSvgIcon } from 'assets';
+import { DeleteSvgIcon, NavigationSvgIcon } from 'assets';
 
 const BusinessUsersListModule = () => {
     const { removeBusinessUser } = useBusinessUserHook({
@@ -141,6 +143,19 @@ const BusinessUsersListModule = () => {
                 key: 'admin',
                 customFilterValue: {
                     role: 'Admin',
+                },
+            },
+        ],
+        actions: [
+            {
+                name: 'Invite User',
+                type: 'normal',
+                outline: true,
+                icon: NavigationSvgIcon,
+                isSvg: true,
+                disabled: false,
+                action: () => {
+                    Navigation.navigate({ url: INVITE_USER_ROUTE });
                 },
             },
         ],

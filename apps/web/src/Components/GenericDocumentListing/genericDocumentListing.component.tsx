@@ -13,7 +13,6 @@ import {
     IsEmptyObject,
     IsFunction,
     IsUndefinedOrNull,
-    Navigation,
     TitleRoutePayload,
     useApp,
     useGenericDocumentListing,
@@ -37,14 +36,13 @@ import {
 } from '@finnoto/design-system';
 import { RightClickRowOptionProps } from '@finnoto/design-system/src/Components/Inputs/RightClick/rightClick.types';
 
-import ArcToggleListingButtonGroup from '@Components/ArcGenericCardListing/arc.toggle.listing.button.group.component';
 import DropdownActionButton from '@Components/DropdownButton/dropdown.action.button';
 import { openCommonKeyValueList } from '@Utils/functions.utils';
 
 import OuterFilterList from './Components/outerFilter.list.component';
 import { GenericDocumentListingProps } from './genericDocumentListing.types';
 
-import { CalendarSvgIcon, DownloadChartSvgIcon } from 'assets';
+import { CalendarSvgIcon } from 'assets';
 
 const GenericDocumentListing = ({
     name,
@@ -829,7 +827,7 @@ export const renderListingActionButton = (actions, records?: any) => {
                         onClick={() => value.action(null)}
                         shape={value?.shape}
                         outline={value?.outline}
-                        disabled={value?.outline ?? false}
+                        disabled={value?.disabled ?? false}
                     >
                         <div className='gap-2 items-center row-flex'>
                             {value?.icon && (

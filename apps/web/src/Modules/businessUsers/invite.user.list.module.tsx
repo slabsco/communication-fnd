@@ -1,11 +1,17 @@
-import { RefetchGenericListing, useBusinessUserHook } from '@finnoto/core';
+import {
+    IsUndefinedOrNull,
+    Navigation,
+    RefetchGenericListing,
+    TEAM_MANAGEMENT_ROUTE,
+    useBusinessUserHook,
+} from '@finnoto/core';
 import { ConfirmUtil } from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../Components/GenericDocumentListing/genericDocumentListing.types';
 import { openBusinessUserInviteModal } from './business.user.invite.modal';
 
-import { DeleteSvgIcon } from 'assets';
+import { DeleteSvgIcon, NavigationSvgIcon } from 'assets';
 
 const InviteUserListModule = () => {
     const { removeUser, reInviteUser } = useBusinessUserHook({
@@ -24,6 +30,17 @@ const InviteUserListModule = () => {
             { name: 'Rejected At', key: 'rejected_at', type: 'date_time' },
         ],
         actions: [
+            {
+                name: 'Manage Team',
+                type: 'normal',
+                outline: true,
+                icon: NavigationSvgIcon,
+                isSvg: true,
+                disabled: false,
+                action: () => {
+                    Navigation.navigate({ url: TEAM_MANAGEMENT_ROUTE });
+                },
+            },
             {
                 name: 'Invite User',
                 type: 'create',
@@ -55,6 +72,7 @@ const InviteUserListModule = () => {
             {
                 name: 'Resend Invitation',
                 type: 'inner',
+                visible: (item) => IsUndefinedOrNull(item?.accepted_at),
                 action: (data) => {
                     ConfirmUtil({
                         isArc: true,
