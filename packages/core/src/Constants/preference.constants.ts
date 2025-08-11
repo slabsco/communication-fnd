@@ -368,11 +368,7 @@ export enum ColumnDefinitionColumnType {
 }
 
 export enum BulkUploadTypeEnum {
-    HR = 1,
-    AxisReconciliation = 4,
-    VENDOR = 2,
-    EXPENSE = 3,
-    EXPENSE_HEAD = 5,
+    CONTACT = 1,
 }
 
 export enum ArcBulkUploadTypeEnum {

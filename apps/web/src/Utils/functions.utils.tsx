@@ -79,6 +79,8 @@ import NewProductSelector from '@Modules/AuthPage/Components/newProductSelector.
 import OwnershipTransferInvitations from '@Modules/AuthPage/Components/ownershipTransferInvitation.component';
 import ChangeOrgNameForm from '@Modules/user_profile/Forms/changeOrgName.form';
 
+import BulkUploadModal from '../Components/bulkUploadModal.component';
+
 import { PercentageSquareSvgIcon } from 'assets';
 
 export const toastLoading = Toast.loading;
@@ -855,3 +857,22 @@ export function getEmployeeReportBreadcrumbData({ name }: { name: string }) {
         },
     ];
 }
+
+export const openBulkUpload = (
+    typeId: number,
+    { name, callback }: { name: string; callback?: () => void }
+) => {
+    Modal.open({
+        component: BulkUploadModal,
+        modalSize: 'md',
+        props: {
+            name: name,
+            typeId,
+            callback: () => {
+                callback();
+                Modal.close();
+                RefetchGenericListing();
+            },
+        },
+    });
+};

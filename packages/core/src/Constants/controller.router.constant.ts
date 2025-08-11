@@ -2,6 +2,7 @@ import { BusinessReportController } from '../backend/ap/business/controllers/bus
 import { ListingPreferenceController } from '../backend/ap/business/controllers/listing.preference.controller';
 import { LoggedUtilityController } from '../backend/ap/utility/controllers/logged.utility.controller';
 import { ViolationDefinitionController } from '../backend/ap/utility/controllers/violation.definition.controller';
+import { BulkUploadController } from '../backend/common/controllers/bulk.upload.controller';
 import { BusinessUserController } from '../backend/common/controllers/business.user.controller';
 import { BusinessWebhookController } from '../backend/common/controllers/business.webhook.controller';
 import { EmailMessageController } from '../backend/common/controllers/email.message.controller';
@@ -55,7 +56,7 @@ export const LISTING_CONTROLLER_ROUTER = {
     ...EMAIL_CONTROLER_ROUTER,
     ...FINNOTO_PAYMENT_ROUTER,
     ...VIOLATIONS_CONTROLLER_ROUTER,
-
+    bulk_uploads: BulkUploadController,
     integrations: Integrations,
     ...EMAIL_CONTROLER_ROUTER,
     ...FINOPS_CONTROLLER_ROUTE,

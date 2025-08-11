@@ -1,4 +1,5 @@
 import {
+    BulkUploadTypeEnum,
     FetchData,
     IsEmptyArray,
     RefetchGenericListing,
@@ -9,9 +10,10 @@ import { ConfirmUtil } from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../Components/GenericDocumentListing/genericDocumentListing.types';
+import { openBulkUpload } from '../../Utils/functions.utils';
 import { openAddContactForm } from './add.contact.modal.form';
 
-import { DeleteSvgIcon, EditSvgIcon } from 'assets';
+import { AddSvgIcon, DeleteSvgIcon, EditSvgIcon } from 'assets';
 
 const ContactListModule = () => {
     const deleteContact = async (id: number) => {
@@ -95,7 +97,27 @@ const ContactListModule = () => {
         ],
 
         actions: [
-            { name: 'Add Contact', type: 'create', action: openAddContactForm },
+            {
+                type: 'icon_btn',
+                icon: AddSvgIcon,
+                action: openAddContactForm,
+                name: 'Add Contact',
+                outline: true,
+            },
+            {
+                name: 'Add Contact',
+                type: 'action_btn',
+                buttonActions: [
+                    {
+                        name: 'Bulk Upload',
+                        type: 'action_btn',
+                        action: () =>
+                            openBulkUpload(BulkUploadTypeEnum.CONTACT, {
+                                name: 'Contacts',
+                            }),
+                    },
+                ],
+            },
         ],
     };
     return <GenericDocumentListingComponent {...props} />;

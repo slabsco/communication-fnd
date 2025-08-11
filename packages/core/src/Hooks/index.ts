@@ -56,6 +56,7 @@ export * from './useRouteChange.hook';
 export * from './useToggle.hook';
 export * from './useUncontrolled.hook';
 export * from './useUncontrolledList.hook';
+export * from './BulkUpload';
 
 export * from './useQueryBuilderValueEditor.hook';
 
