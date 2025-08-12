@@ -9,6 +9,7 @@ import {
     PRODUCT_IDENTIFIER,
     PRODUCT_PATH_STATE,
     REFERRER_STORE,
+    TEAM_INBOX_SPLIT_LIST,
     VENDOR_CLIENT_ROUTE,
     VENDOR_REGISTER_ROUTE,
 } from '../Constants';
@@ -25,6 +26,7 @@ import {
 } from './common.utils';
 import { ExpenseRouteUtils } from './expenseRoute.utils';
 import { GetItem, SetItem } from './localStorage.utils';
+import { Menu } from './menu.utils';
 import { Navigation, SerializeObj } from './navigation.utils';
 import { GetSessionItem } from './sessionStorage.utils';
 import { StoreEvent } from './stateManager.utils';
@@ -58,7 +60,13 @@ const initializeUser = (data: any) => {
 
     storeProductPathState(1, '');
 
-    window.location.replace(HOME_ROUTE);
+    const isAvailable = Menu.isMenuAvailable(HOME_ROUTE);
+
+    if (isAvailable) {
+        window.location.replace(HOME_ROUTE);
+    } else {
+        window.location.replace(TEAM_INBOX_SPLIT_LIST);
+    }
 
     return businesses?.[0];
 };

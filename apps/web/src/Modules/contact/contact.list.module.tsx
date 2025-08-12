@@ -67,6 +67,11 @@ const ContactListModule = () => {
             },
             { name: 'WA ID', key: 'wa_id' },
             { name: 'Managed By', key: 'manager' },
+            {
+                name: 'Bot Mode',
+                key: 'is_assigned_to_bot',
+                type: 'dualistic',
+            },
         ],
         rowActions: [
             {

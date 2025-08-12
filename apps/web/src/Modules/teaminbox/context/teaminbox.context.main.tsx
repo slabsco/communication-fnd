@@ -38,8 +38,6 @@ export const TeamInboxProvider = ({
         },
     });
 
-    console.log({ response });
-
     return (
         <TeamInboxContext.Provider
             value={{ teamInboxId, currentInboxDetail: response, isLoading }}

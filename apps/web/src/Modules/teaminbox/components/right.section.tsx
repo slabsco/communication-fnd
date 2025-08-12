@@ -4,14 +4,13 @@ import { Contact, MessageCircle, User } from 'lucide-react';
 import { IsEmptyArray, IsEmptyObject, useQueryClient } from '@finnoto/core';
 import {
     Avatar,
-    Badge,
     Button,
     FormatDisplayDateStyled,
     Loading,
 } from '@finnoto/design-system';
 
 import { addAssignee } from '../add.assignee.form.util';
-import { useTeamInbox } from '../context/teaminbox.context.main';
+import InboxBotMode from './inbox.bot.mode';
 
 export const RightSection = ({
     data = {},
@@ -66,10 +65,12 @@ export const RightSection = ({
                                                     data,
                                                     () => {
                                                         query.invalidateQueries(
-                                                            [
-                                                                'team_inbox_detail',
-                                                                data.id,
-                                                            ]
+                                                            {
+                                                                queryKey: [
+                                                                    'team_inbox_detail',
+                                                                    data.id,
+                                                                ],
+                                                            }
                                                         );
                                                     }
                                                 )
@@ -88,10 +89,12 @@ export const RightSection = ({
                                     outline
                                     onClick={() =>
                                         addAssignee(data?.id, data, () => {
-                                            query.invalidateQueries([
-                                                'team_inbox_detail',
-                                                data.id,
-                                            ]);
+                                            query.invalidateQueries({
+                                                queryKey: [
+                                                    'team_inbox_detail',
+                                                    data.id,
+                                                ],
+                                            });
                                         })
                                     }
                                 >
@@ -100,6 +103,9 @@ export const RightSection = ({
                             )}
                         </div>
                     </div>
+                    {/* BOT */}
+
+                    <InboxBotMode />
 
                     {/* Chat Section */}
                     <div className='space-y-2'>
