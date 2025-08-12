@@ -2,6 +2,7 @@ import { BaseModel } from '../../../Models/base.models';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
 import { StringSearchDto } from '../../common/dtos/string.search.dto';
 import { AddContactDto } from '../dto/add.contact.dto';
+import { AddEnableBotModePayloadDto } from '../dto/change.contact.mode.dto';
 
 export class ContactController extends BaseModel {
     protected endPoint = 'api/b/contact';
@@ -21,6 +22,13 @@ export class ContactController extends BaseModel {
     async remove(id: number) {
         this.api = `${this.endPoint}/${id}`;
         return this.delete();
+    }
+
+    async botMode(id: number) {
+        this.api = `${this.endPoint}/${id}/enable-bot`;
+        this.bodyDto = AddEnableBotModePayloadDto;
+
+        return this.post();
     }
 
     async create() {

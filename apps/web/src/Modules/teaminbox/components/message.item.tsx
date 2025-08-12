@@ -1,7 +1,7 @@
 import { Info, Reply } from 'lucide-react';
 import { useMemo } from 'react';
 
-import { cn, Tooltip } from '@finnoto/design-system';
+import { cn, FormatDisplayDateStyled, Tooltip } from '@finnoto/design-system';
 
 import { MessageSectionPreview } from '../../broadcast/your-templates/components/YourTemplatesPriview.component';
 import { RenderInnerTextMessage } from './render.inner.text.component';
@@ -36,7 +36,25 @@ export const MessageItem = ({ message }: { message: any }) => {
     }, [body, footer, header]);
 
     const isSentBySystem =
-        message?.attributes?.sent_by || message?.attributes?.is_bot;
+        message?.attributes?.sent_by ||
+        message?.attributes?.is_bot ||
+        message?.from_external_source;
+
+    if (message.is_log) {
+        return (
+            <div className='flex gap-1 justify-center items-center text-center'>
+                <div className='text-[10px] centralize text-base-secondary'>
+                    {message?.payload?.message},
+                </div>
+                {FormatDisplayDateStyled({
+                    value: message?.created_at,
+                    size: 'xs',
+                    className: 'text-base-secondary text-[10px]',
+                    containerClass: 'text-[10px]',
+                })}
+            </div>
+        );
+    }
 
     return (
         <div

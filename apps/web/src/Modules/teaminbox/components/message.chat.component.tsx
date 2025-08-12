@@ -53,6 +53,15 @@ export const MessageChat = ({ data }) => {
         return input?.length <= 0;
     }, [files, input]);
 
+    const refetch = useCallback(() => {
+        queryClient.invalidateQueries({
+            queryKey: ['team_inbox_message_list', +data.id],
+        });
+        queryClient.invalidateQueries({
+            queryKey: ['team_inbox_detail', +data.id],
+        });
+    }, [queryClient, data.id]);
+
     const sendMessage = useCallback(async () => {
         const doc: any = files?.[0];
 
@@ -77,8 +86,8 @@ export const MessageChat = ({ data }) => {
 
         setInput('');
         setFiles([]);
-        queryClient.invalidateQueries(['team_inbox_message_list', +data.id]);
-    }, [data?.id, files, input, isSendButtonDisabled, queryClient, setFiles]);
+        refetch();
+    }, [data?.id, files, input, isSendButtonDisabled, refetch, setFiles]);
 
     const triggerChatbotAction = useCallback(
         async (chatbot_id: number) => {
@@ -92,12 +101,9 @@ export const MessageChat = ({ data }) => {
 
             setInput('');
             setFiles([]);
-            queryClient.invalidateQueries([
-                'team_inbox_message_list',
-                data?.id,
-            ]);
+            refetch();
         },
-        [data?.id, queryClient, setFiles]
+        [data?.id, refetch, setFiles]
     );
 
     const handleKeyPress = useCallback(
@@ -121,10 +127,7 @@ export const MessageChat = ({ data }) => {
             contact_id: data?.contact_id,
             disableContact: true,
             callback: () => {
-                queryClient.invalidateQueries([
-                    'team_inbox_message_list',
-                    +data?.id,
-                ]);
+                refetch();
             },
         });
     };

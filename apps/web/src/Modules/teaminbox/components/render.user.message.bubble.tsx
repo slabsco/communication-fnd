@@ -31,7 +31,8 @@ const getData = (components: any[], type: string) => {
 
 export const RenderUserMessageBubble = ({ message }) => {
     const payload = message?.payload;
-    const identifierPayload = payload.image || payload.document;
+    const identifierPayload =
+        payload.image || payload.document || payload.video || payload.audio;
 
     const { data, isLoading } = useQuery({
         queryKey: ['document', identifierPayload?.id],
@@ -116,6 +117,59 @@ export const RenderUserMessageBubble = ({ message }) => {
                 </div>
             );
         }
+        if (payload?.video?.id) {
+            return (
+                <div className='gap-1 col-flex'>
+                    <div className='flex flex-col gap-2'>
+                        <div className='h-[300px] w-[300px] flex items-center justify-center overflow-hidden'>
+                            {isLoading ? (
+                                <Loading
+                                    size='xl'
+                                    color='primary'
+                                    type='balls'
+                                />
+                            ) : (
+                                <video
+                                    autoPlay={false}
+                                    controls
+                                    src={data}
+                                    height={300}
+                                    width={300}
+                                    className='w-full h-full'
+                                />
+                            )}
+                        </div>
+
+                        <span className='text-sm text-primary-950'>
+                            {payload?.video?.caption}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
+        if (payload?.audio?.id) {
+            return (
+                <div className='gap-1 col-flex'>
+                    <div className='flex flex-col gap-2'>
+                        <div className='h-[80px] w-[300px] flex items-center justify-center overflow-hidden'>
+                            {isLoading ? (
+                                <Loading
+                                    size='xl'
+                                    color='primary'
+                                    type='balls'
+                                />
+                            ) : (
+                                <audio controls src={data} className='w-full' />
+                            )}
+                        </div>
+
+                        <span className='text-sm text-primary-950'>
+                            {payload?.audio?.caption}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
         if (payload?.document?.id) {
             const isNotPdf = !(payload?.document?.filename as string).endsWith(
                 '.pdf'
@@ -154,6 +208,18 @@ export const RenderUserMessageBubble = ({ message }) => {
             );
         }
 
+        if (message?.payload?.text?.body) {
+            return (
+                <span
+                    dangerouslySetInnerHTML={{
+                        __html: convertWhatsAppToHtml(
+                            message?.payload?.text?.body
+                        ),
+                    }}
+                ></span>
+            );
+        }
+
         return (
             <span>
                 {message?.payload?.button?.text ||
@@ -167,7 +233,7 @@ export const RenderUserMessageBubble = ({ message }) => {
 
     return (
         <div className='flex gap-2 items-end'>
-            <div className='gap-2 items-start p-3 bg-gray-300 rounded col-flex'>
+            <div className='gap-2 items-start p-3 bg-gray-300 rounded max-w-9/12 col-flex'>
                 {message?.template_parent_body && (
                     <div
                         className='h-[70px] overflow-hidden text-ellipsis whitespace-pre-line line-clamp-3 w-[200px] bg-primary/70 text-xs p-1 rounded text-primary-content'
@@ -200,3 +266,86 @@ export const RenderUserMessageBubble = ({ message }) => {
         </div>
     );
 };
+
+function convertWhatsAppToHtml(input) {
+    if (input == null) return '';
+
+    // Helper: escape HTML
+    const escapeHtml = (s) =>
+        s
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+    let text = String(input);
+
+    // 1) Extract code blocks (triple backticks) and replace with placeholders
+    const codeBlocks = [];
+    text = text.replace(/```([\s\S]*?)```/g, (m, p1) => {
+        const idx = codeBlocks.push(p1) - 1;
+        return `@@CODEBLOCK_${idx}@@`;
+    });
+
+    // 2) Extract inline code (single backticks) and replace with placeholders
+    const inlineCodes = [];
+    text = text.replace(/`([^`\r\n]+?)`/g, (m, p1) => {
+        const idx = inlineCodes.push(p1) - 1;
+        return `@@INLINECODE_${idx}@@`;
+    });
+
+    // The 's' (dotAll) and 'g' flags are not available in ES2017 and below.
+    // So, we need to avoid using 's' and use [\s\S] instead of '.' for multiline matching.
+
+    // Bold+italic: *_text_*
+    text = text
+        .replace(/\*_([\s\S]+?)_\*/g, '<strong><em>$1</em></strong>')
+        .replace(/_\*([\s\S]+?)\*_/g, '<strong><em>$1</em></strong>');
+
+    // Strikethrough: ~text~
+    text = text.replace(/~([\s\S]+?)~/g, '<del>$1</del>');
+
+    // Bold: *text*
+    // Avoid matching * surrounded by spaces
+    text = text.replace(/\*(?!\s)([\s\S]+?)(?<!\s)\*/g, '<strong>$1</strong>');
+
+    // Italic: _text_
+    // Avoid matching _ surrounded by spaces
+    text = text.replace(/_(?!\s)([\s\S]+?)(?<!\s)_/g, '<em>$1</em>');
+
+    const protectedTags = ['strong', 'em', 'del', 'pre', 'code', 'br'];
+    protectedTags.forEach((tag) => {
+        const openRe = new RegExp(`<${tag}>`, 'g');
+        const closeRe = new RegExp(`</${tag}>`, 'g');
+        text = text.replace(openRe, `@@OPEN_${tag.toUpperCase()}@@`);
+        text = text.replace(closeRe, `@@CLOSE_${tag.toUpperCase()}@@`);
+    });
+
+    text = escapeHtml(text);
+
+    protectedTags.forEach((tag) => {
+        text = text.replace(/@@OPEN_([A-Z]+)@@/g, (m, p1) => {
+            if (p1.toLowerCase() === tag) return `<${tag}>`;
+            return m;
+        });
+        text = text.replace(/@@CLOSE_([A-Z]+)@@/g, (m, p1) => {
+            if (p1.toLowerCase() === tag) return `</${tag}>`;
+            return m;
+        });
+    });
+
+    text = text.replace(/@@INLINECODE_(\d+)@@/g, (m, idx) => {
+        const code = escapeHtml(inlineCodes[Number(idx)]);
+        return `<code>${code}</code>`;
+    });
+
+    text = text.replace(/@@CODEBLOCK_(\d+)@@/g, (m, idx) => {
+        const cb = escapeHtml(codeBlocks[Number(idx)]);
+        return `<pre><code>${cb}</code></pre>`;
+    });
+
+    text = text.replace(/\r\n/g, '\n').replace(/\n/g, '<br/>');
+
+    return text;
+}
