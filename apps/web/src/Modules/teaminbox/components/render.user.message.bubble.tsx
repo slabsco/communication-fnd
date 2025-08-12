@@ -32,7 +32,11 @@ const getData = (components: any[], type: string) => {
 export const RenderUserMessageBubble = ({ message }) => {
     const payload = message?.payload;
     const identifierPayload =
-        payload.image || payload.document || payload.video || payload.audio;
+        payload?.image ||
+        payload?.document ||
+        payload?.video ||
+        payload?.audio ||
+        payload?.sticker;
 
     const { data, isLoading } = useQuery({
         queryKey: ['document', identifierPayload?.id],
@@ -170,6 +174,34 @@ export const RenderUserMessageBubble = ({ message }) => {
                 </div>
             );
         }
+        if (payload?.sticker?.id) {
+            return (
+                <div className='gap-1 col-flex'>
+                    <div className='flex flex-col gap-2'>
+                        <div className='h-[200px] w-[200px] flex items-center justify-center overflow-hidden'>
+                            {isLoading ? (
+                                <Loading
+                                    size='xl'
+                                    color='primary'
+                                    type='balls'
+                                />
+                            ) : (
+                                <Image
+                                    alt='Image'
+                                    src={data}
+                                    height={300}
+                                    width={300}
+                                    className='object-contain'
+                                />
+                            )}
+                        </div>
+                        <span className='text-sm text-primary-950'>
+                            {payload?.sticker?.caption}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
         if (payload?.document?.id) {
             const isNotPdf = !(payload?.document?.filename as string).endsWith(
                 '.pdf'
@@ -233,7 +265,7 @@ export const RenderUserMessageBubble = ({ message }) => {
 
     return (
         <div className='flex gap-2 items-end'>
-            <div className='gap-2 items-start p-3 bg-gray-300 rounded max-w-9/12 col-flex'>
+            <div className='gap-2 items-start p-3 bg-gray-300 rounded max-w-[75%] col-flex'>
                 {message?.template_parent_body && (
                     <div
                         className='h-[70px] overflow-hidden text-ellipsis whitespace-pre-line line-clamp-3 w-[200px] bg-primary/70 text-xs p-1 rounded text-primary-content'
