@@ -52,6 +52,7 @@ const AddInboxModal = ({
             required: true,
             labelKey: 'display_name',
             disabled: disableContact,
+            sublabelKey: 'wa_id',
         },
         template_id: {
             type: 'reference_select',
@@ -60,6 +61,7 @@ const AddInboxModal = ({
             placeholder: 'Select Template',
             required: true,
             autoSelectZeroth: true,
+            sublabelKey: 'identifier',
         },
     };
 
