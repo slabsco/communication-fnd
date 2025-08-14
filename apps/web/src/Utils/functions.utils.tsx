@@ -80,6 +80,7 @@ import OwnershipTransferInvitations from '@Modules/AuthPage/Components/ownership
 import ChangeOrgNameForm from '@Modules/user_profile/Forms/changeOrgName.form';
 
 import BulkUploadModal from '../Components/bulkUploadModal.component';
+import UserDetailsModal from '../Components/userDetailsModal';
 
 import { PercentageSquareSvgIcon } from 'assets';
 
@@ -873,6 +874,16 @@ export const openBulkUpload = (
                 Modal.close();
                 RefetchGenericListing();
             },
+        },
+    });
+};
+
+export const openArUserDetailsModal = async (user_id: number) => {
+    Modal.open({
+        component: UserDetailsModal,
+        modalSize: 'sm',
+        props: {
+            id: user_id,
         },
     });
 };

@@ -10,6 +10,7 @@ import {
 import { useLocation, useToggle } from 'react-use';
 
 import { Modal, SlidingPane } from '@finnoto/design-system';
+import { MentionUserContextProvider } from '@finnoto/design-system/src/Components/Inputs/MentionInput/mention.user.provider';
 
 import { QueryClientProvider } from '@tanstack/react-query';
 
@@ -186,8 +187,9 @@ export const AppProvider = ({ children }: any) => {
             <NotificationProvider>
                 <ThemeContextProvider>
                     <QueryClientProvider client={queryClient}>
-                        {children}
-                        {/* {!IsProduction() && (
+                        <MentionUserContextProvider>
+                            {children}
+                            {/* {!IsProduction() && (
                             <ReactQueryDevtools
                                 position='bottom-right'
                                 toggleButtonProps={{
@@ -196,8 +198,9 @@ export const AppProvider = ({ children }: any) => {
                                 initialIsOpen={false}
                             />
                         )} */}
-                        {/* Theme customizer available for only user id 1. i.e. Hemant Kumar Sah */}
-                        {user?.id === 1 && <ThemeCustomizer />}
+                            {/* Theme customizer available for only user id 1. i.e. Hemant Kumar Sah */}
+                            {user?.id === 1 && <ThemeCustomizer />}
+                        </MentionUserContextProvider>
                     </QueryClientProvider>
                 </ThemeContextProvider>
             </NotificationProvider>

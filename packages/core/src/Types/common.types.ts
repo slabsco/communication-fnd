@@ -69,6 +69,7 @@ export interface FilesUploadDto {
 export interface FileData extends Partial<File> {
     id?: number;
     serverUrl?: string;
+    hideDelete?: boolean;
 }
 
 export interface DocumentUploadResponsePayload {
@@ -90,10 +91,7 @@ export type PaginationType = {
     page?: number;
     total?: number;
 };
-
 export type GenericListingType = keyof typeof LISTING_CONTROLLER_ROUTER;
-export type GenericListingControllerType =
-    (typeof LISTING_CONTROLLER_ROUTER)[GenericListingType];
 
 export type SearchQueryType = keyof typeof SPOTLIGHT_QUERY_CONTROLLER_ROUTE;
 
@@ -150,8 +148,9 @@ export interface SourceDetailObj {
     identifier?: string;
     path?: string;
     publicPath?: string;
-    controller?: GenericListingControllerType;
     action?: (..._: any) => void;
+    navigationFn?: (..._: any) => void;
+    defaultActiveTab?: ObjectDto;
 }
 
 export interface FileData extends Partial<File> {
@@ -186,6 +185,7 @@ export interface ChatDataPayload {
     image_url?: string;
     sameSide?: boolean;
     platform_id?: number;
+    isSystemGenerated?: boolean;
 }
 
 export interface ProductPayload {

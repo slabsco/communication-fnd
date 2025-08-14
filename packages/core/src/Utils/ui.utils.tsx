@@ -66,8 +66,8 @@ export {
     CommentConfirmUtil,
     ConfirmUtil,
     ExpenseWrappers,
+    formElements,
     Functions,
     PageLoader,
     ThemeCustomizer,
-    formElements,
 };

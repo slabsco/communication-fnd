@@ -1,5 +1,7 @@
 import { formatDistance } from 'date-fns';
 
+import { Modal } from '@finnoto/design-system';
+
 import { ObjectDto } from '../backend/Dtos';
 import {
     CURRENT_EMPLOYEE,

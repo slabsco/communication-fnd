@@ -2,22 +2,29 @@
 
 import { ReactNode } from 'react';
 
-import { HOME_ROUTE } from '@finnoto/core';
+import { HOME_ROUTE, useFetchParams } from '@finnoto/core';
+import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import {
     AnimatedTabs,
     Breadcrumbs,
+    Conversation,
     FilterProvider,
 } from '@finnoto/design-system';
 
 import ChatMessageDetailComponent from './components/chat.message.detail.component';
 import ChatMessageListingComponent from './components/ChatMessageListing.component';
 import { RightSection } from './components/right.section';
-import { TeamInboxProvider } from './context/teaminbox.context.main';
+import {
+    TeamInboxProvider,
+    useTeamInbox,
+} from './context/teaminbox.context.main';
 import TeamInboxFilter from './team.inbox.filter';
 
-import { ArcInfoSvgIcon, MessageSvgIcon } from 'assets';
+import { ArcInfoSvgIcon, MessageSvgIcon, NotesSvgIcon } from 'assets';
 
 const TeamInboxModuleDetail = () => {
+    const { id: teamInboxId } = useFetchParams();
+
     return (
         <Container>
             <ChatMessageListingComponent />
@@ -38,6 +45,18 @@ const TeamInboxModuleDetail = () => {
                         key: 'detail',
                         icon: ArcInfoSvgIcon,
                         component: <RightSection />,
+                    },
+                    {
+                        title: 'Notes',
+                        key: 'notes',
+                        icon: NotesSvgIcon,
+                        component: (
+                            <Conversation
+                                id={teamInboxId}
+                                controller={TeamInboxController}
+                                className='p-3'
+                            />
+                        ),
                     },
                 ]}
             />
