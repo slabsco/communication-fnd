@@ -29,7 +29,7 @@ export const ChatMessageListingMain = () => {
         <div
             ref={scrollableDivRef}
             style={{ display: 'flex', flexDirection: 'column-reverse' }}
-            className='overflow-y-auto flex-1 rounded bg-base-100 scrollbar-xs'
+            className='overflow-y-auto flex-1 scrollbar-xs bg-[#ece5dd]'
             id='scrollableDiv111'
         >
             <InfiniteScroll

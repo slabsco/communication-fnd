@@ -54,6 +54,8 @@ const FilterSelectionList = ({ children }: { children?: React.ReactNode }) => {
         };
     }, [appliedFilters, listFilters, tempSelectedFilter]);
 
+    console.log({ selectedFilterConfig });
+
     const checkIsDeletable = useCallback(
         (filter: any) => {
             return (

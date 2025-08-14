@@ -5,10 +5,8 @@ import {
     IsArray,
     LISTING_CONTROLLER_ROUTER,
     ObjectDto,
-    VendorBusinessKycStatusEnum,
 } from '@finnoto/core';
-import { TableColumnType,Badge } from '@finnoto/design-system';
-
+import { TableColumnType } from '@finnoto/design-system';
 
 export const hasRoleIdentifierPresent = (identifier: string | string[]) => {
     if (IsArray(identifier)) {
@@ -59,3 +57,18 @@ export const getController = (ref_identifier: string) => {
     return LISTING_CONTROLLER_ROUTER[ref_identifier] || null;
 };
 
+export const getReferenceType = (type_id: number) => {
+    switch (type_id) {
+        case 1:
+            return 'text';
+        case 3:
+        case 4:
+            return 'date';
+        case 5:
+            return 'boolean';
+        case 6:
+            return 'multi_select';
+        default:
+            break;
+    }
+};

@@ -70,32 +70,22 @@ export const useFilter = ({
     );
 
     const filterData = useMemo(() => {
-        const defaultLimit = product_id === PRODUCT_IDENTIFIER.RECO ? 40 : 20;
-
         const storeFilters = getStoreFilters(filterAliasKey) || {};
 
         try {
             const jsonFilters = filterParams ? JSON.parse(filterParams) : {};
 
             return {
-                limit: defaultLimit,
                 ...defaultValues,
                 ...storeFilters,
                 ...jsonFilters,
             };
         } catch (error) {
             return {
-                limit: defaultLimit,
                 ...defaultValues,
             };
         }
-    }, [
-        defaultValues,
-        filterAliasKey,
-        filterParams,
-        getStoreFilters,
-        product_id,
-    ]);
+    }, [defaultValues, filterAliasKey, filterParams, getStoreFilters]);
 
     const filterQuery = useMemo(() => {
         if (paramsFilterQuery) {

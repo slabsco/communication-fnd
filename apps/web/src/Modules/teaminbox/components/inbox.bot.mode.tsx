@@ -1,5 +1,3 @@
-import { BotIcon } from 'lucide-react';
-
 import { FetchData, toastBackendError } from '@finnoto/core';
 import { ContactController } from '@finnoto/core/src/backend/communication/controller/contact.controller';
 import { Functions } from '@finnoto/core/src/Utils/ui.utils';
@@ -38,22 +36,12 @@ const InboxBotMode = () => {
         },
     });
     return (
-        <div>
-            <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
-                <h3 className='flex gap-2 items-center font-medium'>
-                    <BotIcon size={18} />
-                    Bot Mode
-                </h3>
-            </div>
-            <div className='mt-2'>
-                <Switch
-                    onChange={(val) => {
-                        mutateAsync(val);
-                    }}
-                    checked={currentInboxDetail?.contact?.is_assigned_to_bot}
-                />
-            </div>
-        </div>
+        <Switch
+            onChange={(val) => {
+                mutateAsync(val);
+            }}
+            checked={currentInboxDetail?.contact?.is_assigned_to_bot}
+        />
     );
 };
 

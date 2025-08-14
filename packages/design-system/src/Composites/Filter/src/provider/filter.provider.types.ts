@@ -63,4 +63,5 @@ export interface FilterProviderInterface {
     defaultFilterParams?: ObjectDto;
     defaultFilterQueries?: ObjectDto;
     defaultRestrictedQueries?: string;
+    defaultSaveFilter?: any;
 }

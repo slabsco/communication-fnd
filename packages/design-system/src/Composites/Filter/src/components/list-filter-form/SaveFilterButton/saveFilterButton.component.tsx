@@ -1,10 +1,4 @@
-import {
-    IsFunction,
-    Navigation,
-    ObjectDto,
-    toastBackendError,
-    useApp,
-} from '@finnoto/core';
+import { IsFunction, ObjectDto, toastBackendError } from '@finnoto/core';
 import { Toast } from '@finnoto/core/src/Utils/toast.utils';
 
 import { Button, handleInlineModalToggle } from '../../../../../../Components';
@@ -29,6 +23,8 @@ export const SaveFilterButton = withListFormFilterProviderExport(
         buttonText = 'Save',
         onSave,
         onApply,
+        definitionFilterColumns,
+        defaultSaveFilter = {},
     }: {
         definitionKey: string;
         getFilterValues?: any;
@@ -38,6 +34,8 @@ export const SaveFilterButton = withListFormFilterProviderExport(
         buttonType?: 'button' | 'text';
         onSave?: () => void;
         onApply?: () => void;
+        definitionFilterColumns?: any[];
+        defaultSaveFilter?: ObjectDto;
     }) => {
         const {
             getValues,
@@ -55,7 +53,7 @@ export const SaveFilterButton = withListFormFilterProviderExport(
             saveFilter,
             isAppliedFilterDifference,
             isShowSaveFilter,
-        } = useSaveFilter({ saved_filter, definitionKey });
+        } = useSaveFilter({ saved_filter, definitionKey, defaultSaveFilter });
         const getValueFn = getFilterValues ?? getValues;
 
         const saveFilterActions = [
@@ -90,7 +88,9 @@ export const SaveFilterButton = withListFormFilterProviderExport(
                         filterData: getValueFn(),
                         listFilters,
                         saveFilter,
+                        definitionFilterColumns,
                         filter_query: filterQuery,
+                        defaultSaveFilter,
                         callback: async (response: ObjectDto) => {
                             await refetch();
                             onSave?.();
@@ -112,6 +112,8 @@ export const SaveFilterButton = withListFormFilterProviderExport(
                                     saveFilter,
                                     filter_query: filterQuery,
                                     handleNavigationSearch,
+                                    definitionFilterColumns,
+                                    defaultSaveFilter,
                                     callback: async (response: ObjectDto) => {
                                         await refetch();
                                         onSave?.();
@@ -160,6 +162,8 @@ export const openSaveFilter = ({
     data,
     definitionKey,
     handleNavigationSearch,
+    definitionFilterColumns,
+    defaultSaveFilter = {},
 }: any) => {
     handleInlineModalToggle('filter');
     Modal.open({
@@ -171,6 +175,7 @@ export const openSaveFilter = ({
             data,
             filter_query,
             definitionKey,
+            definitionFilterColumns,
             onSubmit: async (values, { setError }) => {
                 const newData = { ...values };
                 if (values?.is_global) {
@@ -182,6 +187,7 @@ export const openSaveFilter = ({
                     identifier: values?.identifier,
                     filterValues: {
                         ...filterData,
+                        ...defaultSaveFilter,
                         filter_query,
                     },
                     is_global: values?.is_global,
@@ -193,14 +199,17 @@ export const openSaveFilter = ({
                 }
 
                 if (!success) return;
-                handleNavigationSearch(
-                    {
-                        saved_filter: response.id,
-                        filter: JSON.stringify(filterData),
-                        filter_query,
-                    },
-                    false
-                );
+
+                if (IsFunction(handleNavigationSearch)) {
+                    handleNavigationSearch(
+                        {
+                            saved_filter: response.id,
+                            filter: JSON.stringify(filterData),
+                            filter_query,
+                        },
+                        false
+                    );
+                }
                 Modal.close();
                 handleInlineModalToggle('filter');
                 callback?.(response);

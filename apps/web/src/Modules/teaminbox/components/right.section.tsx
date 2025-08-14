@@ -6,58 +6,162 @@ import {
     Avatar,
     Button,
     FormatDisplayDateStyled,
+    IconButton,
     Loading,
 } from '@finnoto/design-system';
 
 import { addAssignee } from '../add.assignee.form.util';
+import { useTeamInbox } from '../context/teaminbox.context.main';
 import InboxBotMode from './inbox.bot.mode';
 
-export const RightSection = ({
-    data = {},
-    isLoading,
+import { EyeSvgIcon } from 'assets';
+
+const InfoCard = ({
+    icon,
+    title,
+    children,
+    className = '',
 }: {
-    data: any;
-    isLoading?: boolean;
-}) => {
+    icon: React.ReactNode;
+    title: string;
+    children: React.ReactNode;
+    className?: string;
+}) => (
+    <div
+        className={`flex flex-col gap-2 p-2 bg-white rounded-lg border shadow-sm dark:bg-base-200 ${className}`}
+    >
+        <div className='flex gap-2 items-center mb-2'>
+            <span className='text-primary'>{icon}</span>
+            <span className='text-base font-semibold'>{title}</span>
+        </div>
+        <div>{children}</div>
+    </div>
+);
+
+export const RightSection = () => {
+    const { currentInboxDetail: data, isLoading } = useTeamInbox();
     const query = useQueryClient();
+
     if (IsEmptyObject(data)) return <></>;
+
     return (
-        <div className='col-span-1 h-full rounded border bg-polaris-bg-surface'>
-            {isLoading && (
+        <div className='flex overflow-y-auto flex-col col-span-1 gap-4 p-4 h-full rounded border bg-polaris-bg-surface'>
+            {isLoading ? (
                 <div className='flex justify-center items-center h-full'>
                     <Loading color='primary' size='xl' />
                 </div>
-            )}
-            {!isLoading && (
-                <div className='p-4 space-y-4'>
-                    {/* Header with Avatar */}
-                    <div className='flex gap-3 items-center'>
-                        <Avatar
-                            color='primary'
-                            size='sm'
-                            shape='circle'
-                            alt={data.contact?.display_name}
-                        />
-                        <span className='font-medium'>
-                            {data.contact?.display_name}
-                        </span>
+            ) : (
+                <>
+                    {/* Header with Avatar and Contact Info */}
+                    <div className='flex gap-6 items-center p-6 bg-white rounded-xl border shadow-lg transition-all dark:bg-base-200'>
+                        {/* Avatar Section */}
+                        <div className='flex-shrink-0'>
+                            <Avatar
+                                color='primary'
+                                size='lg'
+                                shape='circle'
+                                alt={data.contact?.display_name}
+                            />
+                        </div>
+                        {/* Main Info Section */}
+                        <div className='flex flex-col flex-1 gap-2'>
+                            <div className='flex flex-col gap-1'>
+                                <span className='text-2xl font-bold text-base-content'>
+                                    {data.contact?.display_name || 'No Name'}
+                                </span>
+                                {data.contact?.company && (
+                                    <span className='text-sm font-medium text-base-secondary'>
+                                        {data.contact?.company}
+                                    </span>
+                                )}
+                            </div>
+                            <div className='flex flex-wrap gap-4 mt-2'>
+                                {data.contact?.phone && (
+                                    <div className='flex gap-2 items-center px-3 py-1 rounded-lg shadow-sm bg-polaris-bg-surface'>
+                                        <span className='text-base material-icons text-primary'>
+                                            phone
+                                        </span>
+                                        <span className='text-sm text-base-content'>
+                                            {data.contact?.phone}
+                                        </span>
+                                    </div>
+                                )}
+                                {data.contact?.email && (
+                                    <div className='flex gap-2 items-center px-3 py-1 rounded-lg shadow-sm bg-polaris-bg-surface'>
+                                        <span className='text-base material-icons text-primary'>
+                                            email
+                                        </span>
+                                        <span className='text-sm text-base-content'>
+                                            {data.contact?.email}
+                                        </span>
+                                    </div>
+                                )}
+                                {data.contact?.address && (
+                                    <div className='flex gap-2 items-center px-3 py-1 rounded-lg shadow-sm bg-polaris-bg-surface'>
+                                        <span className='text-base material-icons text-primary'>
+                                            location_on
+                                        </span>
+                                        <span className='text-sm text-base-content'>
+                                            {data.contact?.address}
+                                        </span>
+                                    </div>
+                                )}
+                                {data.contact?.created_at && (
+                                    <div className='flex gap-2 items-start px-3 py-1 rounded-lg shadow-sm bg-polaris-bg-surface'>
+                                        <span className='text-base material-icons text-primary'>
+                                            calendar_today
+                                        </span>
+                                        <span className='text-sm text-base-content'>
+                                            {FormatDisplayDateStyled({
+                                                value: data?.contact
+                                                    ?.created_at,
+                                            })}
+                                        </span>
+                                    </div>
+                                )}
+                                {data.contact?.dialing_code &&
+                                    data.contact?.mobile && (
+                                        <div className='flex gap-2 items-center px-3 py-1 rounded-lg shadow-sm bg-polaris-bg-surface'>
+                                            <span className='text-base material-icons text-primary'>
+                                                smartphone
+                                            </span>
+                                            <span className='text-sm text-base-content'>
+                                                (+{data.contact?.dialing_code}){' '}
+                                                {data.contact?.mobile}
+                                            </span>
+                                        </div>
+                                    )}
+                                {data.contact?.name && (
+                                    <div className='flex gap-2 items-center px-3 py-1 rounded-lg shadow-sm bg-polaris-bg-surface'>
+                                        <span className='text-base material-icons text-primary'>
+                                            person
+                                        </span>
+                                        <span className='text-sm text-base-content'>
+                                            {data.contact?.name}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
-                    {/* assignee  */}
-                    <div>
-                        <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
-                            <h3 className='flex gap-2 items-center font-medium'>
-                                <User size={18} />
-                                Assignee info
-                            </h3>
-                        </div>
-                        <div className='mt-2'>
+                    {/* Info Cards in Grid */}
+                    <div className='grid grid-cols-3 gap-4'>
+                        {/* Assignee Info Card */}
+                        <InfoCard
+                            icon={<User size={18} />}
+                            title='Assignee Info'
+                        >
                             {data?.assignee?.id ? (
-                                <div className='col-flex'>
-                                    <p className='flex gap-2 items-center'>
-                                        {data?.assignee?.user?.name}{' '}
-                                        <Button
+                                <div className='flex flex-col gap-1'>
+                                    <div className='flex gap-2 items-center'>
+                                        <span className='font-medium'>
+                                            {data?.assignee?.user?.name}
+                                        </span>
+                                        <IconButton
+                                            icon={EyeSvgIcon}
                                             size='xs'
+                                            name='Change Assignee'
                                             outline
                                             onClick={() =>
                                                 addAssignee(
@@ -75,13 +179,11 @@ export const RightSection = ({
                                                     }
                                                 )
                                             }
-                                        >
-                                            Change Assignee
-                                        </Button>
-                                    </p>
-                                    <p className='text-sm text-base-secondary'>
+                                        />
+                                    </div>
+                                    <span className='text-sm text-base-secondary'>
                                         {data?.assignee?.user?.email}
-                                    </p>
+                                    </span>
                                 </div>
                             ) : (
                                 <Button
@@ -101,116 +203,79 @@ export const RightSection = ({
                                     Add Assignee
                                 </Button>
                             )}
-                        </div>
-                    </div>
-                    {/* BOT */}
+                        </InfoCard>
 
-                    <InboxBotMode />
+                        {/* Bot Mode Info Card */}
+                        <InfoCard
+                            icon={<span className='text-lg i-robot' />}
+                            title='Bot Mode'
+                        >
+                            <InboxBotMode />
+                        </InfoCard>
 
-                    {/* Chat Section */}
-                    <div className='space-y-2'>
-                        <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
-                            <h3 className='flex gap-2 items-center font-medium'>
-                                <MessageCircle size={18} />
-                                Chat info
-                            </h3>
-                        </div>
-                        {/* Contact Details */}
-                        <div className='space-y-4'>
-                            {data?.expired_at ? (
-                                <div>
-                                    <label className='text-sm text-gray-500'>
-                                        Chat Expired At
-                                    </label>
+                        {/* Chat Info Card */}
+                        <InfoCard
+                            icon={<MessageCircle size={18} />}
+                            title='Chat Info'
+                        >
+                            <div className='flex flex-col gap-2'>
+                                {data?.expired_at ? (
                                     <div>
-                                        {FormatDisplayDateStyled({
-                                            value: data?.expired_at as any,
-                                        })}
+                                        <label className='text-xs text-gray-500'>
+                                            Chat Expired At
+                                        </label>
+                                        <div className='font-medium'>
+                                            {FormatDisplayDateStyled({
+                                                value: data?.expired_at as any,
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <div>
-                                    <label className='text-sm text-gray-500'>
-                                        Chat Expires at
-                                    </label>
+                                ) : (
                                     <div>
-                                        {FormatDisplayDateStyled({
-                                            value: addHours(
-                                                new Date(
-                                                    data?.last_activity_at
-                                                ),
-                                                23
-                                            ) as any,
-                                        })}
+                                        <label className='text-xs text-gray-500'>
+                                            Chat Expires At
+                                        </label>
+                                        <div className='font-medium'>
+                                            {FormatDisplayDateStyled({
+                                                value: addHours(
+                                                    new Date(
+                                                        data?.last_activity_at
+                                                    ),
+                                                    23
+                                                ) as any,
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    {/* Contact Section */}
-                    <div className='space-y-2'>
-                        <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
-                            <h3 className='flex gap-2 items-center font-medium'>
-                                <Contact size={18} />
-                                Contact info
-                            </h3>
-                        </div>
-                        {/* Contact Details */}
-                        <div className='space-y-4'>
-                            <div>
-                                <label className='text-sm text-gray-500'>
-                                    Phone Number
-                                </label>
-                                <div className='flex gap-2 items-center'>
-                                    <span className='i-flag-india' />
-                                    <span>
-                                        (+{data?.contact?.dialing_code}){' '}
-                                        {data?.contact?.mobile}
-                                    </span>
-                                    {/* <button className='text-gray-400'>
-                                        <span className='i-copy' />
-                                    </button> */}
-                                </div>
-                            </div>
-                            <div>
-                                <label className='text-sm text-gray-500'>
-                                    User Name
-                                </label>
-                                <div>{data?.contact?.name}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {!IsEmptyArray(data?.contact?.custom_attributes) && (
-                        <div className='space-y-4'>
-                            <div className='flex justify-between items-center p-1 text-base-content bg-base-300'>
-                                <h3 className='flex gap-2 items-center font-medium'>
-                                    <Contact size={18} />
-                                    Contact Attributes
-                                </h3>
-                            </div>
-
-                            {/* Attributes List */}
-                            <div className='space-y-2 p-2 max-h-[300px] overflow-y-auto border rounded'>
-                                {data?.contact?.custom_attributes?.map(
-                                    (val) => {
-                                        return (
-                                            <div
-                                                className='gap-0 col-flex'
-                                                key={val?.key}
-                                            >
-                                                <label className='text-sm text-gray-500'>
-                                                    {val?.key}
-                                                </label>
-                                                <div>{val?.value}</div>
-                                            </div>
-                                        );
-                                    }
                                 )}
                             </div>
-                        </div>
+                        </InfoCard>
+                    </div>
+                    {!IsEmptyArray(data?.contact?.custom_attributes) && (
+                        <InfoCard
+                            icon={<Contact size={18} />}
+                            title='Contact Attributes'
+                            className='max-h-[300px] overflow-y-auto'
+                        >
+                            <div className='flex flex-col gap-2'>
+                                {data?.contact?.custom_attributes?.map(
+                                    (val) => (
+                                        <div
+                                            className='flex flex-col gap-0.5'
+                                            key={val?.key}
+                                        >
+                                            <label className='text-xs text-gray-500'>
+                                                {val?.key}
+                                            </label>
+                                            <div className='font-medium'>
+                                                {val?.value}
+                                            </div>
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        </InfoCard>
                     )}
-                </div>
+                </>
             )}
         </div>
     );

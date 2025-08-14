@@ -184,7 +184,7 @@ export const MessageChat = ({ data }) => {
     };
 
     return (
-        <div className='sticky right-0 bottom-0 left-0 gap-1 p-2 rounded col-flex bg-base-100'>
+        <div className='sticky right-0 bottom-0 left-0 gap-1 p-2 rounded shadow-inner col-flex'>
             <ChatTextareaComponent
                 input={input}
                 setInput={setInput}
@@ -220,6 +220,7 @@ export const MessageChat = ({ data }) => {
                         icon={ArcMessageSvgIcon}
                         onClick={sendTemplateMessage}
                         outline
+                        size='sm'
                         appearance='polaris-transparent'
                     />
 
@@ -234,6 +235,7 @@ export const MessageChat = ({ data }) => {
                             });
                         }}
                         appearance='plain'
+                        size='sm'
                     />
 
                     <CommonFileUploader
@@ -246,6 +248,7 @@ export const MessageChat = ({ data }) => {
                             return (
                                 <div>
                                     <IconButton
+                                        size='sm'
                                         icon={AttachmentsSvgIcon}
                                         outline
                                         appearance='polaris-transparent'
@@ -265,6 +268,7 @@ export const MessageChat = ({ data }) => {
                         }}
                         outline
                         appearance='polaris-transparent'
+                        size='sm'
                     />
 
                     <Popover
@@ -284,10 +288,15 @@ export const MessageChat = ({ data }) => {
                             name='Add Emoji'
                             icon={EmojiSvgIcon}
                             appearance='plain'
+                            size='sm'
                         />
                     </Popover>
                 </div>
-                <Button onClick={sendMessage} disabled={isSendButtonDisabled}>
+                <Button
+                    defaultMinWidth
+                    onClick={sendMessage}
+                    disabled={isSendButtonDisabled}
+                >
                     Send
                 </Button>
             </div>

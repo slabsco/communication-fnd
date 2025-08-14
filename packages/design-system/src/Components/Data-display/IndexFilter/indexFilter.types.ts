@@ -1,3 +1,5 @@
+import { ObjectDto } from '@finnoto/core';
+
 import { FilterProps } from '../Filter/filter.types';
 
 export interface IndexFilterProps
@@ -23,4 +25,10 @@ export interface IndexFilterProps
     hideSaveFilter?: boolean;
     filterTitle?: string;
     withLegacyFilter?: boolean;
+    showSearchFilter?:
+        | {
+              placeholder?: string;
+          }
+        | false;
+    defaultSaveFilter?: ObjectDto;
 }

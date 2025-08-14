@@ -45,6 +45,8 @@ export interface FilterProps {
     hideFilter?: boolean;
     hideSaveFilter?: boolean;
     isLegacyFilter?: boolean;
+    onModeToggle?: (mode: 'tab' | 'filter') => void;
+    disableSort?: boolean;
 }
 
 export interface FilterHookProps

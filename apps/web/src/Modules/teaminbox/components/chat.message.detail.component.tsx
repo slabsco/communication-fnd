@@ -5,6 +5,7 @@ import {
     ConfirmUtil,
     Loading,
     NoDataFound,
+    Tooltip,
 } from '@finnoto/design-system';
 
 import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
@@ -13,9 +14,33 @@ import { useTeamInbox } from '../context/teaminbox.context.main';
 import { ChatMessageListingMain } from './chat.message.main.listing';
 import { MessageChat } from './message.chat.component';
 
+import { EyeSvgIcon, RobotSvgIcon } from 'assets';
+
 const ChatMessageDetailComponent = () => {
     const { currentInboxDetail, isLoading } = useTeamInbox();
 
+    if (!currentInboxDetail || isLoading)
+        return (
+            <div className='col-span-7 centralize'>
+                {isLoading ? (
+                    <Loading size='lg' type='spinner' color='primary' />
+                ) : (
+                    <NoDataFound />
+                )}
+            </div>
+        );
+    return (
+        <div className='overflow-hidden h-full col-flex'>
+            <ChatHeader currentInboxDetail={currentInboxDetail} />
+            <ChatMessageListingMain />
+            <MessageChat data={currentInboxDetail} />
+        </div>
+    );
+};
+
+export default ChatMessageDetailComponent;
+
+const ChatHeader = ({ currentInboxDetail }: { currentInboxDetail: any }) => {
     const query = useQueryClient();
 
     const handleUpdateStatus = async (status_id: TeamInboxStatusTypeEnum) => {
@@ -28,16 +53,14 @@ const ChatMessageDetailComponent = () => {
             },
         });
         if (success) {
-            query.invalidateQueries([
-                'team_inbox_detail',
-                currentInboxDetail.id,
-            ]);
+            query.invalidateQueries({
+                queryKey: ['team_inbox_detail', currentInboxDetail.id],
+            });
             return response;
         }
 
         return toastBackendError(response);
     };
-
     const updateStatus = (status_id: TeamInboxStatusTypeEnum) => {
         ConfirmUtil({
             isArc: true,
@@ -49,68 +72,70 @@ const ChatMessageDetailComponent = () => {
             onConfirmPress: () => handleUpdateStatus(status_id),
         });
     };
-    if (!currentInboxDetail || isLoading)
-        return (
-            <div className='col-span-7 centralize'>
-                {isLoading ? (
-                    <Loading size='lg' type='spinner' color='primary' />
-                ) : (
-                    <NoDataFound />
-                )}
-            </div>
-        );
+
     return (
-        <div className='overflow-hidden col-span-12 gap-2 h-full lg:col-span-7 col-flex'>
-            <div className='flex gap-2 justify-between items-center px-3 py-2 rounded bg-base-100'>
-                <p className='flex gap-3 items-center'>
-                    <span className='font-semibold'>Chat Status:</span>
-                    <DisplayTeamInboxStatus
-                        currentInboxDetail={currentInboxDetail}
-                    />
-                </p>
-                {!currentInboxDetail?.expired_at && (
-                    <DropdownActionButton
-                        buttonName='Change Status'
-                        actions={[
-                            {
-                                name: 'Solved',
-                                visible:
-                                    currentInboxDetail?.status_id !==
-                                    TeamInboxStatusTypeEnum.SOLVED,
-                                action: () =>
-                                    updateStatus(
-                                        TeamInboxStatusTypeEnum.SOLVED
-                                    ),
-                            },
-                            {
-                                name: 'Pending',
-                                visible:
-                                    currentInboxDetail?.status_id !==
-                                    TeamInboxStatusTypeEnum.PENDING,
-                                action: () =>
-                                    updateStatus(
-                                        TeamInboxStatusTypeEnum.PENDING
-                                    ),
-                            },
-                            {
-                                name: 'Open',
-                                visible:
-                                    currentInboxDetail?.status_id !==
-                                    TeamInboxStatusTypeEnum.OPEN,
-                                action: () =>
-                                    updateStatus(TeamInboxStatusTypeEnum.OPEN),
-                            },
-                        ]}
+        <div className='flex overflow-hidden gap-2 justify-between items-center px-3 py-2 bg-base-100'>
+            <p className='flex gap-3 items-center'>
+                <DisplayTeamInboxStatus
+                    currentInboxDetail={currentInboxDetail}
+                />
+                {currentInboxDetail?.assignee?.user?.name && (
+                    <Badge
+                        label={currentInboxDetail?.assignee?.user?.name}
+                        size='sm'
+                        appearance='secondary'
+                        lefticon={EyeSvgIcon}
                     />
                 )}
-            </div>
-            <ChatMessageListingMain />
-            <MessageChat data={currentInboxDetail} />
+
+                {currentInboxDetail?.contact?.is_assigned_to_bot && (
+                    <Tooltip message='Bot mode is activated on this chat'>
+                        <div>
+                            <Badge
+                                label={''}
+                                lefticon={RobotSvgIcon}
+                                size='sm'
+                                appearance='accent'
+                            />
+                        </div>
+                    </Tooltip>
+                )}
+            </p>
+
+            {!currentInboxDetail?.expired_at && (
+                <DropdownActionButton
+                    buttonName='Change Status'
+                    actions={[
+                        {
+                            name: 'Solved',
+                            visible:
+                                currentInboxDetail?.status_id !==
+                                TeamInboxStatusTypeEnum.SOLVED,
+                            action: () =>
+                                updateStatus(TeamInboxStatusTypeEnum.SOLVED),
+                        },
+                        {
+                            name: 'Pending',
+                            visible:
+                                currentInboxDetail?.status_id !==
+                                TeamInboxStatusTypeEnum.PENDING,
+                            action: () =>
+                                updateStatus(TeamInboxStatusTypeEnum.PENDING),
+                        },
+                        {
+                            name: 'Open',
+                            visible:
+                                currentInboxDetail?.status_id !==
+                                TeamInboxStatusTypeEnum.OPEN,
+                            action: () =>
+                                updateStatus(TeamInboxStatusTypeEnum.OPEN),
+                        },
+                    ]}
+                />
+            )}
         </div>
     );
 };
-
-export default ChatMessageDetailComponent;
 
 export const DisplayTeamInboxStatus = ({
     currentInboxDetail,

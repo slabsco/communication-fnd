@@ -6,6 +6,7 @@ import { Button, Popover } from '../../../../../../Components';
 import { cn } from '../../../../../../Utils/common.ui.utils';
 import { renderFilterDisplay } from '../../filterListDisplay/arcFilterList.display.component';
 import { ListFormFilterProps } from '../../list-filter-form';
+import { BooleanFilterElement } from '../../list-filter-form/components/filterListFormElement/boolean.filter.element';
 import { AmountSelectionList } from './FilterSelectionFields/amount.selection.list.component';
 import { CommonValueSelectionList } from './FilterSelectionFields/common.value.selection.list.component';
 import { DateSelectionList } from './FilterSelectionFields/date.selection.list.component';
@@ -58,7 +59,7 @@ const FilterSelectionBox = ({
                     size='xs'
                     className={cn(
                         'border-solid hover:bg-base-200 border-base-tertiary hover:border-solid font-normal gap-0 !px-0 text-left !h-auto',
-                        { 'border-dashed ': IsUndefined(value) }
+                        { 'border-dashed': IsUndefined(value) }
                     )}
                     autoFocus
                 >
@@ -91,7 +92,7 @@ const FilterSelectionBox = ({
 
 const FilterTitle = ({ config }: { config: ListFormFilterProps }) => {
     return (
-        <div className='flex items-center gap-1 px-2'>
+        <div className='flex gap-1 items-center px-2'>
             {config.title}
             <ChevronDown className='w-4 h-4 text-base-tertiary' />
         </div>
@@ -180,8 +181,10 @@ const getFormElement = (
         //             key={filter.key}
         //         />
         //     );
-        // case 'boolean':
-        //     return <BooleanFilterElement {...{ filter }} key={filter.key} />;
+        case 'boolean':
+            return (
+                <BooleanFilterElement {...(filter as any)} key={filter.key} />
+            );
         // case 'month_filter':
         //     return <MonthYearSelectFilter {...{ filter }} key={filter?.key} />;
 
