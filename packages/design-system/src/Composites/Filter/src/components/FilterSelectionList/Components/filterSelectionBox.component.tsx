@@ -181,10 +181,14 @@ const getFormElement = (
         //             key={filter.key}
         //         />
         //     );
-        case 'boolean':
-            return (
-                <BooleanFilterElement {...(filter as any)} key={filter.key} />
-            );
+        // case 'boolean':
+        //     return (
+        //         <BooleanFilterElement
+        //             value={!value || IsArray(value) ? value : [value]}
+        //             {...(filter as any)}
+        //             key={filter.key}
+        //         />
+        //     );
         // case 'month_filter':
         //     return <MonthYearSelectFilter {...{ filter }} key={filter?.key} />;
 

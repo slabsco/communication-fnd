@@ -1,7 +1,8 @@
 import { addHours } from 'date-fns';
 import { Contact, MessageCircle, User } from 'lucide-react';
+import { useEffectOnce } from 'react-use';
 
-import { IsEmptyArray, IsEmptyObject, useQueryClient } from '@finnoto/core';
+import { IsEmptyArray, IsEmptyObject } from '@finnoto/core';
 import {
     Avatar,
     Button,
@@ -11,7 +12,10 @@ import {
 } from '@finnoto/design-system';
 
 import { addAssignee } from '../add.assignee.form.util';
-import { useTeamInbox } from '../context/teaminbox.context.main';
+import {
+    RefetchTeamInboxDetail,
+    useTeamInbox,
+} from '../context/teaminbox.context.main';
 import InboxBotMode from './inbox.bot.mode';
 
 import { EyeSvgIcon } from 'assets';
@@ -40,7 +44,10 @@ const InfoCard = ({
 
 export const RightSection = () => {
     const { currentInboxDetail: data, isLoading } = useTeamInbox();
-    const query = useQueryClient();
+
+    useEffectOnce(() => {
+        RefetchTeamInboxDetail();
+    });
 
     if (IsEmptyObject(data)) return <></>;
 
@@ -167,16 +174,7 @@ export const RightSection = () => {
                                                 addAssignee(
                                                     data?.id,
                                                     data,
-                                                    () => {
-                                                        query.invalidateQueries(
-                                                            {
-                                                                queryKey: [
-                                                                    'team_inbox_detail',
-                                                                    data.id,
-                                                                ],
-                                                            }
-                                                        );
-                                                    }
+                                                    RefetchTeamInboxDetail
                                                 )
                                             }
                                         />
@@ -190,14 +188,11 @@ export const RightSection = () => {
                                     size='xs'
                                     outline
                                     onClick={() =>
-                                        addAssignee(data?.id, data, () => {
-                                            query.invalidateQueries({
-                                                queryKey: [
-                                                    'team_inbox_detail',
-                                                    data.id,
-                                                ],
-                                            });
-                                        })
+                                        addAssignee(
+                                            data?.id,
+                                            data,
+                                            RefetchTeamInboxDetail
+                                        )
                                     }
                                 >
                                     Add Assignee

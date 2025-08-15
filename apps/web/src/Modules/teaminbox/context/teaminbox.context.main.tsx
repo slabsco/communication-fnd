@@ -1,6 +1,13 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 
-import { FetchData, useFetchParams } from '@finnoto/core';
+import {
+    FetchData,
+    StoreEvent,
+    SubscribeToEvent,
+    TEAM_INBOX_DETAIL_REFETCH,
+    TEAM_INBOX_LISTING_REFETCH,
+    useFetchParams,
+} from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 
 import { useQuery } from '@tanstack/react-query';
@@ -22,7 +29,11 @@ export const TeamInboxProvider = ({
 }) => {
     const { id: teamInboxId } = useFetchParams();
 
-    const { data: response, isLoading } = useQuery({
+    const {
+        data: response,
+        isLoading,
+        refetch,
+    } = useQuery({
         cacheTime: Infinity,
         queryKey: ['team_inbox_detail', +teamInboxId],
         queryFn: async () => {
@@ -38,6 +49,20 @@ export const TeamInboxProvider = ({
         },
     });
 
+    useEffect(() => {
+        SubscribeToEvent({
+            eventName: TEAM_INBOX_DETAIL_REFETCH,
+            callback: refetch,
+        });
+
+        () => {
+            SubscribeToEvent({
+                eventName: TEAM_INBOX_DETAIL_REFETCH,
+                callback: refetch,
+            });
+        };
+    }, [refetch]);
+
     return (
         <TeamInboxContext.Provider
             value={{ teamInboxId, currentInboxDetail: response, isLoading }}
@@ -45,4 +70,8 @@ export const TeamInboxProvider = ({
             {children}
         </TeamInboxContext.Provider>
     );
+};
+
+export const RefetchTeamInboxDetail = () => {
+    StoreEvent({ eventName: TEAM_INBOX_DETAIL_REFETCH });
 };

@@ -2,11 +2,10 @@
 
 import { ReactNode } from 'react';
 
-import { HOME_ROUTE, useFetchParams } from '@finnoto/core';
+import { useFetchParams } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import {
     AnimatedTabs,
-    Breadcrumbs,
     Conversation,
     FilterProvider,
 } from '@finnoto/design-system';
@@ -14,10 +13,7 @@ import {
 import ChatMessageDetailComponent from './components/chat.message.detail.component';
 import ChatMessageListingComponent from './components/ChatMessageListing.component';
 import { RightSection } from './components/right.section';
-import {
-    TeamInboxProvider,
-    useTeamInbox,
-} from './context/teaminbox.context.main';
+import { TeamInboxProvider } from './context/teaminbox.context.main';
 import TeamInboxFilter from './team.inbox.filter';
 
 import { ArcInfoSvgIcon, MessageSvgIcon, NotesSvgIcon } from 'assets';
@@ -47,7 +43,7 @@ const TeamInboxModuleDetail = () => {
                         component: <RightSection />,
                     },
                     {
-                        title: 'Notes',
+                        title: 'Notes / Documents',
                         key: 'notes',
                         icon: NotesSvgIcon,
                         component: (
@@ -90,14 +86,7 @@ const Container = ({ children }: { children: ReactNode }) => {
             ]}
         >
             <TeamInboxProvider>
-                <div className='overflow-hidden gap-1 px-7 py-6 h-content-screen col-flex'>
-                    <Breadcrumbs
-                        title={'Team inbox'}
-                        route={[
-                            { name: 'Home', link: HOME_ROUTE },
-                            { name: 'Team Inbox' },
-                        ]}
-                    />
+                <div className='overflow-hidden gap-1 p-2 h-content-screen col-flex'>
                     <TeamInboxFilter />
                     <div className='grid overflow-hidden flex-1 grid-cols-12 gap-2 items-center'>
                         {children}

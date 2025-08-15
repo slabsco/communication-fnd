@@ -1,23 +1,20 @@
-import { useMemo } from 'react';
-
-import { BooleanEnum, IsUndefinedOrNull } from '@finnoto/core';
+import { BooleanEnum } from '@finnoto/core';
 
 import { BooleanSelectFilter } from '../../../../../../../Components/Inputs/SelectBox/boolean.select.filter';
 import { BooleanFilterProps } from '../../list.form.filter.types';
 import { useListFormFilterContext } from '../../provider/list.form.filter.provider';
 
 export const BooleanFilterElement = ({
+    value,
     filter,
 }: {
     filter: BooleanFilterProps;
+    value?: any;
 }) => {
-    const { getValues, handleFilterData } = useListFormFilterContext();
+    const { handleFilterData } = useListFormFilterContext();
 
-    const value = useMemo(() => {
-        const newValue = getValues(filter?.key);
-        if (IsUndefinedOrNull(newValue)) return undefined;
-        return newValue ? BooleanEnum.TRUE : BooleanEnum.FALSE;
-    }, [filter?.key, getValues]);
+    console.log({ value, filter });
+
     return (
         <BooleanSelectFilter
             value={value}

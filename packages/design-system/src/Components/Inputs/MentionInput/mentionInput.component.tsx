@@ -61,7 +61,7 @@ export const MentionInput = forwardRef(
             filterKey,
             filterValue,
             subLabelKey = 'email',
-            placeholder = 'Type @ to mention and notify someone',
+            placeholder = 'Type @ to mention and notify a user, or add notes and documents',
             autoFocus = false,
             customMentions = [],
         }: MentionInputProps,

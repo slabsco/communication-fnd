@@ -4,6 +4,9 @@ import {
     FetchData,
     GetObjectFromArray,
     Navigation,
+    StoreEvent,
+    SubscribeToEvent,
+    TEAM_INBOX_LISTING_REFETCH,
     TEAM_INBOX_SPLIT_LIST,
     useFetchParams,
 } from '@finnoto/core';
@@ -14,8 +17,24 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
 import { NEW_MESSAGE_RECEIVED_SOCKET_EVENT } from '../../../Constants/socket.constant';
 import { useSocket } from '../../../Utils/socket/socket.context.main';
-import { TeamInboxTabFilter } from '../team.inbox.filter';
 import { useNotificationSound } from './useNotificationSound.hook';
+
+export const TeamInboxTabFilter = [
+    {
+        title: 'Assigned to me',
+        key: 'assign_me',
+        customFilterValue: {
+            assign_me: true,
+        },
+    },
+    {
+        title: 'Bot Mode',
+        key: 'is_assigned_to_bot',
+        customFilterValue: {
+            is_assigned_to_bot: true,
+        },
+    },
+];
 
 export const useTeamInboxMessageListing = () => {
     const { id: teamInboxId } = useFetchParams();
@@ -95,15 +114,10 @@ export const useTeamInboxMessageListing = () => {
         });
     }, [client_key, queryClient]);
 
-    const fetchDataFromSocket = useCallback(
-        ({ team_inbox_id }: { team_inbox_id: number }) => {
-            if (team_inbox_id !== +teamInboxId) {
-                fetchMessage();
-                playSound();
-            }
-        },
-        [fetchMessage, playSound, teamInboxId]
-    );
+    const fetchDataFromSocket = useCallback(() => {
+        fetchMessage();
+        playSound();
+    }, [fetchMessage, playSound]);
 
     useEffect(() => {
         if (!teamInboxId && flatData.length > 0) {
@@ -115,11 +129,19 @@ export const useTeamInboxMessageListing = () => {
 
     useEffect(() => {
         subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
+        SubscribeToEvent({
+            eventName: TEAM_INBOX_LISTING_REFETCH,
+            callback: fetchMessage,
+        });
 
         return () => {
             unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
+            SubscribeToEvent({
+                eventName: TEAM_INBOX_LISTING_REFETCH,
+                callback: fetchMessage,
+            });
         };
-    }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket]);
+    }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket, fetchMessage]);
 
     return {
         flatData,
@@ -131,4 +153,8 @@ export const useTeamInboxMessageListing = () => {
         queryClient,
         teamInboxId,
     };
+};
+
+export const RefetchTeamInboxListing = () => {
+    StoreEvent({ eventName: TEAM_INBOX_LISTING_REFETCH });
 };

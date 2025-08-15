@@ -40,18 +40,16 @@ export const RenderSeenUnseen = ({ message }: any) => {
 
 export const MessageBubbleTimePopper = ({ message }: { message: any }) => {
     return (
-        <div className='flex gap-1'>
-            <div>
-                <span className='text-base-secondary text-[10px]'>
-                    {message?.creator || 'Bot'}
-                </span>
-                {FormatDisplayDateStyled({
-                    value: message?.created_at,
-                    size: 'xs',
-                    className: 'text-base-secondary',
-                    containerClass: 'text-[10px]',
-                })}
-            </div>
+        <div className='flex gap-2'>
+            <span className='text-base-secondary text-[10px]'>
+                {message?.creator || 'Bot'},
+            </span>
+            {FormatDisplayDateStyled({
+                value: message?.created_at,
+                size: 'xs',
+                className: 'text-base-secondary',
+                containerClass: 'text-[10px]',
+            })}
         </div>
     );
 };

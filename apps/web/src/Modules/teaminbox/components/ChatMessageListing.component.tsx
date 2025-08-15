@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { useFetchParams } from '@finnoto/core';
@@ -10,9 +9,13 @@ import {
     Loading,
 } from '@finnoto/design-system';
 
+import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
 import { useTeamInboxMessageListing } from '../hooks/useTeamInboxMessageListing.hook';
 import { navigateToTeamInboxDetail } from '../utils/teaminbox.utils';
-import { DisplayTeamInboxStatus } from './chat.message.detail.component';
+import {
+    AssignedToBotStatus,
+    DisplayTeamInboxStatus,
+} from './chat.message.detail.component';
 
 const ChatMessageListingComponent = () => {
     const {
@@ -21,17 +24,8 @@ const ChatMessageListingComponent = () => {
         hasNextPage,
         isFetchingNextPage,
         isLoading,
-        queryClient,
         fetchMessage,
     } = useTeamInboxMessageListing();
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            fetchMessage();
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, [queryClient, fetchMessage]);
 
     return (
         <div className='overflow-hidden w-full h-full col-flex bg-base-100 lg:col-span-3'>
@@ -150,6 +144,9 @@ const Card = ({ data }: { data: any }) => {
                 </div>
             </div>
             <DisplayTeamInboxStatus currentInboxDetail={data} />
+            <AssignedToBotStatus
+                is_assigned_to_bot={data?.is_assigned_to_bot}
+            />
         </div>
     );
 };

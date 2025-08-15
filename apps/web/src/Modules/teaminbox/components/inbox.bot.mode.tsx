@@ -3,13 +3,15 @@ import { ContactController } from '@finnoto/core/src/backend/communication/contr
 import { Functions } from '@finnoto/core/src/Utils/ui.utils';
 import { Switch } from '@finnoto/design-system';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
-import { useTeamInbox } from '../context/teaminbox.context.main';
+import {
+    RefetchTeamInboxDetail,
+    useTeamInbox,
+} from '../context/teaminbox.context.main';
 
 const InboxBotMode = () => {
     const { currentInboxDetail } = useTeamInbox();
-    const query = useQueryClient();
 
     const { mutateAsync } = useMutation({
         mutationFn: async (is_assigned_to_bot: boolean) => {
@@ -26,9 +28,7 @@ const InboxBotMode = () => {
             });
             hideLoading();
             if (success) {
-                query.invalidateQueries({
-                    queryKey: ['team_inbox_detail', currentInboxDetail.id],
-                });
+                RefetchTeamInboxDetail();
 
                 return;
             }
@@ -37,6 +37,7 @@ const InboxBotMode = () => {
     });
     return (
         <Switch
+            color='info'
             onChange={(val) => {
                 mutateAsync(val);
             }}

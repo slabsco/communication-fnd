@@ -3,18 +3,18 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
     FetchData,
+    StoreEvent,
+    SubscribeToEvent,
+    TEAM_INBOX_CHAT_REFETCH,
+    UnsubscribeEvent,
     useFetchParams,
     useQueryClient,
-    useRecursiveFetch,
 } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import {
-    MESSAGE_STATUS_UPDATE_SOCKET_EVENT,
-    NEW_MESSAGE_RECEIVED_SOCKET_EVENT,
-} from '../../../Constants/socket.constant';
+import { MESSAGE_STATUS_UPDATE_SOCKET_EVENT } from '../../../Constants/socket.constant';
 import { useSocket } from '../../../Utils/socket/socket.context.main';
 
 export const useTeamInboxChatListing = () => {
@@ -64,42 +64,17 @@ export const useTeamInboxChatListing = () => {
     }, [data?.pages]);
 
     const fetchMessage = useCallback(() => {
-        queryClient.invalidateQueries([
-            'team_inbox_message_list',
-            +teamInboxId,
-        ]);
+        queryClient.invalidateQueries({
+            queryKey: ['team_inbox_message_list', +teamInboxId],
+        });
     }, [queryClient, teamInboxId]);
 
-    useRecursiveFetch(fetchMessage, { repeat: Infinity, delay: 2000 });
-
     const updateData = useCallback(
-        ({
-            team_inbox_id,
-            message_id,
-            message_payload,
-        }: {
-            team_inbox_id: number;
-            message_id: number;
-            message_payload: any;
-        }) => {
+        ({ team_inbox_id }: { team_inbox_id: number }) => {
             if (team_inbox_id !== +teamInboxId) return;
-
-            queryClient.setQueryData(
-                ['team_inbox_message_list', +teamInboxId],
-                (oldData: any) => ({
-                    ...oldData,
-                    pages: oldData?.pages?.map((page: any) => ({
-                        ...page,
-                        data: page.data.map((item: any) =>
-                            item.id === message_id
-                                ? { ...item, ...message_payload }
-                                : item
-                        ),
-                    })),
-                })
-            );
+            fetchMessage();
         },
-        [queryClient, teamInboxId]
+        [fetchMessage, teamInboxId]
     );
 
     const fetchDataFromSocket = useCallback(
@@ -112,12 +87,18 @@ export const useTeamInboxChatListing = () => {
     );
 
     useEffect(() => {
-        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
         subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
+        SubscribeToEvent({
+            eventName: TEAM_INBOX_CHAT_REFETCH,
+            callback: fetchMessage,
+        });
 
         return () => {
-            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
             unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
+            UnsubscribeEvent({
+                eventName: TEAM_INBOX_CHAT_REFETCH,
+                callback: fetchMessage,
+            });
         };
     }, [
         subscribeEvent,
@@ -125,6 +106,7 @@ export const useTeamInboxChatListing = () => {
         fetchDataFromSocket,
         updateData,
         pathname,
+        fetchMessage,
     ]);
 
     return {
@@ -136,4 +118,8 @@ export const useTeamInboxChatListing = () => {
         isFetchingNextPage,
         isLoading,
     };
+};
+
+export const RefetchTeamInboxChat = () => {
+    StoreEvent({ eventName: TEAM_INBOX_CHAT_REFETCH });
 };

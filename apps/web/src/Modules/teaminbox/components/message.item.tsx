@@ -66,7 +66,6 @@ export const MessageItem = ({ message }: { message: any }) => {
             {component ? (
                 <div className='flex flex-row-reverse gap-2 items-end'>
                     <RenderSeenUnseen message={message} />
-
                     <MessageSectionPreview
                         sampleContent={sampleContent}
                         configuration={message?.template_button_configurations}
@@ -83,7 +82,7 @@ export const MessageItem = ({ message }: { message: any }) => {
                     {message?.payload?.interactive ? (
                         <RenderInteractiveMessage message={message} />
                     ) : (
-                        <div className='flex flex-row-reverse gap-2 items-end'>
+                        <div className='flex flex-row-reverse gap-1 items-end'>
                             {message?.is_error && (
                                 <Tooltip
                                     message={JSON.stringify(
@@ -122,7 +121,7 @@ const RenderInteractiveMessage = ({ message }: { message: any }) => {
             <RenderSeenUnseen message={message} />
             <div
                 className={cn(
-                    ' rounded-md p-3 shadow-md  w-[90%] self-end flex flex-col gap-1 text-black max-w-[50%] bg-green-200'
+                    'rounded-md px-1 py-1 shadow-md  w-[90%] self-end flex flex-col gap-1 text-black max-w-[50%] bg-green-200'
                 )}
             >
                 <div className='flex flex-col gap-2'>

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useList } from 'react-use';
 
 import {
+    Debounce,
     FetchData,
     IsEmptyArray,
     IsEmptyString,
@@ -19,9 +20,9 @@ import {
     Popover,
 } from '@finnoto/design-system';
 
-import { useQueryClient } from '@tanstack/react-query';
-
 import { openQuickReplySelect } from '../../quickreply/quick.reply.select.list';
+import { RefetchTeamInboxDetail } from '../context/teaminbox.context.main';
+import { RefetchTeamInboxChat } from '../hooks/useTeaminboxChatListing.hook';
 import { openTriggerChatbotResponse } from '../modal/TriggerChatbotResponse.modal';
 import { openAddInbox } from './add.inbox.modal';
 import { ChatTextareaComponent } from './chat.text.area.component';
@@ -36,8 +37,6 @@ import {
 } from 'assets';
 
 export const MessageChat = ({ data }) => {
-    const queryClient = useQueryClient();
-
     const emojiRef = useRef(null);
 
     const [input, setInput] = useState('');
@@ -54,13 +53,9 @@ export const MessageChat = ({ data }) => {
     }, [files, input]);
 
     const refetch = useCallback(() => {
-        queryClient.invalidateQueries({
-            queryKey: ['team_inbox_message_list', +data.id],
-        });
-        queryClient.invalidateQueries({
-            queryKey: ['team_inbox_detail', +data.id],
-        });
-    }, [queryClient, data.id]);
+        RefetchTeamInboxChat();
+        RefetchTeamInboxDetail();
+    }, []);
 
     const sendMessage = useCallback(async () => {
         const doc: any = files?.[0];
