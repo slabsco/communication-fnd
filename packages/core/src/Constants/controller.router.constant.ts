@@ -1,3 +1,4 @@
+import { BusinessPreferenceController } from '../backend/ap/business/controllers/business.preference.controller';
 import { BusinessReportController } from '../backend/ap/business/controllers/business.report.controller';
 import { ListingPreferenceController } from '../backend/ap/business/controllers/listing.preference.controller';
 import { LoggedUtilityController } from '../backend/ap/utility/controllers/logged.utility.controller';
@@ -75,6 +76,7 @@ export const LISTING_CONTROLLER_ROUTER = {
     quickReply: QuickReplyController,
     business_webhook: BusinessWebhookController,
     business_users: BusinessUserController,
+    business_preference: BusinessPreferenceController,
     invite_users: BusinessUserInvitationController,
     keyword_details: KeywordDetailsController,
     action_details: ActionDetailsController,

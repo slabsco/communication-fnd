@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { Loading } from '@finnoto/design-system';
@@ -14,22 +13,13 @@ export const ChatMessageListingMain = () => {
         hasNextPage,
         isFetchingNextPage,
         isLoading,
-        fetchMessage,
     } = useTeamInboxChatListing();
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            fetchMessage();
-        }, 3000);
-
-        return () => clearInterval(interval);
-    }, [fetchMessage]);
 
     return (
         <div
             ref={scrollableDivRef}
             style={{ display: 'flex', flexDirection: 'column-reverse' }}
-            className='overflow-y-auto flex-1 rounded bg-base-100 scrollbar-xs'
+            className='overflow-y-auto flex-1 scrollbar-xs bg-[#ece5dd] '
             id='scrollableDiv111'
         >
             <InfiniteScroll
@@ -64,7 +54,7 @@ export const ChatMessageListingMain = () => {
                 }
                 scrollableTarget='scrollableDiv111'
                 inverse
-                className='gap-2 p-4'
+                className='gap-1 p-4'
                 style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
             >
                 {flatData.map((message) => (

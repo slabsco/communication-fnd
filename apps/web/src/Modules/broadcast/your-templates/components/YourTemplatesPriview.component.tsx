@@ -186,14 +186,14 @@ export const MessageSectionPreview = ({
     return (
         <div
             className={cn(
-                'bg-white rounded-md p-3 shadow-md  w-[90%] self-end flex flex-col gap-1 text-black',
+                'bg-white rounded-md px-3 py-2 shadow-md  w-[90%] self-end flex flex-col gap-1 text-black',
                 className
             )}
         >
             <div className='flex flex-col gap-2'>
                 <h3 className='font-bold'>{renderTitle}</h3>
                 <span
-                    className='text-sm text-primary-950'
+                    className='text-xs text-primary-950'
                     dangerouslySetInnerHTML={{
                         __html: replaceVariablesInString(body, sampleContent),
                     }}

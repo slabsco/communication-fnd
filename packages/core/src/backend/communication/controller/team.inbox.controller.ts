@@ -1,6 +1,7 @@
 import { id } from 'date-fns/locale';
 
 import { BaseModel } from '../../../Models/base.models';
+import { CommentDocumentController } from '../../common/controllers/comment.document.controller';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
 import {
     AddAssigneePayloadDto,
@@ -12,7 +13,7 @@ import {
 } from '../dto/send.team.inbox.message.payload.dto';
 import { TeamInboxListFilterDto } from '../dto/teaminbox.list.filter.dto';
 
-export class TeamInboxController extends BaseModel {
+export class TeamInboxController extends CommentDocumentController {
     protected endPoint = 'api/b/team-inbox';
 
     async list() {

@@ -10,9 +10,10 @@ import {
     parseJSONString,
     RemoveEmptyObjectKeys,
     RESTRICTED_FILTERS,
+    SortArrayObjectBy,
     toastBackendError,
     useApp,
-    useOpenProperties,
+    useFetchParams,
 } from '@finnoto/core';
 import { ListingPreferenceController } from '@finnoto/core/src/backend/ap/business/controllers/listing.preference.controller';
 
@@ -45,16 +46,17 @@ export const IndexFilter = ({
     hideSaveFilter,
     filterTitle,
     withLegacyFilter,
+    showSearchFilter,
+    defaultSaveFilter,
+    disableSort,
     ...props
 }: IndexFilterProps) => {
     const filterRef = useRef(null);
     const { definitionKey } = props;
     const { isArc } = useApp();
+    const { filter } = useFetchParams();
 
-    const [enableInlineFilters] = useOpenProperties('enable.inline.filters', {
-        convertBoolean: true,
-        isBusiness: true,
-    });
+    const enableInlineFilters = true;
 
     const {
         listFilters: tableFilters,
@@ -68,10 +70,16 @@ export const IndexFilter = ({
         isFilterButtonVisible,
         hasAnyFilter,
         defaultQueries,
+        definitionFilterColumns,
     } = useFilterContext();
 
-    const { saved_filter, [RESTRICTED_FILTERS]: restricted_filters } =
-        queryString || {};
+    const {
+        saved_filter,
+        [RESTRICTED_FILTERS]: restricted_filters,
+        filter: _filter,
+        filter_query: _filter_query,
+        ...restQueries
+    } = queryString || {};
 
     const {
         saveFilter,
@@ -82,6 +90,7 @@ export const IndexFilter = ({
     } = useSaveFilter({
         saved_filter,
         definitionKey,
+        defaultSaveFilter,
     });
 
     const currentFilterTab =
@@ -114,6 +123,9 @@ export const IndexFilter = ({
                         filterData: rest,
                         listFilters: tableFilters,
                         saveFilter,
+                        definitionFilterColumns,
+                        defaultSaveFilter,
+
                         filter_query,
                         callback: () => {
                             refetchPreferences();
@@ -136,7 +148,9 @@ export const IndexFilter = ({
                         },
                         filterData: rest,
                         listFilters: tableFilters,
+                        defaultSaveFilter,
                         saveFilter,
+                        definitionFilterColumns,
                         filter_query,
                         callback: () => {
                             refetchPreferences();
@@ -151,8 +165,7 @@ export const IndexFilter = ({
                 type: 'error',
                 onClick: (item) => {
                     ConfirmUtil({
-                        message:
-                            'Are you sure you want to delete the saved filter?',
+                        message: 'Are you sure you want to delete?',
                         iconAppearance: 'error',
                         icon: DeleteSvgIcon,
                         onConfirmPress: () => {
@@ -170,6 +183,8 @@ export const IndexFilter = ({
         ],
         [
             clearAllFilter,
+            defaultSaveFilter,
+            definitionFilterColumns,
             definitionKey,
             isArc,
             refetchPreferences,
@@ -191,10 +206,18 @@ export const IndexFilter = ({
                 title: pref.label,
                 isStatic: false,
                 data: pref.data,
-                actions: tabActions,
+                actions: pref?.data?.business_id ? tabActions : [],
             })
         );
-        return [...filterTabList, ...prefTabs];
+
+        const sortedPrefTabs = SortArrayObjectBy(
+            prefTabs,
+            'created_at',
+            'desc',
+            true
+        );
+
+        return [...filterTabList, ...sortedPrefTabs];
     }, [filterTabs, getSanitizedPreferences, tabActions]);
 
     const sort = useMemo(() => {
@@ -212,6 +235,7 @@ export const IndexFilter = ({
         if (onlyDisplayQueryFilter && !filterQuery) return false;
 
         const rules = parseJSONString(filterQuery)?.rules;
+
         const restrictedFilters = restricted_filters?.split(',');
         const isQueryFilterAvailable =
             rules?.filter((rule) => !restrictedFilters?.includes(rule?.field))
@@ -219,8 +243,24 @@ export const IndexFilter = ({
 
         if (onlyDisplayQueryFilter && !isQueryFilterAvailable) return false;
 
-        return isQueryFilterAvailable || hasAnyFilter();
-    }, [filterQuery, hasAnyFilter, onlyDisplayQueryFilter, restricted_filters]);
+        const outerFiltersKeys = tableFilters.map((item) => {
+            if (item?.isOuterFilter) {
+                return item?.key;
+            }
+        });
+        const showOuterFilterSave = !filter
+            ? hasAnyFilter(outerFiltersKeys)
+            : hasAnyFilter();
+
+        return isQueryFilterAvailable || showOuterFilterSave;
+    }, [
+        filter,
+        filterQuery,
+        hasAnyFilter,
+        onlyDisplayQueryFilter,
+        restricted_filters,
+        tableFilters,
+    ]);
 
     const removeQueryFilter = useCallback(
         (forceClean?: boolean) => {
@@ -266,6 +306,8 @@ export const IndexFilter = ({
             tabs={tabs}
             hideFilter={hideFilter || !isFilterButtonVisible}
             searchString={filterData?.search || ''}
+            searchFilter={showSearchFilter}
+            disableSort={disableSort}
             onSearchChange={(value) => {
                 handleFilterData({
                     search: IsValidString(value) ? value : undefined,
@@ -286,10 +328,13 @@ export const IndexFilter = ({
             }}
             onTabChange={(tab) => {
                 if (!tab.key)
-                    return handleNavigationSearch({}, false, { reset: true });
+                    return handleNavigationSearch({ ...restQueries }, false, {
+                        reset: true,
+                    });
                 if (tab.isStatic) {
                     return handleNavigationSearch(
                         RemoveEmptyObjectKeys({
+                            ...restQueries,
                             [tabFilterQueryKey]: tab.key,
                             filter_query: GetFilterRestrictedFilterQuery(
                                 defaultQueries?.filter_query,
@@ -307,6 +352,7 @@ export const IndexFilter = ({
 
                 handleNavigationSearch(
                     {
+                        ...restQueries,
                         saved_filter: tab.key,
                         filter_query,
                         filter: JSON.stringify(restFilters),
@@ -333,7 +379,7 @@ export const IndexFilter = ({
             renderFilterList={
                 <>
                     {!!filterTitle && (
-                        <div className='items-center font-medium row-flex'>
+                        <div className='items-center text-sm font-medium row-flex'>
                             {filterTitle}
                         </div>
                     )}
@@ -365,12 +411,14 @@ export const IndexFilter = ({
                         onApply={() =>
                             filterRef?.current?.handleToggleMode('tab')
                         }
+                        definitionFilterColumns={definitionFilterColumns}
+                        defaultSaveFilter={defaultSaveFilter}
                     />
                 ) : null
             }
             tabSaveFilterButton={
                 isFilterAvailable ? (
-                    <div className='justify-end gap-2 row-flex'>
+                    <div className='gap-2 justify-end row-flex'>
                         <Button
                             className='font-normal'
                             appearance={isArc ? 'polaris-white' : 'error'}
@@ -390,6 +438,8 @@ export const IndexFilter = ({
                             onSave={() =>
                                 filterRef?.current?.handleToggleMode('tab')
                             }
+                            definitionFilterColumns={definitionFilterColumns}
+                            defaultSaveFilter={defaultSaveFilter}
                         />
                     </div>
                 ) : null

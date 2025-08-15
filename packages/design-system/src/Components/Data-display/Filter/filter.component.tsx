@@ -53,6 +53,7 @@ const Filter = forwardRef<any, FilterProps>(
             shouldShowSaveTabFilter,
             hideSaveFilter,
             isLegacyFilter,
+            disableSort,
             ...rest
         },
         ref
@@ -84,9 +85,10 @@ const Filter = forwardRef<any, FilterProps>(
         return (
             <div
                 className={cn(
-                    'filter bg-base-100 p-1 px-0 border-polaris-border border rounded-lg',
+                    'p-1 px-0 rounded-lg border filter bg-base-100 border-polaris-border',
                     {
                         '!rounded border-base-300': !isArc,
+                        'bg-polaris-bg-surface': isArc,
                     },
                     className
                 )}
@@ -105,8 +107,8 @@ const Filter = forwardRef<any, FilterProps>(
                             }}
                         >
                             {currentMode === 'tab' ? (
-                                <div className='items-center gap-2 mx-1 row-flex'>
-                                    <div className='flex-1 max-w-full overflow-hidden'>
+                                <div className='gap-2 items-center mx-1 row-flex'>
+                                    <div className='overflow-hidden flex-1 max-w-full'>
                                         {!shouldShowSaveTabFilter &&
                                         !hideSaveFilter ? (
                                             <PolarisTab
@@ -116,9 +118,6 @@ const Filter = forwardRef<any, FilterProps>(
                                                 disableNav
                                                 onTabChange={onTabChange}
                                                 querykey={tabFilterQueryKey}
-                                                // onClickToAddNew={() =>
-                                                //     handleToggleMode('filter')
-                                                // }
                                             />
                                         ) : (
                                             <div className='gap-2 p-1 rounded row-flex'>
@@ -155,7 +154,7 @@ const Filter = forwardRef<any, FilterProps>(
                                             </Button>
                                         </Tooltip>
                                     )}
-                                    {sortColumns?.length ? (
+                                    {sortColumns?.length && !disableSort ? (
                                         <Popover
                                             element={
                                                 <SortColumnPopover
@@ -166,21 +165,21 @@ const Filter = forwardRef<any, FilterProps>(
                                                 />
                                             }
                                         >
-                                            {/* <Tooltip message='Sort By' asChild> */}
-                                            <Button
-                                                className='gap-0 !px-2'
-                                                appearance={
-                                                    isArc
-                                                        ? 'polaris-white'
-                                                        : 'primary'
-                                                }
-                                                outline={!isArc}
-                                                size='sm'
-                                                shape='square'
-                                            >
-                                                <ArrowDownUpIcon className='min-w-[16px] h-auto' />
-                                            </Button>
-                                            {/* </Tooltip> */}
+                                            <Tooltip message='Sort'>
+                                                <Button
+                                                    className='gap-0 !px-2'
+                                                    appearance={
+                                                        isArc
+                                                            ? 'polaris-white'
+                                                            : 'primary'
+                                                    }
+                                                    outline={!isArc}
+                                                    size='sm'
+                                                    shape='square'
+                                                >
+                                                    <ArrowDownUpIcon className='min-w-[16px] h-auto' />
+                                                </Button>
+                                            </Tooltip>
                                         </Popover>
                                     ) : null}
                                     <div className='gap-2 row-flex'>
@@ -206,7 +205,7 @@ const Filter = forwardRef<any, FilterProps>(
                         >
                             {currentMode === 'filter' ? (
                                 <div className='gap-1 col-flex'>
-                                    <div className='items-center justify-end gap-2 mx-1 row-flex'>
+                                    <div className='gap-2 justify-end items-center mx-1 row-flex'>
                                         {searchFilter !== false && (
                                             <FilterInput
                                                 className='flex-1'
@@ -218,7 +217,7 @@ const Filter = forwardRef<any, FilterProps>(
                                                 }}
                                             />
                                         )}
-                                        <div className='items-center gap-2 row-flex'>
+                                        <div className='gap-2 items-center row-flex'>
                                             <Button
                                                 className='font-medium'
                                                 appearance='polaris-transparent'
@@ -233,7 +232,8 @@ const Filter = forwardRef<any, FilterProps>(
                                             {!hideSaveFilter
                                                 ? filterSaveButton
                                                 : null}
-                                            {sortColumns?.length ? (
+                                            {sortColumns?.length &&
+                                            !disableSort ? (
                                                 <Popover
                                                     element={
                                                         <SortColumnPopover
@@ -308,6 +308,8 @@ const FilterInput = forwardRef<
     ) => {
         const [value, setValue] = useState(searchQuery);
 
+        const { isArc } = useApp();
+
         useUpdateEffect(() => {
             setValue(searchQuery);
         }, [searchQuery]);
@@ -321,7 +323,10 @@ const FilterInput = forwardRef<
         return (
             <label
                 className={cn(
-                    'flex items-center gap-2 outline-none input focus-within:input-bordered bg-polaris-bg-surface-hover input-sm focus-within:outline-0 focus-within:border-base-primary',
+                    'flex gap-2 items-center outline-none input focus-within:input-bordered bg-polaris-bg-surface-hover input-sm focus-within:outline-0 focus-within:border-base-primary',
+                    {
+                        'bg-base-200': !isArc,
+                    },
                     className
                 )}
             >
@@ -329,13 +334,16 @@ const FilterInput = forwardRef<
                 <input
                     name='filter search'
                     type='search'
-                    className='flex-1 bg-polaris-bg-surface-hover h-7'
+                    className={cn('flex-1 h-7 bg-polaris-bg-surface-hover', {
+                        'bg-base-200': !isArc,
+                    })}
                     value={value}
                     onChange={(e) => handleValueChange(e.target.value)}
                     placeholder={
                         searchPlaceholder ?? 'Search ( min: 3 characters )'
                     }
                     ref={ref}
+                    autoFocus
                 />
             </label>
         );

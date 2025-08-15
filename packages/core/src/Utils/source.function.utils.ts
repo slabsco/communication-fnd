@@ -1,4 +1,3 @@
-import { EmailMessageController } from '../backend/common/controllers/email.message.controller';
 import {
     ARC_CUSTOMER_DETAIL_ROUTE,
     ARC_CUSTOMER_PAYMENT_DETAIL_ROUTE,
@@ -11,7 +10,6 @@ import {
     PROMISE_TO_PAY_DETAIL_VIEW,
     SOURCEHASH,
 } from '../Constants';
-import { FINOPS_CONTROLLER_ROUTE } from '../Constants/controller.router.constant';
 import { SourceDetailObj } from '../Types';
 import { ExpenseRouteUtils } from './expenseRoute.utils';
 import { Navigation } from './navigation.utils';
@@ -46,13 +44,6 @@ export const getSourceDetails = (source_hash: string): SourceDetailObj => {
     const isFinops = ExpenseRouteUtils.GetPortalType(pathname) === 'finops';
 
     switch (source_hash) {
-        case SOURCEHASH.businessPayment:
-            return {
-                name: 'Business Payment',
-                key: 'business_payment',
-                controller: FINOPS_CONTROLLER_ROUTE['business_payment'],
-                action: Functions.openExpensePaymentDetail,
-            };
         case SOURCEHASH.orderItem:
             return {
                 name: 'Order Item',
@@ -60,20 +51,12 @@ export const getSourceDetails = (source_hash: string): SourceDetailObj => {
                 // controller: PAYMENT_CONTROLLER_ROUTER['item'],
                 // action: Functions.openItemDetail,
             };
-        case SOURCEHASH.emailMessage:
-            return {
-                name: 'Email Message',
-                key: 'emailMessage',
-                controller: EmailMessageController,
-                action: Functions.openEmailMessageDetail,
-            };
+
         case SOURCEHASH.user:
             return {
                 name: 'User',
                 key: 'user',
-                action: isAr
-                    ? Functions.openArUserDetailsModal
-                    : Functions.openUserDetailsModal,
+                action: Functions.openArUserDetailsModal,
             };
         case SOURCEHASH.paymentMode:
             return {

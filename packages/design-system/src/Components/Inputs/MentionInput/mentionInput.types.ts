@@ -20,4 +20,17 @@ export interface MentionInputProps
     defaultValue?: MentionValueType;
     onChange?: (value: MentionValueType) => void;
     disabled?: boolean;
+    filterKey?: string;
+    filterValue?: any;
+    subLabelKey?: string;
+    placeholder?: string;
+    customMentions?: CustomMention[];
+}
+
+export interface CustomMention {
+    sourceId: number;
+    display?: string;
+    sourceType: string;
+    identifier?: string;
+    email?: string;
 }

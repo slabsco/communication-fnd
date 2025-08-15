@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional } from 'class-validator';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
 
 export class TeamInboxListFilterDto extends CommonListFilterDto {
@@ -8,8 +8,18 @@ export class TeamInboxListFilterDto extends CommonListFilterDto {
     @Expose()
     assign_me?: boolean;
 
+    @IsOptional()
+    @IsBoolean()
+    @Expose()
+    is_assigned_to_bot?: boolean;
+
+    @IsOptional()
+    @IsArray()
+    @Expose()
+    assignee_ids?: number[];
+
     @Expose()
     @IsOptional()
-    @IsNumber()
-    status_id?: number;
+    @IsArray()
+    status_ids?: number[];
 }

@@ -15,9 +15,11 @@ import { GlobalSvgIcon, UserSquareSvgIcon } from 'assets';
 export const useSaveFilter = ({
     saved_filter,
     definitionKey,
+    defaultSaveFilter,
 }: {
     saved_filter?: any;
     definitionKey?: string;
+    defaultSaveFilter?: any;
 }) => {
     const {
         isLoading: isColumnDefinitionLoading,
@@ -31,6 +33,7 @@ export const useSaveFilter = ({
     } = useColumnDefinitions({
         definitionKey,
         saved_filter,
+        defaultSaveFilter,
     });
 
     const {
@@ -49,6 +52,7 @@ export const useSaveFilter = ({
         filterValues,
         is_global,
         id,
+        defaultSaveFilter,
         ...rest
     }: {
         identifier: string;

@@ -65,19 +65,12 @@ export const SaveFilterForm = ({
                 type: 'reference_multi_select',
                 label: 'Users',
                 placeholder: 'Users',
-                controller_type: 'employee',
+                controller_type: 'business_users',
                 isMulti: true,
                 menuPosition: 'fixed',
+                subLabelKey: 'email',
                 valueKey: 'user_id',
                 queryIds: 'user_ids',
-            },
-            group_ids: {
-                type: 'reference_multi_select',
-                label: 'Group Users',
-                placeholder: 'Group Users',
-                isMulti: true,
-                menuPosition: 'fixed',
-                controller_type: 'user_group_finnops',
             },
         };
     }, [product_id]);
@@ -120,7 +113,7 @@ export const SaveFilterForm = ({
     return (
         <ModalContainer title={isEdit ? 'Edit Save Filter' : 'Save Filter'}>
             <form onSubmit={handleSubmit} noValidate>
-                <ModalBody className='gap-4 rounded col-flex '>
+                <ModalBody className='gap-4 rounded col-flex'>
                     {renderFormFields('identifier')}
                     <div className='gap-2 col-flex'>
                         <div className='w-fit'>
@@ -128,9 +121,7 @@ export const SaveFilterForm = ({
                         </div>
                         {!getFormValues('is_global') &&
                             renderFormFields('user_ids')}
-                        {!getFormValues('is_global') &&
-                            renderFormFields('group_ids')}
-                        <div className='px-2 mt-2 text-xs font-medium text-base-primary '>
+                        <div className='px-2 mt-2 text-xs font-medium text-base-primary'>
                             Filter Query
                         </div>
                         <FilterListDisplay
@@ -150,7 +141,7 @@ export const SaveFilterForm = ({
                     </div>
                 </ModalBody>
                 <ModalFooter>
-                    <div className='items-center justify-end w-full gap-4 row-flex'>
+                    <div className='gap-4 justify-end items-center w-full row-flex'>
                         <Button
                             appearance='errorHover'
                             onClick={() => Modal.close()}

@@ -8,6 +8,7 @@ import {
     getColumnType,
     getController,
     getMethodParamsValue,
+    getReferenceType,
     IsArray,
     IsEmptyObject,
     ObjectDto,
@@ -57,6 +58,7 @@ export const FilterProvider = ({
     defaultFilterParams,
     defaultFilterQueries,
     defaultRestrictedQueries,
+    defaultSaveFilter,
 }: FilterProviderInterface) => {
     const { listFilters, getDefaultValues } = useDefaultListFilter({
         filters,
@@ -64,6 +66,7 @@ export const FilterProvider = ({
         amountFilter,
         name,
     });
+
     const getOperators = useCallback(
         (type?: string) =>
             QueryOperatorList.filter((value) => {
@@ -72,9 +75,11 @@ export const FilterProvider = ({
             }),
         []
     );
-    const { filter_column_definitions } = useColumnDefinitions({
-        definitionKey,
-    });
+    const { filter_column_definitions, filter_column_definitions_outer } =
+        useColumnDefinitions({
+            definitionKey,
+            defaultSaveFilter,
+        });
 
     const definitionFilterColumns = useMemo(() => {
         return filter_column_definitions.map((column) => {
@@ -120,13 +125,55 @@ export const FilterProvider = ({
     });
 
     const innerListFilters = useMemo(() => {
-        return listFilters?.filter(
+        const filtersIN = listFilters?.filter(
             (filter) =>
                 filter?.isVisible !== false &&
                 filter?.type !== 'customize_group' &&
                 filter?.isOuterFilter !== true
         );
-    }, [listFilters]);
+
+        if (filter_column_definitions_outer?.length) {
+            filter_column_definitions_outer?.forEach((fil) => {
+                filtersIN.push({
+                    title: fil?.filter_name,
+                    controller: getController(fil.reference_model?.identifier),
+                    controller_type: fil.reference_model?.identifier,
+                    key: fil?.filter_identifier,
+                    type: getReferenceType(fil.column_type_id),
+                    methodParams: getMethodParamsValue(
+                        fil?.reference_model?.method_params
+                    ),
+                    classParams: fil.reference_model?.class_params,
+                    ...fil?.reference_model?.attributes,
+                });
+            });
+        }
+        return filtersIN;
+    }, [filter_column_definitions_outer, listFilters]);
+
+    const sanitizeInnerFilter = useMemo(() => {
+        const filtersIN = listFilters;
+
+        if (filter_column_definitions_outer?.length) {
+            filter_column_definitions_outer?.forEach((fil) => {
+                filtersIN.push({
+                    title: fil?.filter_name,
+                    controller: getController(fil.reference_model?.identifier),
+                    controller_type: fil.reference_model?.identifier,
+                    key: fil?.filter_identifier,
+                    type: getReferenceType(fil.column_type_id),
+                    methodParams: getMethodParamsValue(
+                        fil?.reference_model?.method_params
+                    ),
+                    classParams: fil.reference_model?.class_params,
+                    ...fil?.reference_model?.attributes,
+                });
+            });
+        }
+
+        return filtersIN;
+    }, [filter_column_definitions_outer, listFilters]);
+
     const isFilterButtonVisible = useMemo(() => {
         return (
             innerListFilters?.length > 0 || definitionFilterColumns?.length > 0
@@ -191,7 +238,7 @@ export const FilterProvider = ({
             queryString,
             pagination,
             setPagination,
-            listFilters,
+            listFilters: sanitizeInnerFilter,
             defaultValues: getDefaultValues(),
             defaultQueries,
             hasAnyFilter,
@@ -207,15 +254,14 @@ export const FilterProvider = ({
             handleFilterData,
             handleNavigationSearch,
             removeFilterData,
-            pagination,
             filterData,
             filterJson,
             filterQuery,
             sqlFilterQuery,
             queryString,
+            pagination,
             setPagination,
-            hasVisibleFilterBtn,
-            listFilters,
+            sanitizeInnerFilter,
             getDefaultValues,
             defaultQueries,
             hasAnyFilter,
@@ -223,6 +269,7 @@ export const FilterProvider = ({
             definitionFilterColumns,
             isFilterButtonVisible,
             innerListFilters,
+            hasVisibleFilterBtn,
             filterAliasKey,
             isAnyFilterApplied,
         ]
@@ -254,6 +301,7 @@ export const withFilterProviderExport = <TProps extends ObjectDto>(
                 defaultFilterParams={props?.defaultFilterParams}
                 defaultFilterQueries={props?.defaultFilterQueries}
                 defaultRestrictedQueries={props?.defaultRestrictedQueries}
+                defaultSaveFilter={props?.defaultSaveFilter}
             >
                 <Component {...props} />
             </FilterProvider>

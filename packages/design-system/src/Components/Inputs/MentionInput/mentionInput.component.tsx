@@ -27,15 +27,21 @@ import {
     withReact,
 } from 'slate-react';
 
-import { IsEmptyArray } from '@finnoto/core';
+import {
+    IsEmptyArray,
+    IsUndefinedOrNull,
+    ObjectDto,
+    PRODUCT_IDENTIFIER,
+    useApp,
+} from '@finnoto/core';
 
 import { Portal } from '@radix-ui/react-portal';
 
 import { cn } from '../../../Utils/common.ui.utils';
 import { Avatar } from '../../Data-display/Avatar/avatar.component';
-import { useMentionUsers } from './mention.provider';
 import { slateWordRange } from './mention.utils';
 import { MentionInputProps } from './mentionInput.types';
+import { useMentionUsersApp } from './useMentionUser.hook';
 
 export type MentionElement = {
     type: 'mention';
@@ -52,12 +58,49 @@ export const MentionInput = forwardRef(
             onFocus,
             onBlur,
             disabled,
+            filterKey,
+            filterValue,
+            subLabelKey = 'email',
+            placeholder = 'Type @ to mention and notify a user, or add notes and documents',
+            autoFocus = false,
+            customMentions = [],
         }: MentionInputProps,
         forwardedRef
     ) => {
         const ref = useRef<HTMLDivElement | null>();
 
-        const [users] = useMentionUsers();
+        const { mentionUserContext: mentions } = useMentionUsersApp();
+
+        const sanitizedMentions: ObjectDto[] = useMemo(() => {
+            const sanitizedCustomMentions = customMentions.map((mention) => {
+                return {
+                    active: true,
+                    id: mention.sourceId,
+                    display: mention.display,
+                    email: mention.email,
+                    source_type: mention.sourceType,
+                    identifier: mention.identifier,
+                };
+            });
+
+            return [...mentions, ...sanitizedCustomMentions];
+        }, [customMentions, mentions]);
+
+        const { product_id } = useApp();
+
+        const isVendorPortal = product_id === PRODUCT_IDENTIFIER.VENDOR;
+
+        const filterUsers = useMemo(() => {
+            if (filterKey) {
+                return (
+                    sanitizedMentions?.filter(
+                        (u) => u[filterKey] === filterValue
+                    ) || []
+                );
+            }
+
+            return sanitizedMentions || [];
+        }, [filterKey, filterValue, sanitizedMentions]);
 
         const [target, setTarget] = useState<Range | undefined>();
         const [index, setIndex] = useState(0);
@@ -72,7 +115,7 @@ export const MentionInput = forwardRef(
             []
         );
 
-        const chars = users.filter((c) =>
+        const chars = filterUsers.filter((c) =>
             c.display?.toLowerCase().startsWith(search.toLowerCase())
         );
 
@@ -123,7 +166,7 @@ export const MentionInput = forwardRef(
             const context = [];
 
             const getOption = (character: string) => {
-                return users.find((c) => c.display === character);
+                return filterUsers.find((c) => c.display === character);
             };
 
             value.forEach((node: any, index, arr) => {
@@ -165,6 +208,8 @@ export const MentionInput = forwardRef(
                 try {
                     const domRange = ReactEditor.toDOMRange(editor, target);
                     const rect = domRange.getBoundingClientRect();
+
+                    if (IsUndefinedOrNull(el?.style)) return;
 
                     el.style.top = `${rect.top + window.pageYOffset + 24}px`;
                     el.style.left = `${rect.left + window.pageXOffset}px`;
@@ -238,8 +283,13 @@ export const MentionInput = forwardRef(
                     rows={2}
                     renderElement={renderElement}
                     onKeyDown={onKeyDown}
-                    className={cn('textarea pt-0.5 !min-h-0', className)}
-                    placeholder='Type @ to mention and notify someone'
+                    className={cn(
+                        'textarea pt-0.5 !min-h-0 border-0 bg-transparent rounded-t-lg',
+                        className
+                    )}
+                    placeholder={
+                        isVendorPortal ? 'Type your message' : placeholder
+                    }
                     renderPlaceholder={({ attributes, children }) => (
                         <div {...attributes} className='h-full leading-8'>
                             {children}
@@ -249,6 +299,7 @@ export const MentionInput = forwardRef(
                     onBlur={onBlur}
                     readOnly={disabled}
                     disabled={disabled}
+                    autoFocus={autoFocus}
                 />
 
                 {target && chars.length > 0 && (
@@ -288,7 +339,14 @@ export const MentionInput = forwardRef(
                                         size='xs'
                                         shape='circle'
                                     />
-                                    {char.display}
+                                    <div className='flex flex-col gap-1'>
+                                        {char.display}
+                                        {subLabelKey && (
+                                            <div className='text-xs text-base-500'>
+                                                {char[subLabelKey]}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
                         </div>

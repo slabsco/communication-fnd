@@ -56,3 +56,7 @@ export * from './Filter';
 export * from './PolarisDashboardCard/polarisDashboardCard.component';
 
 export * from './AgeingBucket/ageingBucket.component';
+
+export * from './Conversation/conversation-input-box';
+export * from './Conversation/conversation-message';
+export * from './Conversation/conversation.component';

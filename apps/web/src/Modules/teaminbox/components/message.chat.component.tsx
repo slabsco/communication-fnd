@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useList } from 'react-use';
 
 import {
+    Debounce,
     FetchData,
     IsEmptyArray,
     IsEmptyString,
@@ -19,9 +20,9 @@ import {
     Popover,
 } from '@finnoto/design-system';
 
-import { useQueryClient } from '@tanstack/react-query';
-
 import { openQuickReplySelect } from '../../quickreply/quick.reply.select.list';
+import { RefetchTeamInboxDetail } from '../context/teaminbox.context.main';
+import { RefetchTeamInboxChat } from '../hooks/useTeaminboxChatListing.hook';
 import { openTriggerChatbotResponse } from '../modal/TriggerChatbotResponse.modal';
 import { openAddInbox } from './add.inbox.modal';
 import { ChatTextareaComponent } from './chat.text.area.component';
@@ -36,8 +37,6 @@ import {
 } from 'assets';
 
 export const MessageChat = ({ data }) => {
-    const queryClient = useQueryClient();
-
     const emojiRef = useRef(null);
 
     const [input, setInput] = useState('');
@@ -54,13 +53,9 @@ export const MessageChat = ({ data }) => {
     }, [files, input]);
 
     const refetch = useCallback(() => {
-        queryClient.invalidateQueries({
-            queryKey: ['team_inbox_message_list', +data.id],
-        });
-        queryClient.invalidateQueries({
-            queryKey: ['team_inbox_detail', +data.id],
-        });
-    }, [queryClient, data.id]);
+        RefetchTeamInboxChat();
+        RefetchTeamInboxDetail();
+    }, []);
 
     const sendMessage = useCallback(async () => {
         const doc: any = files?.[0];
@@ -184,7 +179,7 @@ export const MessageChat = ({ data }) => {
     };
 
     return (
-        <div className='sticky right-0 bottom-0 left-0 gap-1 p-2 rounded col-flex bg-base-100'>
+        <div className='sticky right-0 bottom-0 left-0 gap-1 p-2 rounded shadow-inner col-flex'>
             <ChatTextareaComponent
                 input={input}
                 setInput={setInput}
@@ -220,6 +215,7 @@ export const MessageChat = ({ data }) => {
                         icon={ArcMessageSvgIcon}
                         onClick={sendTemplateMessage}
                         outline
+                        size='sm'
                         appearance='polaris-transparent'
                     />
 
@@ -234,6 +230,7 @@ export const MessageChat = ({ data }) => {
                             });
                         }}
                         appearance='plain'
+                        size='sm'
                     />
 
                     <CommonFileUploader
@@ -246,6 +243,7 @@ export const MessageChat = ({ data }) => {
                             return (
                                 <div>
                                     <IconButton
+                                        size='sm'
                                         icon={AttachmentsSvgIcon}
                                         outline
                                         appearance='polaris-transparent'
@@ -265,6 +263,7 @@ export const MessageChat = ({ data }) => {
                         }}
                         outline
                         appearance='polaris-transparent'
+                        size='sm'
                     />
 
                     <Popover
@@ -284,10 +283,15 @@ export const MessageChat = ({ data }) => {
                             name='Add Emoji'
                             icon={EmojiSvgIcon}
                             appearance='plain'
+                            size='sm'
                         />
                     </Popover>
                 </div>
-                <Button onClick={sendMessage} disabled={isSendButtonDisabled}>
+                <Button
+                    defaultMinWidth
+                    onClick={sendMessage}
+                    disabled={isSendButtonDisabled}
+                >
                     Send
                 </Button>
             </div>

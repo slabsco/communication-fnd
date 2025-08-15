@@ -97,7 +97,7 @@ export const RenderInnerTextMessage = ({ message }: any) => {
     return (
         <div
             className={cn(
-                'rounded-md p-3 shadow-md  self-end flex flex-col gap-1 text-black max-w-[50%] bg-green-200'
+                'rounded-md px-2 py-1 shadow-md  self-end flex flex-col gap-1 text-black max-w-[50%] bg-green-200'
             )}
         >
             {renderComponent()}

@@ -22,6 +22,8 @@ import {
 
 import { useQuery } from '@tanstack/react-query';
 
+import { RefetchTeamInboxListing } from '../hooks/useTeamInboxMessageListing.hook';
+
 import { FileDownloadSvgIcon } from 'assets';
 
 const getData = (components: any[], type: string) => {
@@ -67,11 +69,14 @@ export const RenderUserMessageBubble = ({ message }) => {
     });
 
     const setMessageRead = async (broadcastMessageid: number) => {
-        const { success, response } = await FetchData({
+        const { success } = await FetchData({
             className: TeamInboxController,
             method: 'markAsRead',
             methodParams: broadcastMessageid,
         });
+        if (success) {
+            RefetchTeamInboxListing();
+        }
     };
 
     useEffect(() => {
@@ -243,6 +248,7 @@ export const RenderUserMessageBubble = ({ message }) => {
         if (message?.payload?.text?.body) {
             return (
                 <span
+                    className='text-sm'
                     dangerouslySetInnerHTML={{
                         __html: convertWhatsAppToHtml(
                             message?.payload?.text?.body
@@ -253,7 +259,7 @@ export const RenderUserMessageBubble = ({ message }) => {
         }
 
         return (
-            <span>
+            <span className='text-sm'>
                 {message?.payload?.button?.text ||
                     message?.payload?.text?.body ||
                     message?.payload?.interactive?.button_reply?.title ||
@@ -265,10 +271,10 @@ export const RenderUserMessageBubble = ({ message }) => {
 
     return (
         <div className='flex gap-2 items-end'>
-            <div className='gap-2 items-start p-3 bg-gray-300 rounded max-w-[75%] col-flex'>
+            <div className='gap-2 items-start px-2 py-1 bg-gray-300 rounded max-w-[75%] col-flex'>
                 {message?.template_parent_body && (
                     <div
-                        className='h-[70px] overflow-hidden text-ellipsis whitespace-pre-line line-clamp-3 w-[200px] bg-primary/70 text-xs p-1 rounded text-primary-content'
+                        className='h-[70px] overflow-hidden text-ellipsis whitespace-pre-line line-clamp-3 w-[200px] bg-primary/70 text-sm p-1 rounded text-primary-content'
                         dangerouslySetInnerHTML={{
                             __html: replaceVariablesInString(
                                 message?.template_parent_body,
@@ -279,7 +285,7 @@ export const RenderUserMessageBubble = ({ message }) => {
                 )}
                 {message?.parent_payload?.interactive && (
                     <div
-                        className='h-[25px] overflow-hidden text-ellipsis whitespace-pre-line line-clamp-3 w-[200px] bg-primary/70 text-xs p-1 rounded text-primary-content'
+                        className='h-[25px] overflow-hidden text-ellipsis whitespace-pre-line line-clamp-3 w-[200px] bg-primary/70 text-sm px-2 py-1 rounded text-primary-content'
                         dangerouslySetInnerHTML={{
                             __html: message?.parent_payload?.interactive?.body
                                 ?.text,

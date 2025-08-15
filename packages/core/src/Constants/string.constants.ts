@@ -32,6 +32,9 @@ export const DEFAULT_INVOICE_NOTES =
 export const BUSINESS_CHANGE_LOCK_EVENT = 'business_change_lock_event';
 export const BUSINESS_PAGE_CHANGE_EVENT = 'business_page_change_event';
 export const GENERIC_LISTING_REFETCH = 'generic_listing_refetch';
+export const TEAM_INBOX_LISTING_REFETCH = 'TEAM_INBOX_LISTING_REFETCH';
+export const TEAM_INBOX_DETAIL_REFETCH = 'TEAM_INBOX_DETAIL_REFETCH';
+export const TEAM_INBOX_CHAT_REFETCH = 'TEAM_INBOX_CHAT_REFETCH';
 export const CANCEL_API_REQUEST = 'cancel_api_request';
 export const GENERIC_LIST_SELECT_REFETCH = 'generic_list_select_refetch';
 

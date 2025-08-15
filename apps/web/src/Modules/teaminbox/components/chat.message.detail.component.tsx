@@ -1,57 +1,18 @@
-import { FetchData, toastBackendError, useQueryClient } from '@finnoto/core';
-import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
-import {
-    Badge,
-    ConfirmUtil,
-    Loading,
-    NoDataFound,
-} from '@finnoto/design-system';
+import { Badge, Loading, NoDataFound, Tooltip } from '@finnoto/design-system';
 
-import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
 import { TeamInboxStatusTypeEnum } from '../../broadcast/your-templates/enums/whatsapp.template.category.enum';
 import { useTeamInbox } from '../context/teaminbox.context.main';
 import { ChatMessageListingMain } from './chat.message.main.listing';
 import { MessageChat } from './message.chat.component';
 
+import { EyeSvgIcon, RobotSvgIcon } from 'assets';
+
 const ChatMessageDetailComponent = () => {
     const { currentInboxDetail, isLoading } = useTeamInbox();
 
-    const query = useQueryClient();
-
-    const handleUpdateStatus = async (status_id: TeamInboxStatusTypeEnum) => {
-        const { response, success } = await FetchData({
-            className: TeamInboxController,
-            method: 'changeStatus',
-            methodParams: currentInboxDetail?.id,
-            classParams: {
-                status_id,
-            },
-        });
-        if (success) {
-            query.invalidateQueries([
-                'team_inbox_detail',
-                currentInboxDetail.id,
-            ]);
-            return response;
-        }
-
-        return toastBackendError(response);
-    };
-
-    const updateStatus = (status_id: TeamInboxStatusTypeEnum) => {
-        ConfirmUtil({
-            isArc: true,
-            appearance: 'warning',
-            title: 'Update Status',
-            message:
-                'Are you sure you want to update the status? Changing the status might effect yor chatbot and other related message flows.',
-            isReverseAction: true,
-            onConfirmPress: () => handleUpdateStatus(status_id),
-        });
-    };
     if (!currentInboxDetail || isLoading)
         return (
-            <div className='col-span-7 centralize'>
+            <div className='h-full centralize'>
                 {isLoading ? (
                     <Loading size='lg' type='spinner' color='primary' />
                 ) : (
@@ -60,50 +21,8 @@ const ChatMessageDetailComponent = () => {
             </div>
         );
     return (
-        <div className='overflow-hidden col-span-12 gap-2 h-full lg:col-span-7 col-flex'>
-            <div className='flex gap-2 justify-between items-center px-3 py-2 rounded bg-base-100'>
-                <p className='flex gap-3 items-center'>
-                    <span className='font-semibold'>Chat Status:</span>
-                    <DisplayTeamInboxStatus
-                        currentInboxDetail={currentInboxDetail}
-                    />
-                </p>
-                {!currentInboxDetail?.expired_at && (
-                    <DropdownActionButton
-                        buttonName='Change Status'
-                        actions={[
-                            {
-                                name: 'Solved',
-                                visible:
-                                    currentInboxDetail?.status_id !==
-                                    TeamInboxStatusTypeEnum.SOLVED,
-                                action: () =>
-                                    updateStatus(
-                                        TeamInboxStatusTypeEnum.SOLVED
-                                    ),
-                            },
-                            {
-                                name: 'Pending',
-                                visible:
-                                    currentInboxDetail?.status_id !==
-                                    TeamInboxStatusTypeEnum.PENDING,
-                                action: () =>
-                                    updateStatus(
-                                        TeamInboxStatusTypeEnum.PENDING
-                                    ),
-                            },
-                            {
-                                name: 'Open',
-                                visible:
-                                    currentInboxDetail?.status_id !==
-                                    TeamInboxStatusTypeEnum.OPEN,
-                                action: () =>
-                                    updateStatus(TeamInboxStatusTypeEnum.OPEN),
-                            },
-                        ]}
-                    />
-                )}
-            </div>
+        <div className='overflow-hidden h-full col-flex'>
+            <ChatHeader currentInboxDetail={currentInboxDetail} />
             <ChatMessageListingMain />
             <MessageChat data={currentInboxDetail} />
         </div>
@@ -111,6 +30,37 @@ const ChatMessageDetailComponent = () => {
 };
 
 export default ChatMessageDetailComponent;
+
+const ChatHeader = ({ currentInboxDetail }: { currentInboxDetail: any }) => {
+    return (
+        <div className='flex overflow-hidden gap-2 justify-between items-center px-3 py-2 bg-base-100'>
+            <p className='flex gap-3 items-center'>
+                <DisplayTeamInboxStatus
+                    currentInboxDetail={currentInboxDetail}
+                />
+                {currentInboxDetail?.assignee?.user?.name && (
+                    <Tooltip
+                        message={`Chat is assign to ${currentInboxDetail?.assignee?.user?.name}`}
+                    >
+                        <div>
+                            <Badge
+                                label={currentInboxDetail?.assignee?.user?.name}
+                                size='sm'
+                                appearance='secondary'
+                                lefticon={EyeSvgIcon}
+                            />
+                        </div>
+                    </Tooltip>
+                )}
+                <AssignedToBotStatus
+                    is_assigned_to_bot={
+                        currentInboxDetail?.contact?.is_assigned_to_bot
+                    }
+                />
+            </p>
+        </div>
+    );
+};
 
 export const DisplayTeamInboxStatus = ({
     currentInboxDetail,
@@ -127,4 +77,24 @@ export const DisplayTeamInboxStatus = ({
         return <Badge label={'Solved'} size='sm' appearance='success' />;
 
     return <Badge label={'Open'} size='sm' appearance='info' />;
+};
+
+export const AssignedToBotStatus = ({
+    is_assigned_to_bot,
+}: {
+    is_assigned_to_bot: boolean;
+}) => {
+    if (!is_assigned_to_bot) return;
+    return (
+        <Tooltip message='Bot mode is activated on this chat'>
+            <div>
+                <Badge
+                    label={''}
+                    lefticon={RobotSvgIcon}
+                    size='sm'
+                    appearance='info'
+                />
+            </div>
+        </Tooltip>
+    );
 };

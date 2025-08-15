@@ -1,24 +1,46 @@
 import { format, isToday, isYesterday } from 'date-fns';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
 import { ObjectDto } from '../../backend/Dtos';
+import {
+    CommentTypeEnum,
+    PRODUCT_IDENTIFIER,
+    SOURCEHASH,
+} from '../../Constants';
 import { ChatDataPayload, FileUploadDto } from '../../Types';
-import { SortArrayObjectBy } from '../../Utils/common.utils';
+import {
+    AccessValueOnNestedObjectByKey,
+    SortArrayObjectBy,
+} from '../../Utils/common.utils';
+import {
+    StoreEvent,
+    SubscribeToEvent,
+    UnsubscribeEvent,
+} from '../../Utils/stateManager.utils';
 import { Toast } from '../../Utils/toast.utils';
+import { useApp } from '../useApp.hook';
 import { FetchData } from '../useFetchData.hook';
 import { useUserHook } from '../user.hook';
+
+const GENERIC_CONVERSATION_REFETCH = 'GENERIC_CONVERSATION_REFETCH';
 
 export const useConversation = ({
     className,
     id,
     disableNetwork,
+    methodParams,
+    refetch,
 }: {
     className: any;
     id: any;
     disableNetwork?: boolean;
+    methodParams?: ObjectDto;
+    refetch?: () => void;
 }) => {
+    const { product_id } = useApp();
+
     const { user } = useUserHook();
     const {
         data: conversations,
@@ -31,14 +53,31 @@ export const useConversation = ({
         enabled: !!id && !disableNetwork,
     });
 
+    useEffect(() => {
+        SubscribeToEvent({
+            eventName: GENERIC_CONVERSATION_REFETCH,
+            callback: refetchConversations,
+        });
+        return () => {
+            UnsubscribeEvent({
+                eventName: GENERIC_CONVERSATION_REFETCH,
+                callback: refetchConversations,
+            });
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [className]);
+
     const fetchData = async (method: string) => {
         const { success, response } = await FetchData({
             className: className,
             method: method,
-            methodParams: id,
+            methodParams: methodParams ?? id,
         });
 
-        if (success) return response;
+        if (success) {
+            refetch?.();
+            return response;
+        }
 
         return [];
     };
@@ -48,11 +87,25 @@ export const useConversation = ({
         context?: any,
         files?: FileUploadDto
     ) => {
+        const classParams: any = { comments, context, files };
+
+        const sourceType = AccessValueOnNestedObjectByKey(
+            context,
+            'source_type'
+        );
+
+        if (
+            product_id === PRODUCT_IDENTIFIER.VENDOR ||
+            sourceType === SOURCEHASH.billing
+        ) {
+            classParams.type_id = CommentTypeEnum.VENDOR;
+        }
+
         const { success, response } = await FetchData({
             className,
             method: 'createConversation',
-            methodParams: id,
-            classParams: { comments, context, files },
+            methodParams: methodParams ?? id,
+            classParams,
         });
 
         if (!success) {
@@ -118,6 +171,7 @@ export const useConversation = ({
             chat.attachments = data.documents;
             chat.platform_id =
                 data.attributes?.platform_id || data?.platform_id;
+            chat.isSystemGenerated = data.is_system_generated;
             return chatData.push(chat);
         });
 
@@ -132,4 +186,10 @@ export const useConversation = ({
         refetchConversations,
         getGroupedMessageByDate,
     };
+};
+
+export const fetchConversationList = () => {
+    StoreEvent({
+        eventName: GENERIC_CONVERSATION_REFETCH,
+    });
 };
