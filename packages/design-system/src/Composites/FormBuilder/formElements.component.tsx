@@ -24,6 +24,7 @@ import { BooleanInput } from '../../Components/Inputs/Boolean/boolean.component'
 import CurrencySelector from '../../Components/Inputs/CurrencySelector/currencySelector.component';
 import { InputField } from '../../Components/Inputs/InputField/input.component';
 import { InputPassword } from '../../Components/Inputs/InputField/input.password.component';
+import { JsonEditorComponent } from '../../Components/Inputs/InputField/json.editor.component';
 import { TextareaField } from '../../Components/Inputs/InputField/textarea.component';
 import { MultiInput } from '../../Components/Inputs/MultiInput/multi.input.component';
 import { MultiEmailInput } from '../../Components/Inputs/MultiInput/multiEmail.input.component';
@@ -464,6 +465,15 @@ export const formElements = ({
         case 'sql-editor':
             return (
                 <SqlEditorComponent
+                    onChange={onChange}
+                    value={value}
+                    key={key}
+                    {...props}
+                />
+            );
+        case 'json-editor':
+            return (
+                <JsonEditorComponent
                     onChange={onChange}
                     value={value}
                     key={key}

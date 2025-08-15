@@ -7,3 +7,8 @@ export class AddUserPreferenceDto {
     @IsJSON()
     preference: any;
 }
+export class AddBusinessPreferenceDto {
+    @Expose()
+    @IsNotEmpty()
+    preference: any;
+}
