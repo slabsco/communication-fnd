@@ -3,13 +3,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useList } from 'react-use';
 
 import {
-    Debounce,
     FetchData,
     IsEmptyArray,
     IsEmptyString,
     IsUndefinedOrNull,
     replaceVariablesInString,
     toastBackendError,
+    useMutation,
 } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import {
@@ -57,32 +57,39 @@ export const MessageChat = ({ data }) => {
         RefetchTeamInboxDetail();
     }, []);
 
-    const sendMessage = useCallback(async () => {
-        const doc: any = files?.[0];
+    const { mutate: sendMessage, isPending } = useMutation({
+        mutationFn: async () => {
+            const doc: any = files?.[0];
 
-        if (isSendButtonDisabled) return;
+            if (isSendButtonDisabled)
+                throw new Error('Send button is disabled');
 
-        const { success, response } = await FetchData({
-            className: TeamInboxController,
-            method: 'sendMessage',
-            methodParams: data?.id,
-            classParams: {
-                ignore_dto_all: true,
-                data: input,
-                attachment: doc && {
-                    type: doc?.type,
-                    name: doc?.name,
-                    link: doc?.serverUrl,
+            const { success, response } = await FetchData({
+                className: TeamInboxController,
+                method: 'sendMessage',
+                methodParams: data?.id,
+                classParams: {
+                    ignore_dto_all: true,
+                    data: input,
+                    attachment: doc && {
+                        type: doc?.type,
+                        name: doc?.name,
+                        link: doc?.serverUrl,
+                    },
                 },
-            },
-        });
+            });
 
-        if (!success) return toastBackendError(response);
+            if (!success) {
+                toastBackendError(response);
+                throw new Error('Failed to send message');
+            }
+            setInput('');
+            setFiles([]);
+            refetch();
 
-        setInput('');
-        setFiles([]);
-        refetch();
-    }, [data?.id, files, input, isSendButtonDisabled, refetch, setFiles]);
+            return response;
+        },
+    });
 
     const triggerChatbotAction = useCallback(
         async (chatbot_id: number) => {
@@ -111,10 +118,10 @@ export const MessageChat = ({ data }) => {
                 !e.altKey
             ) {
                 e.preventDefault();
-                sendMessage();
+                if (!isPending) sendMessage();
             }
         },
-        [sendMessage]
+        [isPending, sendMessage]
     );
 
     const sendTemplateMessage = () => {
@@ -289,7 +296,8 @@ export const MessageChat = ({ data }) => {
                 </div>
                 <Button
                     defaultMinWidth
-                    onClick={sendMessage}
+                    loading={isPending}
+                    onClick={(next) => sendMessage(next)}
                     disabled={isSendButtonDisabled}
                 >
                     Send
