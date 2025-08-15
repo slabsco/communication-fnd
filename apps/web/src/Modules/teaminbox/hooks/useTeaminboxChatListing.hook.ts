@@ -4,17 +4,15 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
     FetchData,
     StoreEvent,
-    SubscribeToEvent,
     TEAM_INBOX_CHAT_REFETCH,
-    UnsubscribeEvent,
     useFetchParams,
     useQueryClient,
+    useRecursiveFetch,
 } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { MESSAGE_STATUS_UPDATE_SOCKET_EVENT } from '../../../Constants/socket.constant';
 import { useSocket } from '../../../Utils/socket/socket.context.main';
 
 export const useTeamInboxChatListing = () => {
@@ -86,20 +84,27 @@ export const useTeamInboxChatListing = () => {
         [fetchMessage, teamInboxId]
     );
 
-    useEffect(() => {
-        subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
-        SubscribeToEvent({
-            eventName: TEAM_INBOX_CHAT_REFETCH,
-            callback: fetchMessage,
-        });
+    const [startFetching] = useRecursiveFetch(fetchMessage, {
+        delay: 1000,
+        repeat: Infinity,
+    });
 
-        return () => {
-            unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
-            UnsubscribeEvent({
-                eventName: TEAM_INBOX_CHAT_REFETCH,
-                callback: fetchMessage,
-            });
-        };
+    useEffect(() => {
+        startFetching();
+
+        // subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
+        // SubscribeToEvent({
+        //     eventName: TEAM_INBOX_CHAT_REFETCH,
+        //     callback: fetchMessage,
+        // });
+
+        // return () => {
+        //     unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
+        //     UnsubscribeEvent({
+        //         eventName: TEAM_INBOX_CHAT_REFETCH,
+        //         callback: fetchMessage,
+        //     });
+        // };
     }, [
         subscribeEvent,
         unsubscribeEvent,
@@ -107,6 +112,7 @@ export const useTeamInboxChatListing = () => {
         updateData,
         pathname,
         fetchMessage,
+        startFetching,
     ]);
 
     return {

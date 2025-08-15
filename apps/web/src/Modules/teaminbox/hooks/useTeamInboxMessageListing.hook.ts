@@ -9,6 +9,7 @@ import {
     TEAM_INBOX_LISTING_REFETCH,
     TEAM_INBOX_SPLIT_LIST,
     useFetchParams,
+    useRecursiveFetch,
 } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import { useFilterContext } from '@finnoto/design-system';
@@ -114,10 +115,18 @@ export const useTeamInboxMessageListing = () => {
         });
     }, [client_key, queryClient]);
 
-    const fetchDataFromSocket = useCallback(() => {
-        fetchMessage();
-        playSound();
-    }, [fetchMessage, playSound]);
+    const fetchDataFromSocket = useCallback(
+        (data: any) => {
+            fetchMessage();
+            playSound();
+        },
+        [fetchMessage, playSound]
+    );
+
+    const [startFetching] = useRecursiveFetch(fetchMessage, {
+        delay: 3000,
+        repeat: Infinity,
+    });
 
     useEffect(() => {
         if (!teamInboxId && flatData.length > 0) {
@@ -128,20 +137,27 @@ export const useTeamInboxMessageListing = () => {
     }, [flatData, teamInboxId]);
 
     useEffect(() => {
-        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
-        SubscribeToEvent({
-            eventName: TEAM_INBOX_LISTING_REFETCH,
-            callback: fetchMessage,
-        });
+        startFetching();
+        // subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
+        // SubscribeToEvent({
+        //     eventName: TEAM_INBOX_LISTING_REFETCH,
+        //     callback: fetchMessage,
+        // });
 
-        return () => {
-            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
-            SubscribeToEvent({
-                eventName: TEAM_INBOX_LISTING_REFETCH,
-                callback: fetchMessage,
-            });
-        };
-    }, [subscribeEvent, unsubscribeEvent, fetchDataFromSocket, fetchMessage]);
+        // return () => {
+        //     unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
+        //     SubscribeToEvent({
+        //         eventName: TEAM_INBOX_LISTING_REFETCH,
+        //         callback: fetchMessage,
+        //     });
+        // };
+    }, [
+        subscribeEvent,
+        unsubscribeEvent,
+        fetchDataFromSocket,
+        fetchMessage,
+        startFetching,
+    ]);
 
     return {
         flatData,

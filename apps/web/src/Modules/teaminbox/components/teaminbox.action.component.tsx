@@ -9,6 +9,7 @@ import {
     RefetchTeamInboxDetail,
     useTeamInbox,
 } from '../context/teaminbox.context.main';
+import { RefetchTeamInboxChat } from '../hooks/useTeaminboxChatListing.hook';
 import { RefetchTeamInboxListing } from '../hooks/useTeamInboxMessageListing.hook';
 import { openAddInbox } from './add.inbox.modal';
 
@@ -95,7 +96,10 @@ const TeamInboxActionComponent = () => {
                         addAssignee(
                             currentInboxDetail?.id,
                             currentInboxDetail,
-                            RefetchTeamInboxDetail
+                            () => {
+                                RefetchTeamInboxDetail();
+                                RefetchTeamInboxChat();
+                            }
                         );
                     },
                 },
