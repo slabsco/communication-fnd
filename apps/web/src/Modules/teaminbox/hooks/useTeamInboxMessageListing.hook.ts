@@ -73,6 +73,7 @@ export const useTeamInboxMessageListing = () => {
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
         useInfiniteQuery({
+            cacheTime: Infinity,
             queryKey: client_key,
             queryFn: async ({ pageParam = 1 }) => {
                 const filters: Record<string, any> = {
@@ -118,13 +119,12 @@ export const useTeamInboxMessageListing = () => {
     const fetchDataFromSocket = useCallback(
         (data: any) => {
             fetchMessage();
-            playSound();
         },
-        [fetchMessage, playSound]
+        [fetchMessage]
     );
 
     const [startFetching] = useRecursiveFetch(fetchMessage, {
-        delay: 3000,
+        delay: 1000,
         repeat: Infinity,
     });
 
@@ -137,20 +137,20 @@ export const useTeamInboxMessageListing = () => {
     }, [flatData, teamInboxId]);
 
     useEffect(() => {
-        startFetching();
-        // subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
-        // SubscribeToEvent({
-        //     eventName: TEAM_INBOX_LISTING_REFETCH,
-        //     callback: fetchMessage,
-        // });
+        // startFetching();
+        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
+        SubscribeToEvent({
+            eventName: TEAM_INBOX_LISTING_REFETCH,
+            callback: fetchMessage,
+        });
 
-        // return () => {
-        //     unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
-        //     SubscribeToEvent({
-        //         eventName: TEAM_INBOX_LISTING_REFETCH,
-        //         callback: fetchMessage,
-        //     });
-        // };
+        return () => {
+            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
+            SubscribeToEvent({
+                eventName: TEAM_INBOX_LISTING_REFETCH,
+                callback: fetchMessage,
+            });
+        };
     }, [
         subscribeEvent,
         unsubscribeEvent,

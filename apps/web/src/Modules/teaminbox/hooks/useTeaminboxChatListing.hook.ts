@@ -4,7 +4,9 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
     FetchData,
     StoreEvent,
+    SubscribeToEvent,
     TEAM_INBOX_CHAT_REFETCH,
+    UnsubscribeEvent,
     useFetchParams,
     useQueryClient,
     useRecursiveFetch,
@@ -93,18 +95,18 @@ export const useTeamInboxChatListing = () => {
         startFetching();
 
         // subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
-        // SubscribeToEvent({
-        //     eventName: TEAM_INBOX_CHAT_REFETCH,
-        //     callback: fetchMessage,
-        // });
+        SubscribeToEvent({
+            eventName: TEAM_INBOX_CHAT_REFETCH,
+            callback: fetchMessage,
+        });
 
-        // return () => {
-        //     unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
-        //     UnsubscribeEvent({
-        //         eventName: TEAM_INBOX_CHAT_REFETCH,
-        //         callback: fetchMessage,
-        //     });
-        // };
+        return () => {
+            // unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
+            UnsubscribeEvent({
+                eventName: TEAM_INBOX_CHAT_REFETCH,
+                callback: fetchMessage,
+            });
+        };
     }, [
         subscribeEvent,
         unsubscribeEvent,

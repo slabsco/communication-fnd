@@ -29,7 +29,10 @@ const ChatMessageListingComponent = () => {
 
     return (
         <div className='overflow-hidden w-full h-full col-flex bg-base-100 lg:col-span-3'>
-            <div className='overflow-y-auto flex-1 p-1' id='scrollableDiv'>
+            <div
+                className='overflow-y-auto flex-1 p-1 scrollbar-xs'
+                id='scrollableDiv'
+            >
                 <InfiniteScroll
                     dataLength={flatData.length}
                     next={fetchNextPage}

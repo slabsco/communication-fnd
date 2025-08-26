@@ -113,23 +113,19 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         socketRef.current?.off(event);
     }, []);
 
-    const showMessageToast = useCallback(
-        ({ team_inbox_id, payload }) => {
-            playSound();
-
-            Toast.info({
-                delay: 5,
-                onClick: () => {
-                    Navigation.navigate({
-                        url: `${TEAM_INBOX_SPLIT_LIST}/${team_inbox_id}`,
-                    });
-                },
-                title: 'New Message Received!',
-                description: `${payload?.contact?.name} sent a message!`,
-            });
-        },
-        [playSound]
-    );
+    const showMessageToast = useCallback(({ team_inbox_id, payload }) => {
+        // playSound();
+        // Toast.info({
+        //     delay: 5,
+        //     onClick: () => {
+        //         Navigation.navigate({
+        //             url: TEAM_INBOX_SPLIT_LIST,
+        //         });
+        //     },
+        //     title: 'New Message Received!',
+        //     description: `Please open inbox to view message`,
+        // });
+    }, []);
 
     useEffect(() => {
         if (pathname.includes('team-inbox')) return;
