@@ -16,10 +16,6 @@ import { useFilterContext } from '@finnoto/design-system';
 
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
-import { NEW_MESSAGE_RECEIVED_SOCKET_EVENT } from '../../../Constants/socket.constant';
-import { useSocket } from '../../../Utils/socket/socket.context.main';
-import { useNotificationSound } from './useNotificationSound.hook';
-
 export const TeamInboxTabFilter = [
     {
         title: 'Assigned to me',
@@ -39,8 +35,6 @@ export const TeamInboxTabFilter = [
 
 export const useTeamInboxMessageListing = () => {
     const { id: teamInboxId } = useFetchParams();
-    const { subscribeEvent, unsubscribeEvent } = useSocket();
-    const { playSound } = useNotificationSound();
 
     const { filterData, queryString } = useFilterContext();
 
@@ -116,13 +110,6 @@ export const useTeamInboxMessageListing = () => {
         });
     }, [client_key, queryClient]);
 
-    const fetchDataFromSocket = useCallback(
-        (data: any) => {
-            fetchMessage();
-        },
-        [fetchMessage]
-    );
-
     const [startFetching] = useRecursiveFetch(fetchMessage, {
         delay: 1000,
         repeat: Infinity,
@@ -137,27 +124,17 @@ export const useTeamInboxMessageListing = () => {
     }, [flatData, teamInboxId]);
 
     useEffect(() => {
-        // startFetching();
-        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchDataFromSocket);
         SubscribeToEvent({
             eventName: TEAM_INBOX_LISTING_REFETCH,
             callback: fetchMessage,
         });
-
         return () => {
-            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
             SubscribeToEvent({
                 eventName: TEAM_INBOX_LISTING_REFETCH,
                 callback: fetchMessage,
             });
         };
-    }, [
-        subscribeEvent,
-        unsubscribeEvent,
-        fetchDataFromSocket,
-        fetchMessage,
-        startFetching,
-    ]);
+    }, [fetchMessage, startFetching]);
 
     return {
         flatData,

@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, {
     createContext,
     useCallback,
@@ -8,17 +7,10 @@ import React, {
 } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-import {
-    ACCESS_TOKEN,
-    GetItem,
-    Navigation,
-    TEAM_INBOX_SPLIT_LIST,
-    UserBusiness,
-} from '@finnoto/core';
-import { Toast } from '@finnoto/design-system';
+import { ACCESS_TOKEN, GetItem, UserBusiness } from '@finnoto/core';
 
 import { NEW_MESSAGE_RECEIVED_SOCKET_EVENT } from '../../Constants/socket.constant';
-import { useNotificationSound } from '../../Modules/teaminbox/hooks/useNotificationSound.hook';
+import { RefetchTeamInboxListing } from '../../Modules/teaminbox/hooks/useTeamInboxMessageListing.hook';
 
 interface SocketContextType {
     subscribeEvent: (event: string, callback: (...args: any[]) => void) => void;
@@ -36,9 +28,6 @@ interface SocketProviderProps {
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const socketRef = useRef<Socket | null>(null);
-
-    const { playSound } = useNotificationSound();
-    const { pathname } = useRouter();
 
     const SOCKET_SERVER_URL = UserBusiness.getBusinessAPIUrl();
 
@@ -98,9 +87,31 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     useEffect(() => {
         initializeSocket();
         return () => {
+            socketRef.current?.removeAllListeners();
             socketRef.current?.disconnect();
+            socketRef.current = null;
         };
     }, [initializeSocket]);
+
+    const unsubscribeEvent = (event: string) => {
+        socketRef.current?.off(event);
+    };
+
+    useEffect(() => {
+        const handler = (...args: any[]) => {
+            console.log(
+                `[Socket Event Received]: ${NEW_MESSAGE_RECEIVED_SOCKET_EVENT}`,
+                ...args
+            );
+            RefetchTeamInboxListing();
+        };
+
+        socketRef.current?.on(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, handler);
+
+        return () => {
+            socketRef.current?.off(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, handler);
+        };
+    }, []);
 
     const subscribeEvent = useCallback(
         (event: string, callback: (...args: any[]) => void) => {
@@ -108,34 +119,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         },
         []
     );
-
-    const unsubscribeEvent = useCallback((event: string) => {
-        socketRef.current?.off(event);
-    }, []);
-
-    const showMessageToast = useCallback(({ team_inbox_id, payload }) => {
-        // playSound();
-        // Toast.info({
-        //     delay: 5,
-        //     onClick: () => {
-        //         Navigation.navigate({
-        //             url: TEAM_INBOX_SPLIT_LIST,
-        //         });
-        //     },
-        //     title: 'New Message Received!',
-        //     description: `Please open inbox to view message`,
-        // });
-    }, []);
-
-    useEffect(() => {
-        if (pathname.includes('team-inbox')) return;
-
-        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, showMessageToast);
-        return () => {
-            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pathname]);
 
     return (
         <SocketContext.Provider

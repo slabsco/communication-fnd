@@ -7,6 +7,7 @@ import {
     Modal,
     ModalBody,
     ModalContainer,
+    NoDataFound,
     Swipper,
 } from '@finnoto/design-system';
 
@@ -36,6 +37,20 @@ const QuickReplySelectList = ({ getData }: { getData?: (data) => void }) => {
                     name='Quick Response'
                     asInnerTable
                     renderMiddleComponent={(data) => {
+                        if (!data?.length) {
+                            return (
+                                <div className='h-full centralize'>
+                                    <NoDataFound
+                                        button={{
+                                            name: 'Add Quick Reply',
+                                            appearance: 'primary',
+                                            outline: true,
+                                            onClick: addQuickReplyFormUtil,
+                                        }}
+                                    />
+                                </div>
+                            );
+                        }
                         return (
                             <div className='grid grid-cols-3 gap-2 py-3 h-[600px] overflow-hidden overflow-y-auto'>
                                 {data?.map((val) => {
@@ -70,21 +85,25 @@ const QuickReplySelectList = ({ getData }: { getData?: (data) => void }) => {
                                                 })}
                                             </div>
 
-                                            <div className='flex gap-2 items-center'>
-                                                <Swipper
-                                                    settings={{}}
-                                                    className='overflow-hidden p-2 w-full overflow-y-auto h-[190px] rounded bg-base-100'
-                                                >
-                                                    {val?.document?.map(
-                                                        (doc) => (
-                                                            <RenderDocument
-                                                                doc={doc}
-                                                                key={doc.type}
-                                                            />
-                                                        )
-                                                    )}
-                                                </Swipper>
-                                            </div>
+                                            {val?.document?.length && (
+                                                <div className='flex gap-2 items-center'>
+                                                    <Swipper
+                                                        settings={{}}
+                                                        className='overflow-hidden p-2 w-full overflow-y-auto h-[190px] rounded bg-base-100'
+                                                    >
+                                                        {val?.document?.map(
+                                                            (doc) => (
+                                                                <RenderDocument
+                                                                    doc={doc}
+                                                                    key={
+                                                                        doc.type
+                                                                    }
+                                                                />
+                                                            )
+                                                        )}
+                                                    </Swipper>
+                                                </div>
+                                            )}
 
                                             <div className='absolute bottom-1 right-3 z-50 p-2 rounded-full bg-base-100'>
                                                 <IconButton

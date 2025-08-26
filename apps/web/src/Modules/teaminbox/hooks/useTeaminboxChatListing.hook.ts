@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
@@ -15,16 +14,12 @@ import { TeamInboxController } from '@finnoto/core/src/backend/communication/con
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { useSocket } from '../../../Utils/socket/socket.context.main';
-
 export const useTeamInboxChatListing = () => {
     const { id: teamInboxId } = useFetchParams();
     const PAGE_LIMIT = 20;
 
-    const { subscribeEvent, unsubscribeEvent } = useSocket();
     const queryClient = useQueryClient();
     const scrollableDivRef = useRef<HTMLDivElement>(null);
-    const { pathname } = useRouter();
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
         useInfiniteQuery({
@@ -69,23 +64,6 @@ export const useTeamInboxChatListing = () => {
         });
     }, [queryClient, teamInboxId]);
 
-    const updateData = useCallback(
-        ({ team_inbox_id }: { team_inbox_id: number }) => {
-            if (team_inbox_id !== +teamInboxId) return;
-            fetchMessage();
-        },
-        [fetchMessage, teamInboxId]
-    );
-
-    const fetchDataFromSocket = useCallback(
-        ({ team_inbox_id }: { team_inbox_id: number }) => {
-            if (team_inbox_id === +teamInboxId) {
-                fetchMessage();
-            }
-        },
-        [fetchMessage, teamInboxId]
-    );
-
     const [startFetching] = useRecursiveFetch(fetchMessage, {
         delay: 1000,
         repeat: Infinity,
@@ -94,28 +72,18 @@ export const useTeamInboxChatListing = () => {
     useEffect(() => {
         startFetching();
 
-        // subscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT, updateData);
         SubscribeToEvent({
             eventName: TEAM_INBOX_CHAT_REFETCH,
             callback: fetchMessage,
         });
 
         return () => {
-            // unsubscribeEvent(MESSAGE_STATUS_UPDATE_SOCKET_EVENT);
             UnsubscribeEvent({
                 eventName: TEAM_INBOX_CHAT_REFETCH,
                 callback: fetchMessage,
             });
         };
-    }, [
-        subscribeEvent,
-        unsubscribeEvent,
-        fetchDataFromSocket,
-        updateData,
-        pathname,
-        fetchMessage,
-        startFetching,
-    ]);
+    }, [fetchMessage, startFetching]);
 
     return {
         scrollableDivRef,

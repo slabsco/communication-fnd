@@ -164,7 +164,7 @@ export const MessageChat = ({ data }) => {
         const documents = [];
         const attributes = {};
 
-        (quickReplyData?.document as any[]).forEach((doc) => {
+        quickReplyData?.document?.forEach((doc) => {
             documents.push({
                 ...doc?.attributes,
                 serverUrl: doc?.document_url,
@@ -175,7 +175,7 @@ export const MessageChat = ({ data }) => {
             attributes[quickReplyData?.key] = quickReplyData?.value;
         });
 
-        addFiles(...documents);
+        if (documents?.length) addFiles(...documents);
 
         const withVariable = replaceVariablesInString(quickReplyData?.message, {
             name: data?.contact?.display_name,
