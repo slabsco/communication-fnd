@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
     FetchData,
@@ -9,7 +9,6 @@ import {
     TEAM_INBOX_LISTING_REFETCH,
     TEAM_INBOX_SPLIT_LIST,
     useFetchParams,
-    useRecursiveFetch,
 } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import { useFilterContext } from '@finnoto/design-system';
@@ -100,6 +99,9 @@ export const useTeamInboxMessageListing = () => {
                     : undefined,
         });
 
+    // Fetch every 1 second
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
     const flatData = useMemo(() => {
         return data?.pages.flatMap((page) => page.data) ?? [];
     }, [data?.pages]);
@@ -110,11 +112,6 @@ export const useTeamInboxMessageListing = () => {
         });
     }, [client_key, queryClient]);
 
-    const [startFetching] = useRecursiveFetch(fetchMessage, {
-        delay: 1000,
-        repeat: Infinity,
-    });
-
     useEffect(() => {
         if (!teamInboxId && flatData.length > 0) {
             Navigation.navigate({
@@ -122,6 +119,17 @@ export const useTeamInboxMessageListing = () => {
             });
         }
     }, [flatData, teamInboxId]);
+
+    useEffect(() => {
+        if (flatData) {
+            intervalRef.current = setInterval(() => {
+                fetchMessage();
+            }, 5000);
+        }
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+    }, [fetchMessage, flatData]);
 
     useEffect(() => {
         SubscribeToEvent({
@@ -134,7 +142,7 @@ export const useTeamInboxMessageListing = () => {
                 callback: fetchMessage,
             });
         };
-    }, [fetchMessage, startFetching]);
+    }, [fetchMessage]);
 
     return {
         flatData,

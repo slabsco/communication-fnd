@@ -63,15 +63,21 @@ export const useTeamInboxChatListing = () => {
             queryKey: ['team_inbox_message_list', +teamInboxId],
         });
     }, [queryClient, teamInboxId]);
-
-    const [startFetching] = useRecursiveFetch(fetchMessage, {
-        delay: 1000,
-        repeat: Infinity,
-    });
+    // Fetch every 1 second
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        startFetching();
+        if (flatData) {
+            intervalRef.current = setInterval(() => {
+                fetchMessage();
+            }, 1000);
+        }
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+    }, [flatData, fetchMessage]);
 
+    useEffect(() => {
         SubscribeToEvent({
             eventName: TEAM_INBOX_CHAT_REFETCH,
             callback: fetchMessage,
@@ -83,7 +89,7 @@ export const useTeamInboxChatListing = () => {
                 callback: fetchMessage,
             });
         };
-    }, [fetchMessage, startFetching]);
+    }, [fetchMessage]);
 
     return {
         scrollableDivRef,
