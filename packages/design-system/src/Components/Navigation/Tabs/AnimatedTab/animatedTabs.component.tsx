@@ -32,6 +32,7 @@ export const AnimatedTabs = ({
     triggerClassName,
     disableSwitch,
     onTabClick,
+    rightComponent,
     ...props
 }: AnimatedTabsProps) => {
     const { width } = useWindowSize(); // Getting Screen width.
@@ -95,7 +96,7 @@ export const AnimatedTabs = ({
         >
             <div
                 className={cn(
-                    'flex items-center  rounded border border-base-300 bg-base-100',
+                    'flex items-center rounded border border-base-300 bg-base-100',
                     tabListClassName
                 )}
             >
@@ -111,7 +112,7 @@ export const AnimatedTabs = ({
                 )}
                 <TabsList
                     ref={tabListsRef}
-                    className='relative flex flex-1 gap-3 p-1 overflow-x-auto overflow-y-hidden scrollbar-none'
+                    className='flex overflow-x-auto overflow-y-hidden relative flex-1 gap-3 p-1 scrollbar-none'
                 >
                     {isComponentRendered && (
                         <div
@@ -170,6 +171,7 @@ export const AnimatedTabs = ({
                         onClick={onClickToRightArrow}
                     />
                 )}
+                {rightComponent}
             </div>
             {middleSeparator}
             {tabs.map((value) => {

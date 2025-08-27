@@ -6,7 +6,6 @@ import {
     SubscribeToEvent,
     TEAM_INBOX_DETAIL_REFETCH,
     useFetchParams,
-    useRecursiveFetch,
 } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 
@@ -35,9 +34,9 @@ export const TeamInboxProvider = ({
         refetch,
     } = useQuery({
         cacheTime: Infinity,
+        enabled: !!teamInboxId,
         queryKey: ['team_inbox_detail', +teamInboxId],
         queryFn: async () => {
-            if (!teamInboxId) return;
             const { success, response } = await FetchData({
                 className: TeamInboxController,
                 method: 'show',
@@ -49,13 +48,7 @@ export const TeamInboxProvider = ({
         },
     });
 
-    const [startRefetching] = useRecursiveFetch(refetch, {
-        delay: 10000,
-        repeat: Infinity,
-    });
-
     useEffect(() => {
-        startRefetching();
         SubscribeToEvent({
             eventName: TEAM_INBOX_DETAIL_REFETCH,
             callback: refetch,
@@ -67,7 +60,7 @@ export const TeamInboxProvider = ({
                 callback: refetch,
             });
         };
-    }, [refetch, startRefetching]);
+    }, [refetch, teamInboxId]);
 
     return (
         <TeamInboxContext.Provider

@@ -186,7 +186,7 @@ export const MessageChat = ({ data }) => {
     };
 
     return (
-        <div className='sticky right-0 bottom-0 left-0 gap-1 p-2 rounded shadow-inner col-flex'>
+        <div className='sticky right-0 bottom-0 left-0 gap-1 rounded shadow-inner col-flex'>
             <ChatTextareaComponent
                 input={input}
                 setInput={setInput}

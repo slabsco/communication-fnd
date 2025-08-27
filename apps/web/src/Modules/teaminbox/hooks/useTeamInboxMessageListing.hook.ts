@@ -113,7 +113,7 @@ export const useTeamInboxMessageListing = () => {
     }, [client_key, queryClient]);
 
     useEffect(() => {
-        if (!teamInboxId && flatData.length > 0) {
+        if (!teamInboxId && flatData?.length > 0) {
             Navigation.navigate({
                 url: `${TEAM_INBOX_SPLIT_LIST}/${flatData[0].id}`,
             });

@@ -21,8 +21,8 @@ const ChatMessageDetailComponent = () => {
             </div>
         );
     return (
-        <div className='overflow-hidden h-full col-flex'>
-            <ChatHeader currentInboxDetail={currentInboxDetail} />
+        <div className='overflow-hidden gap-1 h-full col-flex'>
+            {/* <ChatHeader currentInboxDetail={currentInboxDetail} /> */}
             <ChatMessageListingMain />
             <MessageChat data={currentInboxDetail} />
         </div>
@@ -67,10 +67,10 @@ export const DisplayTeamInboxStatus = ({
 }: {
     currentInboxDetail: any;
 }) => {
-    if (currentInboxDetail?.only_broadcast)
-        return <Badge label={'Only Broadcast'} size='sm' appearance='orange' />;
     if (currentInboxDetail?.expired_at)
         return <Badge label={'Expired'} size='sm' appearance='error' />;
+    if (currentInboxDetail?.only_broadcast)
+        return <Badge label={'Only Broadcast'} size='sm' appearance='orange' />;
     if (currentInboxDetail?.status_id === TeamInboxStatusTypeEnum.PENDING)
         return <Badge label={'Pending'} size='sm' appearance='warning' />;
     if (currentInboxDetail?.status_id === TeamInboxStatusTypeEnum.SOLVED)

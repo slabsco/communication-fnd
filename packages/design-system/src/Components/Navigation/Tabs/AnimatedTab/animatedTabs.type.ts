@@ -9,6 +9,7 @@ export interface AnimatedTabsProps extends TabsProps {
     containerClassName?: string; // Custom Container class, this is the parent component.
     tabListClassName?: string; // Custom Tab list class.
     middleSeparator?: ReactNode;
+    rightComponent?: ReactNode;
     triggerClassName?: string;
     disableSwitch?: boolean;
     onTabClick?: (key: string) => void;
