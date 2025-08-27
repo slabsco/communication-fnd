@@ -1,17 +1,19 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 
 import { useFetchParams } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import {
     AnimatedTabs,
+    cn,
     Conversation,
     FilterProvider,
 } from '@finnoto/design-system';
 
 import ChatMessageDetailComponent from './components/chat.message.detail.component';
 import ChatMessageListingComponent from './components/ChatMessageListing.component';
+import Hamburger, { ExpandCollapse } from './components/hamburger.component';
 import { RightSection } from './components/right.section';
 import { TeamInboxProvider } from './context/teaminbox.context.main';
 import TeamInboxFilter from './team.inbox.filter';
@@ -20,42 +22,70 @@ import { ArcInfoSvgIcon, MessageSvgIcon, NotesSvgIcon } from 'assets';
 
 const TeamInboxModuleDetail = () => {
     const { id: teamInboxId } = useFetchParams();
+    const [showDetail, setShowDetail] = useState(true);
 
     return (
         <Container>
+            {/* Card Listing Section */}
             <ChatMessageListingComponent />
-            <AnimatedTabs
-                active='conversation'
-                containerClassName='overflow-hidden col-span-12 gap-1 h-full lg:col-span-9 col-flex overflow-hidden bg-transparent'
-                querykey='inside_tab'
-                contentContainerClass='flex-1 overflow-hidden p-0 h-full bg-transparent'
-                tabs={[
-                    {
-                        title: 'Conversation',
-                        key: 'conversation',
-                        component: <ChatMessageDetailComponent />,
-                        icon: MessageSvgIcon,
-                    },
-                    {
-                        title: 'Detail',
-                        key: 'detail',
-                        icon: ArcInfoSvgIcon,
-                        component: <RightSection />,
-                    },
-                    {
-                        title: 'Notes / Documents',
-                        key: 'notes',
-                        icon: NotesSvgIcon,
-                        component: (
-                            <Conversation
-                                id={teamInboxId}
-                                controller={TeamInboxController}
-                                className='p-3'
-                            />
-                        ),
-                    },
-                ]}
-            />
+
+            {teamInboxId && (
+                <>
+                    {/* Middle Chat section */}
+                    <AnimatedTabs
+                        active='conversation'
+                        containerClassName={cn(
+                            'overflow-hidden col-span-12 gap-1 h-full  col-flex  lg:col-span-9 bg-transparent transition-all',
+                            {
+                                'xl:col-span-7': showDetail,
+                            }
+                        )}
+                        querykey='inside_tab'
+                        contentContainerClass='flex-1 overflow-hidden p-0 h-full bg-transparent'
+                        tabs={[
+                            {
+                                title: 'Conversation',
+                                key: 'conversation',
+                                component: <ChatMessageDetailComponent />,
+                                icon: MessageSvgIcon,
+                            },
+                            {
+                                title: 'Detail',
+                                key: 'detail',
+                                icon: ArcInfoSvgIcon,
+                                component: <RightSection />,
+                            },
+                            {
+                                title: 'Notes / Documents',
+                                key: 'notes',
+                                icon: NotesSvgIcon,
+                                component: (
+                                    <Conversation
+                                        id={teamInboxId}
+                                        controller={TeamInboxController}
+                                        className='p-3'
+                                    />
+                                ),
+                            },
+                        ]}
+                        rightComponent={
+                            <div className='hidden xl:flex'>
+                                <Hamburger
+                                    isOpen={showDetail}
+                                    onClick={() =>
+                                        setShowDetail((prev) => !prev)
+                                    }
+                                />
+                            </div>
+                        }
+                    />
+
+                    {/* Right Section */}
+                    <ExpandCollapse open={showDetail}>
+                        <RightSection compress />
+                    </ExpandCollapse>
+                </>
+            )}
         </Container>
     );
 };

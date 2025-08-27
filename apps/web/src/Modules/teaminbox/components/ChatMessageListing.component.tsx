@@ -9,7 +9,6 @@ import {
     Loading,
 } from '@finnoto/design-system';
 
-import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
 import { useTeamInboxMessageListing } from '../hooks/useTeamInboxMessageListing.hook';
 import { navigateToTeamInboxDetail } from '../utils/teaminbox.utils';
 import {
@@ -146,10 +145,10 @@ const Card = ({ data }: { data: any }) => {
                     </span>
                 </div>
             </div>
-            <DisplayTeamInboxStatus currentInboxDetail={data} />
             <AssignedToBotStatus
                 is_assigned_to_bot={data?.is_assigned_to_bot}
             />
+            <DisplayTeamInboxStatus currentInboxDetail={data} />
         </div>
     );
 };
