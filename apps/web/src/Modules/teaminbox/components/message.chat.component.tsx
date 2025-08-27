@@ -139,7 +139,7 @@ export const MessageChat = ({ data }) => {
         return () => document.removeEventListener('keydown', handleKeyPress);
     }, [handleKeyPress]);
 
-    if (data?.expired_at) {
+    if (data?.expired_at || data?.only_broadcast) {
         return (
             <div className='p-3 rounded bg-primary col-flex'>
                 <h3 className='text-lg font-semibold text-primary-content'>
