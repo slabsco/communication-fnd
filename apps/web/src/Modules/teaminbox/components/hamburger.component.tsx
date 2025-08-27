@@ -1,3 +1,5 @@
+import { cn } from '@finnoto/design-system';
+
 const Hamburger = ({
     isOpen,
     onClick,
@@ -40,8 +42,13 @@ export const ExpandCollapse: React.FC<ExpandCollapseProps> = ({
     children,
     open,
 }) => {
+    if (!open) return;
     return (
-        <div className='hidden relative w-full h-full lg:col-span-2 xl:flex'>
+        <div
+            className={cn(
+                'hidden relative w-full h-full lg:col-span-2 xl:flex'
+            )}
+        >
             <div
                 className={`
                     absolute right-0 top-0 bottom-0 h-full
