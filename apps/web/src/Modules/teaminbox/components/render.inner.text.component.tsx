@@ -79,6 +79,25 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                 </div>
             );
         }
+        if (!IsEmptyObject(payload?.audio)) {
+            return (
+                <div className='gap-1 col-flex'>
+                    <div className='flex flex-col gap-2'>
+                        <div className='h-[40px] w-[300px] flex items-center justify-center overflow-hidden'>
+                            <audio
+                                controls
+                                src={payload?.audio?.link}
+                                className='w-full'
+                            />
+                        </div>
+
+                        <span className='text-sm text-primary-950'>
+                            {payload?.audio?.caption}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
 
         return (
             <div className='flex flex-col gap-2'>

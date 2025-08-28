@@ -16,6 +16,7 @@ export { default as ActiveCircleSvgIcon } from './SVGIcons/Iconactivecircle.svg'
 export { default as EmojiSvgIcon } from './SVGIcons/emojiicon.svg';
 export { default as InactiveSvgIcon } from './SVGIcons/Iconinactiveicon.svg';
 export { default as FilePPTSvgIcon } from './SVGIcons/PPT.svg';
+export { default as AudioSvgIcon } from './SVGIcons/audio.svg';
 export { default as AddCircleSvgIcon } from './SVGIcons/add-circleadd-circle.svg';
 export { default as ApiStatusSvgIcon } from './SVGIcons/apistatus.svg';
 export { default as AppsSvgIcon } from './SVGIcons/apps.svg';
