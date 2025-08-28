@@ -35,7 +35,7 @@ const TeamInboxModuleDetail = () => {
                     <AnimatedTabs
                         active='conversation'
                         containerClassName={cn(
-                            'overflow-hidden col-span-12 gap-1 h-full  col-flex  lg:col-span-9 bg-transparent transition-all',
+                            'overflow-hidden col-span-12 gap-1 h-full  col-flex lg:col-span-9 bg-transparent transition-all',
                             {
                                 'xl:col-span-7': showDetail,
                             }

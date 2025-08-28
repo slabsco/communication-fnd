@@ -25,12 +25,14 @@ import { RefetchTeamInboxDetail } from '../context/teaminbox.context.main';
 import { RefetchTeamInboxChat } from '../hooks/useTeaminboxChatListing.hook';
 import { openTriggerChatbotResponse } from '../modal/TriggerChatbotResponse.modal';
 import { openAddInbox } from './add.inbox.modal';
+import AudioRecorderComponent from './audio.recorder';
 import { ChatTextareaComponent } from './chat.text.area.component';
 import { UploadedFileCard } from './seen.unseen.component';
 
 import {
     ArcMessageSvgIcon,
     AttachmentsSvgIcon,
+    DeleteSvgIcon,
     EmojiSvgIcon,
     ReplySvgICon,
     RobotSvgIcon,
@@ -42,6 +44,7 @@ export const MessageChat = ({ data }) => {
     const [input, setInput] = useState('');
     const [files, { removeAt, set: setFiles, push: addFiles }] =
         useList<any[]>();
+    const [audioUrl, setAudioUrl] = useState(null);
 
     const isSendButtonDisabled = useMemo(() => {
         if (!IsEmptyArray(files)) return false;
@@ -57,37 +60,42 @@ export const MessageChat = ({ data }) => {
         RefetchTeamInboxDetail();
     }, []);
 
+    const handleSendMessage = async (doc: any) => {
+        const { success, response } = await FetchData({
+            className: TeamInboxController,
+            method: 'sendMessage',
+            methodParams: data?.id,
+            classParams: {
+                ignore_dto_all: true,
+                data: input,
+                attachment: doc && {
+                    type: doc?.type,
+                    name: doc?.name,
+                    link: doc?.serverUrl,
+                },
+            },
+        });
+
+        if (!success) {
+            toastBackendError(response);
+            throw new Error('Failed to send message');
+        }
+
+        setInput('');
+        setFiles([]);
+        refetch();
+        setAudioUrl(null);
+
+        return response;
+    };
+
     const { mutate: sendMessage, isPending } = useMutation({
         mutationFn: async () => {
-            const doc: any = files?.[0];
-
+            let doc: any = files?.[0];
             if (isSendButtonDisabled)
                 throw new Error('Send button is disabled');
 
-            const { success, response } = await FetchData({
-                className: TeamInboxController,
-                method: 'sendMessage',
-                methodParams: data?.id,
-                classParams: {
-                    ignore_dto_all: true,
-                    data: input,
-                    attachment: doc && {
-                        type: doc?.type,
-                        name: doc?.name,
-                        link: doc?.serverUrl,
-                    },
-                },
-            });
-
-            if (!success) {
-                toastBackendError(response);
-                throw new Error('Failed to send message');
-            }
-            setInput('');
-            setFiles([]);
-            refetch();
-
-            return response;
+            return handleSendMessage(doc);
         },
     });
 
@@ -185,6 +193,36 @@ export const MessageChat = ({ data }) => {
         setInput((prev) => `${prev} ${withVariable}`);
     };
 
+    if (audioUrl) {
+        return (
+            <div className='sticky right-0 bottom-0 left-0 gap-1 mx-2 rounded shadow-inner col-flex'>
+                <div className='flex gap-3 items-center'>
+                    <audio controls src={audioUrl} style={{ width: '100%' }}>
+                        Your browser does not support the audio element.
+                    </audio>
+                    <Button
+                        onClick={async (next) => {
+                            await handleSendMessage({
+                                type: 'audio',
+                                serverUrl: audioUrl,
+                            });
+                            next();
+                        }}
+                    >
+                        Send
+                    </Button>
+                    <IconButton
+                        name='Remove Audio'
+                        icon={DeleteSvgIcon}
+                        appearance='error'
+                        outline
+                        onClick={(next) => setAudioUrl(null)}
+                    />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className='sticky right-0 bottom-0 left-0 gap-1 rounded shadow-inner col-flex'>
             <ChatTextareaComponent
@@ -217,29 +255,11 @@ export const MessageChat = ({ data }) => {
 
             <div className='flex gap-2 items-center'>
                 <div className='flex flex-1 items-center'>
-                    <IconButton
-                        name='Template Message'
-                        icon={ArcMessageSvgIcon}
-                        onClick={sendTemplateMessage}
-                        outline
-                        size='sm'
-                        appearance='polaris-transparent'
-                    />
-
-                    <IconButton
-                        name='Trigger Chatbot'
-                        icon={RobotSvgIcon}
-                        onClick={() => {
-                            openTriggerChatbotResponse({
-                                onTrigger: (id) => {
-                                    triggerChatbotAction(id);
-                                },
-                            });
+                    <AudioRecorderComponent
+                        getAudioUrl={(url) => {
+                            setAudioUrl(url);
                         }}
-                        appearance='plain'
-                        size='sm'
                     />
-
                     <CommonFileUploader
                         is_multiple={false}
                         onFileUpload={(data) => {
@@ -254,25 +274,12 @@ export const MessageChat = ({ data }) => {
                                         icon={AttachmentsSvgIcon}
                                         outline
                                         appearance='polaris-transparent'
+                                        name='Send Attachments'
                                     />
                                 </div>
                             );
                         }}
                     </CommonFileUploader>
-
-                    <IconButton
-                        name='Quick Reply'
-                        icon={ReplySvgICon}
-                        onClick={() => {
-                            openQuickReplySelect({
-                                getData: setQuickReplyData,
-                            });
-                        }}
-                        outline
-                        appearance='polaris-transparent'
-                        size='sm'
-                    />
-
                     <Popover
                         ref={emojiRef}
                         element={
@@ -293,6 +300,41 @@ export const MessageChat = ({ data }) => {
                             size='sm'
                         />
                     </Popover>
+                    <IconButton
+                        name='Template Message'
+                        icon={ArcMessageSvgIcon}
+                        onClick={sendTemplateMessage}
+                        outline
+                        size='sm'
+                        appearance='polaris-transparent'
+                    />
+
+                    <IconButton
+                        name='Quick Reply'
+                        icon={ReplySvgICon}
+                        onClick={() => {
+                            openQuickReplySelect({
+                                getData: setQuickReplyData,
+                            });
+                        }}
+                        outline
+                        appearance='polaris-transparent'
+                        size='sm'
+                    />
+
+                    <IconButton
+                        name='Trigger Chatbot'
+                        icon={RobotSvgIcon}
+                        onClick={() => {
+                            openTriggerChatbotResponse({
+                                onTrigger: (id) => {
+                                    triggerChatbotAction(id);
+                                },
+                            });
+                        }}
+                        appearance='plain'
+                        size='sm'
+                    />
                 </div>
                 <Button
                     defaultMinWidth
