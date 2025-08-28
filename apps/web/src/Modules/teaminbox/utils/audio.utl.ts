@@ -14,24 +14,32 @@ export const convertBlobToMp3 = async (blob: Blob): Promise<Blob> => {
     // Only use the first channel for simplicity
     const samples = audioBuffer.getChannelData(0);
 
-    // Create MP3 encoder: channels, sampleRate, kbps
-    const mp3Encoder = new lamejs.Mp3Encoder(
-        audioBuffer.numberOfChannels,
-        audioBuffer.sampleRate,
-        128
-    );
+    // Create MP3 encoder: channels, sampleRate, kbps (mono)
+    const mp3Encoder = new lamejs.Mp3Encoder(1, audioBuffer.sampleRate, 128);
 
     const sampleBlockSize = 1152;
-    let mp3Data: Uint8Array[] = [];
+    let mp3Data: BlobPart[] = [];
 
     for (let i = 0; i < samples.length; i += sampleBlockSize) {
         const sampleChunk = samples.subarray(i, i + sampleBlockSize);
         const mp3buf = mp3Encoder.encodeBuffer(floatTo16BitPCM(sampleChunk));
-        if (mp3buf.length > 0) mp3Data.push(mp3buf);
+        if (mp3buf.length > 0) {
+            const ab = mp3buf.buffer.slice(
+                mp3buf.byteOffset,
+                mp3buf.byteOffset + mp3buf.byteLength
+            ) as ArrayBuffer;
+            mp3Data.push(ab);
+        }
     }
 
     const mp3buf = mp3Encoder.flush();
-    if (mp3buf.length > 0) mp3Data.push(mp3buf);
+    if (mp3buf.length > 0) {
+        const ab = mp3buf.buffer.slice(
+            mp3buf.byteOffset,
+            mp3buf.byteOffset + mp3buf.byteLength
+        ) as ArrayBuffer;
+        mp3Data.push(ab);
+    }
 
     return new Blob(mp3Data, { type: 'audio/mpeg' });
 };
