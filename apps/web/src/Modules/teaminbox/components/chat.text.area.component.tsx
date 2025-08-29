@@ -47,8 +47,8 @@ export const ChatTextareaComponent = ({
         <Popover
             trigger='manual'
             side='top'
-            offsetY={120}
-            offsetX={10}
+            offsetY={100}
+            offsetX={5}
             align='start'
             visible={isQuickReplyOpen}
             element={
@@ -62,15 +62,17 @@ export const ChatTextareaComponent = ({
             }
         >
             <TextareaField
+                showLimit
                 inputClassName='leading-5 py-2 h-full'
-                rows={3}
+                rows={4}
                 value={IsUndefinedOrNull(input) ? '' : input}
                 onChange={(val) => setInput(val)}
                 placeholder={
                     'Type your message here or press (⌘ + /) for the quick replies.'
                 }
-                className='w-full h-[100px]'
+                className='mb-1 w-full h-full'
                 size='lg'
+                max={1024}
             />
         </Popover>
     );

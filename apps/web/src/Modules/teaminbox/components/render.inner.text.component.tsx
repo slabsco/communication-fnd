@@ -101,13 +101,14 @@ export const RenderInnerTextMessage = ({ message }: any) => {
 
         return (
             <div className='flex flex-col gap-2'>
-                <span className='text-sm text-primary-950'>
-                    {payload?.text?.body?.split('\n')?.map((line, index) => (
-                        <span key={index}>
-                            {line}
-                            <br />
-                        </span>
-                    ))}
+                <span
+                    className='text-sm whitespace-pre-line break-words text-primary-950'
+                    style={{
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                    }}
+                >
+                    {payload?.text?.body}
                 </span>
             </div>
         );

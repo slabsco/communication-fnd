@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 
 import { useFetchParams } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
@@ -13,21 +13,49 @@ import {
 
 import ChatMessageDetailComponent from './components/chat.message.detail.component';
 import ChatMessageListingComponent from './components/ChatMessageListing.component';
-import Hamburger, { ExpandCollapse } from './components/hamburger.component';
 import { RightSection } from './components/right.section';
+import TogglePanelComponent from './components/toggle.panel.component';
 import { TeamInboxProvider } from './context/teaminbox.context.main';
+import {
+    panelType,
+    TeamInboxUiProvider,
+    useTeamInboxUi,
+} from './context/teaminbox.ui.context.main';
 import TeamInboxFilter from './team.inbox.filter';
 
 import { ArcInfoSvgIcon, MessageSvgIcon, NotesSvgIcon } from 'assets';
 
-const TeamInboxModuleDetail = () => {
-    const { id: teamInboxId } = useFetchParams();
-    const [showDetail, setShowDetail] = useState(true);
+// 12
+const girdMapping: any = {
+    left: {
+        small: 70, // col-span-1
+        big: 400,
+        ipad: 200,
+    },
+    right: {
+        small: 0, // col-span-1
+        big: 270,
+    },
+};
 
+const TeamInboxModuleDetail = () => {
     return (
         <Container>
+            <TeamInboxBody />
+        </Container>
+    );
+};
+
+const TeamInboxBody = () => {
+    const { id: teamInboxId } = useFetchParams();
+    const { toggleInboxPanel, isLeftPanelOpen, isRightPanelOpen } =
+        useTeamInboxUi();
+    return (
+        <>
             {/* Card Listing Section */}
-            <ChatMessageListingComponent />
+            <ToggleHandleContainer type='left' isOpen={isLeftPanelOpen}>
+                <ChatMessageListingComponent />
+            </ToggleHandleContainer>
 
             {teamInboxId && (
                 <>
@@ -35,10 +63,7 @@ const TeamInboxModuleDetail = () => {
                     <AnimatedTabs
                         active='conversation'
                         containerClassName={cn(
-                            'overflow-hidden col-span-12 gap-1 h-full  col-flex lg:col-span-9 bg-transparent transition-all',
-                            {
-                                'xl:col-span-7': showDetail,
-                            }
+                            'overflow-hidden flex-1  gap-1 h-full  col-flex  bg-transparent transition-all'
                         )}
                         querykey='inside_tab'
                         contentContainerClass='flex-1 overflow-hidden p-0 h-full bg-transparent'
@@ -50,13 +75,13 @@ const TeamInboxModuleDetail = () => {
                                 icon: MessageSvgIcon,
                             },
                             {
-                                title: 'Detail',
+                                title: 'Info',
                                 key: 'detail',
                                 icon: ArcInfoSvgIcon,
                                 component: <RightSection />,
                             },
                             {
-                                title: 'Notes / Documents',
+                                title: 'Notes',
                                 key: 'notes',
                                 icon: NotesSvgIcon,
                                 component: (
@@ -69,24 +94,29 @@ const TeamInboxModuleDetail = () => {
                             },
                         ]}
                         rightComponent={
-                            <div className='hidden xl:flex'>
-                                <Hamburger
-                                    isOpen={showDetail}
-                                    onClick={() =>
-                                        setShowDetail((prev) => !prev)
-                                    }
+                            <div className='hidden mr-2 xl:flex'>
+                                <TogglePanelComponent
+                                    open={isLeftPanelOpen}
+                                    onClick={() => toggleInboxPanel('left')}
+                                />
+                                <TogglePanelComponent
+                                    open={isRightPanelOpen}
+                                    direction='right'
+                                    onClick={() => toggleInboxPanel('right')}
                                 />
                             </div>
                         }
                     />
 
-                    {/* Right Section */}
-                    <ExpandCollapse open={showDetail}>
+                    <ToggleHandleContainer
+                        type='right'
+                        isOpen={isRightPanelOpen}
+                    >
                         <RightSection compress />
-                    </ExpandCollapse>
+                    </ToggleHandleContainer>
                 </>
             )}
-        </Container>
+        </>
     );
 };
 
@@ -116,13 +146,56 @@ const Container = ({ children }: { children: ReactNode }) => {
             ]}
         >
             <TeamInboxProvider>
-                <div className='overflow-hidden gap-1 p-2 h-content-screen col-flex'>
-                    <TeamInboxFilter />
-                    <div className='grid overflow-hidden flex-1 grid-cols-12 gap-2 items-center'>
-                        {children}
+                <TeamInboxUiProvider>
+                    <div className='overflow-hidden gap-1 p-2 h-content-screen col-flex'>
+                        <TeamInboxFilter />
+                        <div className='flex overflow-hidden flex-1 gap-2 items-center'>
+                            {children}
+                        </div>
                     </div>
-                </div>
+                </TeamInboxUiProvider>
             </TeamInboxProvider>
         </FilterProvider>
+    );
+};
+
+const ToggleHandleContainer = ({
+    isOpen,
+    children,
+    type,
+}: {
+    isOpen: boolean;
+    children: ReactNode;
+    type: panelType;
+}) => {
+    if (type === 'right') {
+        return (
+            <div
+                className={cn(
+                    'hidden overflow-hidden h-full transition-all xl:flex'
+                )}
+                style={{
+                    width: isOpen
+                        ? girdMapping[type].big
+                        : girdMapping[type].small,
+                }}
+            >
+                {children}
+            </div>
+        );
+    }
+    return (
+        <div
+            className={cn(
+                'overflow-hidden h-full transition-all',
+                girdMapping[type]?.ipad && `w-[${girdMapping[type]?.ipad}px]`,
+                `xl:w-[${girdMapping[type]?.big}px]`
+            )}
+            style={{
+                width: !isOpen && girdMapping[type].small,
+            }}
+        >
+            {children}
+        </div>
     );
 };

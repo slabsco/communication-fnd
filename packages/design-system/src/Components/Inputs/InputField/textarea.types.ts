@@ -66,6 +66,7 @@ export interface TextAreaInterface
     readOnly?: boolean;
     autoFocus?: boolean;
     bordered?: boolean;
+    showLimit?: boolean;
     tabIndex?: number;
     inputClassName?: string;
     labelClassName?: string;

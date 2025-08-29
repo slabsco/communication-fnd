@@ -47,7 +47,7 @@ export const Ellipsis = ({
                                   …{' '}
                                   <a
                                       className={cn(
-                                          'table-link font-medium text-base-primary',
+                                          'font-medium table-link text-base-primary',
                                           showTextClassName
                                       )}
                                       onClick={(e) => {

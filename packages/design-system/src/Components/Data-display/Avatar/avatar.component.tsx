@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
-import { useApp } from '@finnoto/core';
+import { IsValidString, useApp } from '@finnoto/core';
 
 import { cn } from '../../../Utils/common.ui.utils';
 import { Icon } from '../Icon/icon.component';
@@ -171,7 +171,11 @@ export const Avatar = ({
         if (size === 'xs' || size === 'polaris-xs')
             return GetInitials(alt).charAt(0);
 
-        return GetInitials(alt);
+        const name = GetInitials(alt);
+        if (!name && IsValidString(alt)) {
+            return alt.substring(0, 2);
+        }
+        return name;
     }, [alt, initial, size]);
 
     return (
