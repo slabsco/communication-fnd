@@ -258,7 +258,6 @@ export const MessageChat = ({ data }) => {
                                         icon={AttachmentsSvgIcon}
                                         outline
                                         appearance='polaris-transparent'
-                                        name='Send Attachments'
                                     />
                                 </div>
                             );
