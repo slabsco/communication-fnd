@@ -111,7 +111,7 @@ const DISPLAY_MODES: Record<'normal' | 'compress', DisplayMode> = {
         iconSize: 14,
         cardComponent: InfoCardCompress,
         containerClass:
-            'flex overflow-y-auto flex-col gap-2 p-2 h-full text-xs rounded border bg-polaris-bg-surface',
+            'flex overflow-y-auto flex-col gap-2 p-2 h-full text-xs rounded border bg-polaris-bg-surface w-full',
         gridClass: 'flex flex-col gap-1',
     },
 };

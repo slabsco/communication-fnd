@@ -248,7 +248,11 @@ export const RenderUserMessageBubble = ({ message }) => {
         if (message?.payload?.text?.body) {
             return (
                 <span
-                    className='text-sm'
+                    className='text-sm whitespace-pre-line break-words'
+                    style={{
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                    }}
                     dangerouslySetInnerHTML={{
                         __html: convertWhatsAppToHtml(
                             message?.payload?.text?.body

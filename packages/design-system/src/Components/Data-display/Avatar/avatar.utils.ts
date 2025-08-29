@@ -5,7 +5,9 @@
  * @returns string
  */
 export const GetInitials = (value: string) => {
-    if (value && value.length === 1) return value;
+    if (!value) return '';
+    if (value.length === 1) return value;
+
     const rgx = new RegExp(/\b(\p{L})/gu);
     const initials = [...((value?.matchAll(rgx) as any) || [])];
 

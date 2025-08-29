@@ -25,14 +25,13 @@ import { RefetchTeamInboxDetail } from '../context/teaminbox.context.main';
 import { RefetchTeamInboxChat } from '../hooks/useTeaminboxChatListing.hook';
 import { openTriggerChatbotResponse } from '../modal/TriggerChatbotResponse.modal';
 import { openAddInbox } from './add.inbox.modal';
-import AudioRecorderComponent from './audio.recorder';
+import AudioRecorderComponent, { RenderAudioRecorded } from './audio.recorder';
 import { ChatTextareaComponent } from './chat.text.area.component';
 import { UploadedFileCard } from './seen.unseen.component';
 
 import {
     ArcMessageSvgIcon,
     AttachmentsSvgIcon,
-    DeleteSvgIcon,
     EmojiSvgIcon,
     ReplySvgICon,
     RobotSvgIcon,
@@ -193,45 +192,30 @@ export const MessageChat = ({ data }) => {
         setInput((prev) => `${prev} ${withVariable}`);
     };
 
-    if (audioUrl) {
+    if (audioUrl)
         return (
-            <div className='sticky right-0 bottom-0 left-0 gap-1 mx-2 rounded shadow-inner col-flex'>
-                <div className='flex gap-3 items-center'>
-                    <audio controls src={audioUrl} style={{ width: '100%' }}>
-                        Your browser does not support the audio element.
-                    </audio>
-                    <Button
-                        onClick={async (next) => {
-                            await handleSendMessage({
-                                type: 'audio',
-                                serverUrl: audioUrl,
-                            });
-                            next();
-                        }}
-                    >
-                        Send
-                    </Button>
-                    <IconButton
-                        name='Remove Audio'
-                        icon={DeleteSvgIcon}
-                        appearance='error'
-                        outline
-                        onClick={(next) => setAudioUrl(null)}
-                    />
-                </div>
-            </div>
+            <RenderAudioRecorded
+                audioUrl={audioUrl}
+                onClickSend={async (next) => {
+                    await handleSendMessage({
+                        type: 'audio',
+                        serverUrl: audioUrl,
+                    });
+                    next();
+                }}
+                setAudio={setAudioUrl}
+            />
         );
-    }
 
     return (
-        <div className='sticky right-0 bottom-0 left-0 gap-1 rounded shadow-inner col-flex'>
+        <div className='sticky right-0 bottom-0 left-0 rounded shadow-inner col-flex'>
             <ChatTextareaComponent
                 input={input}
                 setInput={setInput}
                 onSelect={setQuickReplyData}
             />
             {!IsEmptyArray(files) && (
-                <div className='gap-2 w-full col-flex'>
+                <div className='gap-2 my-1 w-full col-flex'>
                     {files?.map((file: any, index): any => {
                         return (
                             <UploadedFileCard

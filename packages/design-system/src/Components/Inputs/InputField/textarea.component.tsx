@@ -87,6 +87,7 @@ export const TextareaField = forwardRef(
             labelClassName,
             onFocus,
             onKeyDown,
+            showLimit,
             ...props
         }: TextAreaInterface,
         ref: any
@@ -169,6 +170,54 @@ export const TextareaField = forwardRef(
         );
 
         const renderInput = useMemo(() => {
+            if (showLimit)
+                return (
+                    <div style={{ position: 'relative', width: '100%' }}>
+                        <textarea
+                            data-gramm={false}
+                            data-enable-grammarly={false}
+                            data-gramm_editor={false}
+                            className={cn('w-full', textAreaInputclasses)}
+                            id={name}
+                            {...{
+                                name,
+                                type,
+                                value,
+                                defaultValue,
+                                placeholder,
+                                min,
+                                max,
+                                autoFocus,
+                                readOnly,
+                                disabled,
+                                required,
+                                rows,
+                            }}
+                            minLength={min}
+                            maxLength={max}
+                            ref={ref}
+                            onChange={(e) => handleChange(e)}
+                            onBlur={(e) => onBlur(getValue(e))}
+                            onFocus={(e) => onFocus?.(getValue(e))}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <span
+                            style={{
+                                position: 'absolute',
+                                bottom: 0,
+                                right: 8,
+                                fontSize: 10,
+                                color: '#888',
+                                background: 'transparent',
+                                padding: '0 4px',
+                                borderRadius: 4,
+                                pointerEvents: 'none',
+                            }}
+                        >
+                            {`${(value || '').length}${max ? `/${max}` : ''}`}
+                        </span>
+                    </div>
+                );
             return (
                 <textarea
                     data-gramm={false}
@@ -200,6 +249,7 @@ export const TextareaField = forwardRef(
                 />
             );
         }, [
+            showLimit,
             textAreaInputclasses,
             name,
             type,
@@ -214,11 +264,11 @@ export const TextareaField = forwardRef(
             required,
             rows,
             ref,
+            handleKeyDown,
             handleChange,
             onBlur,
             getValue,
             onFocus,
-            handleKeyDown,
         ]);
 
         const containerClass = cn(
