@@ -16,6 +16,8 @@ import { navigateToTeamInboxDetail } from '../utils/teaminbox.utils';
 import {
     AssignedToBotStatus,
     DisplayTeamInboxStatus,
+    getTeamInboxStatusKey,
+    team_inbox_status_preference,
 } from './chat.message.detail.component';
 
 const ChatMessageListingComponent = () => {
@@ -113,7 +115,11 @@ const Card = ({ data }: { data: any }) => {
             >
                 <div className='relative'>
                     <Avatar
-                        color='polaris'
+                        color={
+                            team_inbox_status_preference[
+                                getTeamInboxStatusKey(data)
+                            ]?.appearance as any
+                        }
                         size='sm'
                         shape='circle'
                         alt={data?.contact_name}
@@ -126,7 +132,7 @@ const Card = ({ data }: { data: any }) => {
                             size='xs'
                             circle
                             solid
-                            appearance='info'
+                            appearance='primary'
                         />
                     )}
                 </div>

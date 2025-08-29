@@ -1,5 +1,3 @@
-import { PolarisBadgeAppearance } from '../Badge/badge.types';
-
 export interface AvatarProps {
     // Size of the avatar
     size?:
@@ -32,6 +30,7 @@ export interface AvatarProps {
         | 'polaris-error'
         | 'polaris-secondary'
         | 'polaris-orange'
+        | 'orange'
         | 'success';
     // Icon component to be displayed in the avatar
     icon?: any;

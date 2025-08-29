@@ -85,6 +85,8 @@ export const Avatar = ({
                 color === 'vendor' && !randomBg && !imageLoaded,
             'bg-info text-info-content':
                 color === 'info' && !randomBg && !imageLoaded,
+            'bg-[#ff703c] text-white':
+                color === 'orange' && !randomBg && !imageLoaded,
             'bg-warning text-warning-content':
                 color === 'warning' && !randomBg && !imageLoaded,
             'bg-success text-success-content':
