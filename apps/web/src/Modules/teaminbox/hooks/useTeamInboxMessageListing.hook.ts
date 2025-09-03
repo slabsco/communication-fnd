@@ -3,17 +3,23 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
     FetchData,
     GetObjectFromArray,
+    IsUndefinedOrNull,
     Navigation,
     StoreEvent,
     SubscribeToEvent,
     TEAM_INBOX_LISTING_REFETCH,
     TEAM_INBOX_SPLIT_LIST,
+    UnsubscribeEvent,
     useFetchParams,
 } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import { useFilterContext } from '@finnoto/design-system';
 
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+
+import { NEW_MESSAGE_RECEIVED_SOCKET_EVENT } from '../../../Constants/socket.constant';
+import { useSocket } from '../../../Utils/socket/socket.context.main';
+import { playNotificationSound } from './useNotificationSound.hook';
 
 export const TeamInboxTabFilter = [
     {
@@ -36,6 +42,7 @@ export const useTeamInboxMessageListing = () => {
     const { id: teamInboxId } = useFetchParams();
 
     const { filterData, queryString } = useFilterContext();
+    const { subscribeEvent, unsubscribeEvent } = useSocket();
 
     const tabFilter = useMemo(() => queryString['tab'] || 'All', [queryString]);
 
@@ -106,11 +113,18 @@ export const useTeamInboxMessageListing = () => {
         return data?.pages.flatMap((page) => page.data) ?? [];
     }, [data?.pages]);
 
-    const fetchMessage = useCallback(() => {
-        queryClient.invalidateQueries({
-            queryKey: client_key,
-        });
-    }, [client_key, queryClient]);
+    const fetchMessage = useCallback(
+        (data?: any) => {
+            if (!IsUndefinedOrNull(data) && data?.id !== +teamInboxId) {
+                playNotificationSound();
+            }
+
+            queryClient.invalidateQueries({
+                queryKey: client_key,
+            });
+        },
+        [client_key, queryClient, teamInboxId]
+    );
 
     useEffect(() => {
         if (!teamInboxId && flatData?.length > 0) {
@@ -132,17 +146,19 @@ export const useTeamInboxMessageListing = () => {
     }, [fetchMessage, flatData]);
 
     useEffect(() => {
+        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, fetchMessage);
         SubscribeToEvent({
             eventName: TEAM_INBOX_LISTING_REFETCH,
             callback: fetchMessage,
         });
         return () => {
-            SubscribeToEvent({
+            UnsubscribeEvent({
                 eventName: TEAM_INBOX_LISTING_REFETCH,
                 callback: fetchMessage,
             });
+            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
         };
-    }, [fetchMessage]);
+    }, [fetchMessage, subscribeEvent, unsubscribeEvent]);
 
     return {
         flatData,
