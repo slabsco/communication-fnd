@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, {
     createContext,
     useCallback,
@@ -7,10 +8,17 @@ import React, {
 } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-import { ACCESS_TOKEN, GetItem, UserBusiness } from '@finnoto/core';
+import {
+    ACCESS_TOKEN,
+    GetItem,
+    Navigation,
+    TEAM_INBOX_SPLIT_LIST,
+    UserBusiness,
+} from '@finnoto/core';
+import { Toast } from '@finnoto/design-system';
 
 import { NEW_MESSAGE_RECEIVED_SOCKET_EVENT } from '../../Constants/socket.constant';
-import { RefetchTeamInboxListing } from '../../Modules/teaminbox/hooks/useTeamInboxMessageListing.hook';
+import { playNotificationSound } from '../../Modules/teaminbox/hooks/useNotificationSound.hook';
 
 interface SocketContextType {
     subscribeEvent: (event: string, callback: (...args: any[]) => void) => void;
@@ -28,6 +36,7 @@ interface SocketProviderProps {
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const socketRef = useRef<Socket | null>(null);
+    const { asPath } = useRouter();
 
     const SOCKET_SERVER_URL = UserBusiness.getBusinessAPIUrl();
 
@@ -97,28 +106,36 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         socketRef.current?.off(event);
     };
 
-    useEffect(() => {
-        const handler = (...args: any[]) => {
-            console.log(
-                `[Socket Event Received]: ${NEW_MESSAGE_RECEIVED_SOCKET_EVENT}`,
-                ...args
-            );
-            RefetchTeamInboxListing();
-        };
-
-        socketRef.current?.on(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, handler);
-
-        return () => {
-            socketRef.current?.off(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, handler);
-        };
-    }, []);
-
     const subscribeEvent = useCallback(
         (event: string, callback: (...args: any[]) => void) => {
             return socketRef.current?.on(event, callback);
         },
         []
     );
+
+    useEffect(() => {
+        subscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT, (data: any) => {
+            if (asPath.includes(TEAM_INBOX_SPLIT_LIST)) return;
+
+            playNotificationSound();
+            Toast.info({
+                delay: 5,
+                onClick: () => {
+                    Navigation.navigate({
+                        url: `${TEAM_INBOX_SPLIT_LIST}/${data?.id}`,
+                    });
+                },
+                title: 'New Message Received!',
+                description: `${
+                    data?.contact?.name || 'Someone'
+                } sent a message!`,
+            });
+        });
+
+        return () => {
+            unsubscribeEvent(NEW_MESSAGE_RECEIVED_SOCKET_EVENT);
+        };
+    }, [asPath, subscribeEvent]);
 
     return (
         <SocketContext.Provider

@@ -54,7 +54,15 @@ export const TeamInboxProvider = ({
             callback: refetch,
         });
 
-        () => {
+        let interval: NodeJS.Timeout | null = null;
+        if (teamInboxId) {
+            interval = setInterval(() => {
+                refetch();
+            }, 10000); // 10 seconds
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
             SubscribeToEvent({
                 eventName: TEAM_INBOX_DETAIL_REFETCH,
                 callback: refetch,
