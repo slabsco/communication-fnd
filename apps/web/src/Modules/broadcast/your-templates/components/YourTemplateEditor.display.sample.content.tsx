@@ -22,7 +22,7 @@ const YourTemplateEditorDisplaySampleContent = ({
         const titleVar = getVariableParamsFromString(title?.value);
         const bodyVar = getVariableParamsFromString(body);
 
-        return [...titleVar, ...bodyVar];
+        return Array.from(new Set([...titleVar, ...bodyVar]));
     }, [title, body]);
 
     if (IsEmptyArray(variables)) return <></>;

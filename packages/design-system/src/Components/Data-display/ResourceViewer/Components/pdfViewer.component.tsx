@@ -107,3 +107,22 @@ export const PdfViewer = ({
         </div>
     );
 };
+
+export const RenderPdfDocument = ({
+    url,
+    className,
+}: {
+    url: string;
+    className: string;
+}) => {
+    return (
+        <div
+            className={cn(
+                'flex overflow-hidden justify-center items-center h-[300px] w-[300px]',
+                className
+            )}
+        >
+            <iframe src={url} width='100%' height='100%' />
+        </div>
+    );
+};
