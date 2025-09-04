@@ -1,3 +1,5 @@
+import { useEffectOnce } from 'react-use';
+
 import {
     Navigation,
     ObjectDto,
@@ -23,10 +25,11 @@ import { CopySvgIcon, DeleteSvgIcon, EditSvgIcon } from 'assets';
 const YourTemplatesListModule = () => {
     const { deleteTemplate } = useHandleTemplate();
 
-    useRecursiveFetch(RefetchGenericListing, {
+    const [trigger] = useRecursiveFetch(RefetchGenericListing, {
         delay: 1000,
         repeat: Infinity,
     });
+
     const props: GenericDocumentListingProps = {
         type: 'communication_template',
         name: 'Your Template List',
@@ -144,6 +147,10 @@ const YourTemplatesListModule = () => {
             },
         ],
     };
+
+    useEffectOnce(() => {
+        trigger();
+    });
     return <GenericDocumentListingComponent {...props} />;
 };
 
