@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 import {
+    cn,
     InputField,
     IsUndefinedOrNull,
     RadioGroup,
@@ -32,9 +33,7 @@ const YourTemplateEditorBroadcast = ({
                     value={value?.type}
                     onChange={(value: any) => {
                         setValue({ type: value, value: '' });
-
-                        if (value === 0)
-                            getCurrentValue({ type: 'none', value: '' });
+                        getCurrentValue({ type: 'none', value: undefined });
                     }}
                     options={[
                         { label: 'None', value: 0 },
@@ -86,7 +85,12 @@ const RenderTitleField = ({
                 />
             );
         case 'document':
-            return <RenderDocumentField onValueChange={onValueChange} />;
+            return (
+                <RenderDocumentField
+                    defaultValue={value?.value}
+                    onValueChange={onValueChange}
+                />
+            );
         default:
             break;
     }
@@ -103,7 +107,7 @@ const RenderImageField = ({
 
     return (
         <div className='mt-3'>
-            {!IsUndefinedOrNull(file) && (
+            {file ? (
                 <div>
                     <Image
                         src={defaultValue || file?.link}
@@ -112,84 +116,97 @@ const RenderImageField = ({
                         alt='uploaded'
                     />
                 </div>
-            )}
+            ) : (
+                <div className='flex gap-7 items-start mt-3'>
+                    <div className='flex flex-col flex-1'>
+                        <InputField
+                            onChange={(e) => {
+                                const value = e;
+                                if (!value.length)
+                                    return onValueChange({
+                                        type: 'image',
+                                        value: file?.link,
+                                    });
+                                onValueChange({ type: 'image', value: value });
+                            }}
+                            defaultValue={defaultValue}
+                            placeholder='Add the image url'
+                        />
 
-            <div className='flex gap-7 items-start mt-3'>
-                <div className='flex flex-col flex-1'>
-                    <InputField
-                        onChange={(e) => {
-                            const value = e;
-                            if (!value.length)
-                                return onValueChange({
-                                    type: 'image',
-                                    value: file?.link,
-                                });
-                            onValueChange({ type: 'image', value: value });
-                        }}
-                        defaultValue={defaultValue}
-                        placeholder='Add the image url'
-                    />
-
-                    <p className='mt-2 text-sm'>
+                        {/* <p className='mt-2 text-sm'>
                         To add a variable, use the format{' '}
                         <strong> {'{{image_url}}'}</strong>.
-                    </p>
+                    </p> */}
+                    </div>
+                    <span>Or</span>
+                    <FileUploaderComponent
+                        accepts={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}
+                        onFileUploadDone={(data) => {
+                            setFile(data);
+                            onValueChange({ type: 'image', value: data?.link });
+                        }}
+                    />
                 </div>
-                <span>Or</span>
-                <FileUploaderComponent
-                    accepts={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}
-                    onFileUploadDone={(data) => {
-                        setFile(data);
-                        onValueChange({ type: 'image', value: data?.link });
-                    }}
-                />
-            </div>
+            )}
         </div>
     );
 };
 
 const RenderDocumentField = ({
     onValueChange,
+    defaultValue,
 }: {
     onValueChange: (data: any) => void;
+    defaultValue: string;
 }) => {
-    const [file, setFile] = useState<any>(undefined);
+    const [file, setFile] = useState<any>();
+
     return (
         <div className='mt-3'>
-            {!IsUndefinedOrNull(file) && (
-                <div className='overflow-hidden w-60 h-60 border'>
-                    <PdfViewer url={file?.link} />
-                </div>
-            )}
-
-            <div className='flex gap-7 items-start mt-3'>
-                <div className='flex flex-col flex-1'>
-                    <InputField
-                        onChange={(e) => {
-                            const value = e;
-                            if (!value.length)
-                                return onValueChange({
-                                    type: 'document',
-                                    value: file?.link,
-                                });
-                            onValueChange({ type: 'document', value: value });
-                        }}
-                        placeholder='Add the PDF/Document Url'
+            {file || defaultValue ? (
+                <div className='h-[300px] w-[300px] overflow-hidden flex items-center justify-center'>
+                    <iframe
+                        src={file?.link || defaultValue}
+                        width='100%'
+                        height='100%'
                     />
-                    <p className='mt-2 text-sm'>
+                </div>
+            ) : (
+                <div className='flex gap-7 items-start mt-3'>
+                    <div className='flex flex-col flex-1'>
+                        <InputField
+                            onChange={(e) => {
+                                const value = e;
+                                if (!value.length)
+                                    return onValueChange({
+                                        type: 'document',
+                                        value: file?.link,
+                                    });
+                                onValueChange({
+                                    type: 'document',
+                                    value: value,
+                                });
+                            }}
+                            placeholder='Add the PDF/Document Url'
+                        />
+                        {/* <p className='mt-2 text-sm'>
                         To add a variable, use the format{' '}
                         <strong> {'{{document_url}}'}</strong>.
-                    </p>
+                    </p> */}
+                    </div>
+                    <span>Or</span>
+                    <FileUploaderComponent
+                        accepts={{ 'application/pdf': ['.pdf'] }}
+                        onFileUploadDone={(data) => {
+                            setFile(data);
+                            onValueChange({
+                                type: 'document',
+                                value: data?.link,
+                            });
+                        }}
+                    />
                 </div>
-                <span>Or</span>
-                <FileUploaderComponent
-                    accepts={{ 'application/pdf': ['.pdf'] }}
-                    onFileUploadDone={(data) => {
-                        setFile(data);
-                        onValueChange({ type: 'document', value: data?.link });
-                    }}
-                />
-            </div>
+            )}
         </div>
     );
 };

@@ -14,7 +14,10 @@ import {
     replaceVariablesInString,
 } from '@finnoto/core';
 import { cn } from '@finnoto/design-system';
-import { PdfViewer } from '@finnoto/design-system/src/Components/Data-display/ResourceViewer/Components/pdfViewer.component';
+import {
+    PdfViewer,
+    RenderPdfDocument,
+} from '@finnoto/design-system/src/Components/Data-display/ResourceViewer/Components/pdfViewer.component';
 
 import { BUTTON_CONFIG_TYPE } from '../enums/whatsapp.template.category.enum';
 import { YOUR_TEMPLATE_SUPPORTED_CONFIG } from './YourTemplateEditor.button.component';
@@ -130,8 +133,8 @@ export const MessageSectionPreview = ({
         }
         if (type === 'document') {
             return (
-                <div className='overflow-hidden w-60 h-60 border'>
-                    <PdfViewer url={value} />
+                <div className='overflow-hidden w-full h-60 border'>
+                    <RenderPdfDocument url={value} className='w-full h-full' />
                 </div>
             );
         }

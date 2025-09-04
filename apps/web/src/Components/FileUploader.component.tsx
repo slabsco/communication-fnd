@@ -58,7 +58,7 @@ const FileUploaderComponent = ({
         <div {...getRootProps()}>
             <input {...getInputProps()} />
             <Button appearance={'primary'} outline>
-                Upload Image
+                Upload
             </Button>
         </div>
     );

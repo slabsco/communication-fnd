@@ -32,9 +32,10 @@ const YourTemplateEditor = forwardRef(
         ref
     ) => {
         const [title, setTitle] = useState<any>({
-            type: defaultValues?.title?.type || 'text',
-            value: defaultValues?.title?.value || '',
+            type: defaultValues?.title?.type,
+            value: defaultValues?.title?.value,
         });
+
         const [sampleContent, setSampleContent] = useState<any>(
             defaultValues?.sample_contents || {}
         );

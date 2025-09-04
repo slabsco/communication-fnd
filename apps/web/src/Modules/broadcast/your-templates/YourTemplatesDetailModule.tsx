@@ -37,12 +37,14 @@ const YourTemplatesDetailModule = () => {
 
         const log = response?.log || response?.logs;
         const last = log?.length;
-        const error = log?.[last - 1]?.response?.error;
+        const error =
+            log?.[last - 1]?.response?.error ||
+            log?.[last - 1]?.webhook_response?.value?.reason;
         if (!error) return;
 
         Toast.error({
-            title: error?.error_user_title,
-            description: error?.error_user_msg,
+            title: error?.error_user_title || error,
+            description: error?.error_user_msg || error,
             position: 'top-center',
             progress: 1,
             closeButton: true,
