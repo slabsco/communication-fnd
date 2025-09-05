@@ -40,13 +40,13 @@ const girdMapping: any = {
 
 const TeamInboxModuleDetail = () => {
     return (
-        <Container>
+        <TeamInboxContainer>
             <TeamInboxBody />
-        </Container>
+        </TeamInboxContainer>
     );
 };
 
-const TeamInboxBody = () => {
+export const TeamInboxBody = () => {
     const { id: teamInboxId } = useFetchParams();
     const { toggleInboxPanel, isLeftPanelOpen, isRightPanelOpen } =
         useTeamInboxUi();
@@ -122,7 +122,7 @@ const TeamInboxBody = () => {
 
 export default TeamInboxModuleDetail;
 
-const Container = ({ children }: { children: ReactNode }) => {
+export const TeamInboxContainer = ({ children }: { children: ReactNode }) => {
     return (
         <FilterProvider
             name={'Team Inbox'}

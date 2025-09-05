@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
@@ -8,7 +9,6 @@ import {
     UnsubscribeEvent,
     useFetchParams,
     useQueryClient,
-    useRecursiveFetch,
 } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 
@@ -16,10 +16,12 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 export const useTeamInboxChatListing = () => {
     const { id: teamInboxId } = useFetchParams();
+    const { asPath } = useRouter();
     const PAGE_LIMIT = 20;
 
     const queryClient = useQueryClient();
     const scrollableDivRef = useRef<HTMLDivElement>(null);
+    const isPreviewChat = asPath.includes('preview-chat');
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
         useInfiniteQuery({
@@ -33,7 +35,7 @@ export const useTeamInboxChatListing = () => {
 
                 const { success, response } = await FetchData({
                     className: TeamInboxController,
-                    method: 'messages',
+                    method: isPreviewChat ? 'previewChat' : 'messages',
                     methodParams: +teamInboxId,
                     classParams: filters,
                 });

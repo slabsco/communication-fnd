@@ -1,6 +1,3 @@
-import { id } from 'date-fns/locale';
-
-import { BaseModel } from '../../../Models/base.models';
 import { CommentDocumentController } from '../../common/controllers/comment.document.controller';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
 import {
@@ -51,6 +48,13 @@ export class TeamInboxController extends CommentDocumentController {
     async show(id: number) {
         this.api = `${this.endPoint}/${id}`;
         return this.get();
+    }
+
+    async previewChat(id: number) {
+        this.api = `${this.endPoint}/${id}/preview-chat`;
+        this.bodyDto = CommonListFilterDto;
+
+        return this.post();
     }
 
     async create() {
