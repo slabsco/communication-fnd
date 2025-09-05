@@ -252,7 +252,7 @@ export const AuthProvider = ({ children }: any) => {
                         className='p-8 max-w-md text-center bg-white rounded-lg shadow-lg opacity-0 transition-opacity duration-500'
                         style={{
                             animation: 'fadeIn 0.5s forwards',
-                            animationDelay: '1s',
+                            animationDelay: '10s',
                         }}
                     >
                         <svg
@@ -270,10 +270,11 @@ export const AuthProvider = ({ children }: any) => {
                             />
                         </svg>
                         <h2 className='mt-6 text-2xl font-bold text-gray-800'>
-                            Access Denied
+                            Something Went Wrong
                         </h2>
                         <p className='mt-2 text-gray-600'>
-                            You don&apos;t have permission to access this page.
+                            You don&apos;t have permission to access this page
+                            or your internet is unstable
                         </p>
                         <p className='mt-2 text-gray-600'>
                             Please contact your administrator if you believe

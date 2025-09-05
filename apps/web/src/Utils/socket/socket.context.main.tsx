@@ -119,7 +119,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
             playNotificationSound();
             Toast.info({
-                delay: 5,
+                delay: 2,
                 onClick: () => {
                     Navigation.navigate({
                         url: `${TEAM_INBOX_SPLIT_LIST}/${data?.id}`,
