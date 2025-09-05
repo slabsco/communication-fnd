@@ -49,6 +49,10 @@ export class TeamInboxController extends CommentDocumentController {
         this.api = `${this.endPoint}/${id}`;
         return this.get();
     }
+    async showMobile(id: number) {
+        this.api = `${this.endPoint}/${id}/mobile`;
+        return this.get();
+    }
 
     async previewChat(id: number) {
         this.api = `${this.endPoint}/${id}/preview-chat`;

@@ -14,14 +14,16 @@ import { TeamInboxController } from '@finnoto/core/src/backend/communication/con
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 
+export const isPreviewChat = () =>
+    typeof window !== 'undefined' &&
+    window.location.pathname.includes('preview-chat');
+
 export const useTeamInboxChatListing = () => {
     const { id: teamInboxId } = useFetchParams();
-    const { asPath } = useRouter();
     const PAGE_LIMIT = 20;
 
     const queryClient = useQueryClient();
     const scrollableDivRef = useRef<HTMLDivElement>(null);
-    const isPreviewChat = asPath.includes('preview-chat');
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
         useInfiniteQuery({
@@ -35,7 +37,7 @@ export const useTeamInboxChatListing = () => {
 
                 const { success, response } = await FetchData({
                     className: TeamInboxController,
-                    method: isPreviewChat ? 'previewChat' : 'messages',
+                    method: isPreviewChat() ? 'previewChat' : 'messages',
                     methodParams: +teamInboxId,
                     classParams: filters,
                 });

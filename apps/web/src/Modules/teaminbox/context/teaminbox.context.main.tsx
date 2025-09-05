@@ -11,6 +11,8 @@ import { TeamInboxController } from '@finnoto/core/src/backend/communication/con
 
 import { useQuery } from '@tanstack/react-query';
 
+import { isPreviewChat } from '../hooks/useTeaminboxChatListing.hook';
+
 interface TeamInboxContextType {
     teamInboxId?: number;
     currentInboxDetail?: any;
@@ -39,7 +41,7 @@ export const TeamInboxProvider = ({
         queryFn: async () => {
             const { success, response } = await FetchData({
                 className: TeamInboxController,
-                method: 'show',
+                method: isPreviewChat() ? 'showMobile' : 'show',
                 methodParams: teamInboxId,
             });
 
