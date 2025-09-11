@@ -111,19 +111,19 @@ const WebhookConfigModule = () => {
                         ]}
                         rowAction={{
                             menuActions: [
-                                {
-                                    name: 'Edit',
-                                    type: 'outer',
-                                    icon: EditSvgIcon,
-                                    action: (rowData) => {
-                                        openAddWebhook({
-                                            initValues: rowData,
-                                        });
-                                    },
-                                },
+                                // {
+                                //     name: 'Edit',
+                                //     type: 'outer',
+                                //     icon: EditSvgIcon,
+                                //     action: (rowData) => {
+                                //         openAddWebhook({
+                                //             initValues: rowData,
+                                //         });
+                                //     },
+                                // },
                                 {
                                     name: 'Delete',
-                                    type: 'inner',
+                                    type: 'outer',
                                     icon: DeleteSvgIcon,
                                     isCancel: true,
                                     action: (rowData) => {
