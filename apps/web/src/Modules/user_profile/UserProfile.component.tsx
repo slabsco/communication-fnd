@@ -260,14 +260,21 @@ const UserProfile = () => {
                                                     {user?.mobile}
                                                 </>
                                             ) : (
-                                                <span
-                                                    className='link link-hover'
-                                                    onClick={() => {
-                                                        openProfileMobileVerify();
-                                                    }}
-                                                >
-                                                    +Add Mobile Number
-                                                </span>
+                                                <div className='flex flex-col gap-1'>
+                                                    <span
+                                                        className='link link-hover'
+                                                        onClick={() => {
+                                                            openProfileMobileVerify();
+                                                        }}
+                                                    >
+                                                        +Add Mobile Number
+                                                    </span>
+                                                    <span className='text-xs animate-pulse text-warning'>
+                                                        ⚠️ Mobile number is
+                                                        required for account
+                                                        verification
+                                                    </span>
+                                                </div>
                                             )}
                                         </div>
                                     ),

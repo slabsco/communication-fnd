@@ -1,4 +1,4 @@
-import { AlertCircle, User2Icon } from 'lucide-react';
+import { AlertCircle, AlertTriangle, User2Icon } from 'lucide-react';
 import Link from 'next/link';
 
 import {
@@ -6,6 +6,7 @@ import {
     getBusinessErrors,
     IsEmptyArray,
     useBusinessPreference,
+    USER_PROFILE_ROUTE,
     UserBusiness,
 } from '@finnoto/core';
 import {
@@ -301,17 +302,40 @@ const EditForm = ({
     );
 };
 
-export const RenderBusinessError = ({ businessInfo }: any) => {
+export const RenderBusinessError = ({ businessInfo, user }: any) => {
     const errors = getBusinessErrors(businessInfo);
 
-    if (IsEmptyArray(errors)) return <></>;
-    return errors.map((item, index) => (
-        <BusinessErrorCard
-            key={index}
-            entityType={item.entity_type}
-            errors={item.errors}
-        />
-    ));
+    if (!IsEmptyArray(errors)) {
+        return errors.map((item, index) => (
+            <BusinessErrorCard
+                key={index}
+                entityType={item.entity_type}
+                errors={item.errors}
+            />
+        ));
+    }
+
+    if (!user?.mobile) {
+        return (
+            <div className='flex flex-col items-start p-4 w-full max-w-lg bg-white rounded-lg backdrop-blur-md'>
+                <div className='flex items-center space-x-3'>
+                    <AlertTriangle className='text-yellow-500' size={34} />
+                    <p className='font-semibold text-gray-900'>
+                        Your phone number is not currently configured in your
+                        account. Please update your mobile number to ensure
+                        proper account verification and access to all features.
+                    </p>
+                </div>
+                <Link href={USER_PROFILE_ROUTE}>
+                    <Button className='px-4 py-2 mt-4 font-semibold text-white bg-green-600 rounded-lg transition hover:bg-green-700'>
+                        Update Mobile Number
+                    </Button>
+                </Link>
+            </div>
+        );
+    }
+
+    return <></>;
 };
 const BusinessErrorCard = ({ entityType, errors }) => {
     if (entityType?.toLowerCase() === 'business') return <></>;
