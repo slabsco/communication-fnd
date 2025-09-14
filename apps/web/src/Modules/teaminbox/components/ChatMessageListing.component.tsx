@@ -163,7 +163,7 @@ const CardMainContent = ({ data }: any) => {
                         })}
                     >
                         {FormatDisplayDateStyled({
-                            value: data?.last_activity_at,
+                            value: data?.last_activity_at || data?.created_at,
                         })}
                     </span>
                 </div>

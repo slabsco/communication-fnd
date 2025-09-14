@@ -142,7 +142,10 @@ const getExpirationDate = (data: any) => {
     return {
         label: 'Chat Expires At',
         value: FormatDisplayDateStyled({
-            value: addHours(new Date(data?.last_activity_at), 23) as any,
+            value: addHours(
+                new Date(data?.last_activity_at || data?.created_at),
+                23
+            ) as any,
         }),
     };
 };
