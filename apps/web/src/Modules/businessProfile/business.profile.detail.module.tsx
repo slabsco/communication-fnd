@@ -100,6 +100,12 @@ const BusinessProfileDetailModule = () => {
                             title: 'Whatsapp Info',
                             component: <BusinessProfileWhatsappInfoTab />,
                         },
+                        // {
+                        //     key: 'business_setting',
+                        //     icon: ArcSettingsSvgIcon,
+                        //     title: 'Settings',
+                        //     component: <BusinessSettings />,
+                        // },
                     ]}
                 />
             </div>

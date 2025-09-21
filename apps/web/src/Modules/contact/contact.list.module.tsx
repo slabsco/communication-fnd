@@ -65,7 +65,7 @@ const ContactListModule = () => {
                     );
                 },
             },
-            { name: 'WA ID', key: 'wa_id' },
+            // { name: 'WA ID', key: 'wa_id' },
             { name: 'Managed By', key: 'manager' },
             {
                 name: 'Bot Mode',
