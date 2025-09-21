@@ -43,6 +43,12 @@ const AddContactForm = ({
             label: 'Name',
             required: true,
         },
+        identifier: {
+            type: 'text',
+            placeholder: 'example-identifier111',
+            label: 'identifier',
+            required: false,
+        },
         dialing_code: {
             type: 'number',
             placeholder: 'Enter Dial Code',
@@ -99,6 +105,7 @@ const AddContactForm = ({
             mobile: initial_data?.mobile,
             managed_by: initial_data?.managed_by,
             dialing_code: initial_data?.dialing_code,
+            identifier: initial_data?.identifier,
         },
         onSubmit,
     });
@@ -111,6 +118,7 @@ const AddContactForm = ({
         <ModalContainer title='Add Contact'>
             <ModalBody className='flex-1 gap-2 col-flex'>
                 {renderFormFields('name')}
+                {renderFormFields('identifier')}
 
                 {renderFormFields('dialing_code')}
                 {renderFormFields('mobile')}

@@ -297,6 +297,38 @@ const ChatInfoSection = ({
         </CardComponent>
     );
 };
+const ChatIdentifierSection = ({
+    data,
+    compress = false,
+}: {
+    data: any;
+    compress?: boolean;
+}) => {
+    const mode = DISPLAY_MODES[compress ? 'compress' : 'normal'];
+    const CardComponent = mode.cardComponent;
+
+    const identifier = data?.contact?.identifier;
+
+    return (
+        <CardComponent
+            icon={<MessageCircle size={mode.iconSize} />}
+            title={'Identifier'}
+        >
+            {compress ? (
+                <span>{identifier}</span>
+            ) : (
+                <div className='flex flex-col gap-2'>
+                    <div>
+                        <label className='text-xs text-gray-500'>
+                            {'Identifier'}
+                        </label>
+                        <div className='font-medium'>{identifier}</div>
+                    </div>
+                </div>
+            )}
+        </CardComponent>
+    );
+};
 
 const CustomAttributesSection = ({
     data,
@@ -445,6 +477,8 @@ export const RightSection = ({
     const { currentInboxDetail: data, isLoading } = useTeamInbox();
     const mode = DISPLAY_MODES[compress ? 'compress' : 'normal'];
 
+    const identifier = data?.contact?.identifier;
+
     useEffectOnce(() => {
         RefetchTeamInboxDetail();
     });
@@ -475,6 +509,10 @@ export const RightSection = ({
                         <AssigneeSection data={data} compress={compress} />
                         <BotSection data={data} compress={compress} />
                         <ChatInfoSection data={data} compress={compress} />
+                        <ChatIdentifierSection
+                            data={data}
+                            compress={compress}
+                        />
                     </div>
 
                     <CustomAttributesSection data={data} compress={compress} />

@@ -10,6 +10,11 @@ export class AddContactDto extends IdPayloadDto {
 
     @Expose()
     @IsString()
+    @IsOptional()
+    identifier?: string;
+
+    @Expose()
+    @IsString()
     @IsNotEmpty()
     mobile: string;
 
