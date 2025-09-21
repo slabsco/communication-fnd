@@ -308,6 +308,7 @@ const ChatIdentifierSection = ({
     const CardComponent = mode.cardComponent;
 
     const identifier = data?.contact?.identifier;
+    if (!identifier) return <></>;
 
     return (
         <CardComponent
