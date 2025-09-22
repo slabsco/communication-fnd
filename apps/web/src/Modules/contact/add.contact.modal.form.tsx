@@ -82,9 +82,9 @@ const AddContactForm = ({
             classParams: {
                 id: initial_data?.id,
                 ...values,
-                custom_attributes: attributes?.map((obj) => {
-                    if (obj?.key) return obj;
-                }),
+                custom_attributes: attributes
+                    ?.filter((obj) => obj && obj.key) // remove empty entries
+                    ?.map((obj) => ({ key: obj.key, value: obj.value })),
             },
         });
 
@@ -129,7 +129,7 @@ const AddContactForm = ({
                         {attributes.map((att, index) => {
                             return (
                                 <div
-                                    key={att.key}
+                                    key={att?.key}
                                     className='relative gap-1 p-2 rounded border col-flex bg-base-300'
                                 >
                                     <IconButton
