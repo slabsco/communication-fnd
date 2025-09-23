@@ -1,14 +1,16 @@
-import { useRouter } from 'next/router';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
     FetchData,
+    GetItem,
     StoreEvent,
     SubscribeToEvent,
     TEAM_INBOX_CHAT_REFETCH,
     UnsubscribeEvent,
     useFetchParams,
     useQueryClient,
+    UserBusiness,
 } from '@finnoto/core';
 import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 
@@ -67,19 +69,35 @@ export const useTeamInboxChatListing = () => {
             queryKey: ['team_inbox_message_list', +teamInboxId],
         });
     }, [queryClient, teamInboxId]);
-    // Fetch every 1 second
-    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        if (flatData) {
-            intervalRef.current = setInterval(() => {
-                fetchMessage();
-            }, 1000);
-        }
-        return () => {
-            if (intervalRef.current) clearInterval(intervalRef.current);
+        const businessUrl = UserBusiness.getBusinessAPIUrl();
+        const token = GetItem('ACCESS_TOKEN', false);
+
+        const es = new EventSourcePolyfill(
+            `${businessUrl}api/b/messages/stream/${teamInboxId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        es.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log({ event: data });
+
+            if (data?.event === 'message_received') return fetchMessage();
         };
-    }, [flatData, fetchMessage]);
+
+        es.onerror = (err: any) => {
+            if (es.readyState === 2) return;
+        };
+
+        return () => {
+            es.close();
+        };
+    }, [fetchMessage, teamInboxId]);
 
     useEffect(() => {
         SubscribeToEvent({

@@ -60,7 +60,7 @@ export const TeamInboxProvider = ({
         if (teamInboxId) {
             interval = setInterval(() => {
                 refetch();
-            }, 10000); // 10 seconds
+            }, 20000);
         }
 
         return () => {
