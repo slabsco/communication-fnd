@@ -32,7 +32,7 @@ import { EyeSvgIcon } from 'assets';
 
 const ScheduleBroadcastDetailModule = () => {
     const { id } = useFetchParams();
-    const { data } = useScheduleBroadCastDetail(id);
+    const { data, remainingTimeForSending } = useScheduleBroadCastDetail(id);
 
     const { user } = useUserHook();
 
@@ -94,25 +94,28 @@ const ScheduleBroadcastDetailModule = () => {
     ];
 
     const enableEdit = useMemo(() => {
-        if (!data?.schedule_at) return false;
-
-        const scheduleTime = new Date(data.schedule_at);
-        const now = new Date();
-
-        const diffMs = scheduleTime.getTime() - now.getTime();
-        const diffMin = diffMs / (1000 * 60);
-
-        return diffMin < 5;
-    }, [data?.schedule_at]);
+        const time = remainingTimeForSending;
+        return time > 120; // Enable edit if more than 3 minutes (180 seconds) remain
+    }, [remainingTimeForSending]);
 
     const isActive = useMemo(() => {
         if (data?.completed_at) return false;
-        const hasTemMinPassed =
-            addMinutes(new Date(data?.created_at), 10) < new Date();
-        if (hasTemMinPassed) return false;
+        if (enableEdit) return false;
 
-        return true;
-    }, [data]);
+        // Make active if schedule_at is within 1 minute before or 2 minutes after now
+        const now = new Date();
+        const scheduleAtRaw = data?.scheduled_at;
+        if (!scheduleAtRaw) return false;
+
+        const scheduleAt = new Date(scheduleAtRaw);
+        if (isNaN(scheduleAt.getTime())) return false;
+
+        const diffSeconds = (scheduleAt.getTime() - now.getTime()) / 1000;
+        if (diffSeconds <= 60 && diffSeconds >= -120) return true;
+
+        return false;
+    }, [data?.completed_at, data?.scheduled_at, enableEdit]);
+
     return (
         <Container
             className={cn('flex flex-col p-6 mx-auto space-y-2', {
