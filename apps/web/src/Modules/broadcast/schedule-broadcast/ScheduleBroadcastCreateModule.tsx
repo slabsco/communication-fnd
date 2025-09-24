@@ -79,7 +79,6 @@ const DetailPage = ({ initialData }: any) => {
             required: false,
         },
         template_id: {
-            autoSelectZeroth: true,
             type: 'reference_select',
             controller: CommunicationTemplateController,
             label: 'Template',

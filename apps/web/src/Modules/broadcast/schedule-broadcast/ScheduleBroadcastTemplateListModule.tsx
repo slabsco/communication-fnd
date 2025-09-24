@@ -14,6 +14,7 @@ import { ConfirmUtil, Modal } from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../../Components/GenericDocumentListing/genericDocumentListing.types';
+import { MultiColorBroadcastComponent } from '../multi.color.broadcast.component';
 import { openTemplateViewer } from '../your-templates/components/TemplateViewer.component';
 
 import { DeleteSvgIcon } from 'assets';
@@ -79,6 +80,13 @@ const ScheduleBroadcastTemplateListModule = () => {
             {
                 name: 'Description',
                 key: 'description',
+            },
+            {
+                name: 'Stats',
+                key: 'stats',
+                renderValue: (item) => {
+                    return <MultiColorBroadcastComponent data={item} />;
+                },
             },
             {
                 name: 'Template',

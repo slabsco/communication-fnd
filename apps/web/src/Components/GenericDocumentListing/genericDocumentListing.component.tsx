@@ -42,7 +42,7 @@ import { openCommonKeyValueList } from '@Utils/functions.utils';
 import OuterFilterList from './Components/outerFilter.list.component';
 import { GenericDocumentListingProps } from './genericDocumentListing.types';
 
-import { CalendarSvgIcon } from 'assets';
+import { CalendarSvgIcon, DownloadChartSvgIcon } from 'assets';
 
 const GenericDocumentListing = ({
     name,
@@ -77,7 +77,7 @@ const GenericDocumentListing = ({
     asInnerTable = false,
     renderRightFilterComponent,
     renderRightActionComponent,
-    enableCsvDownload = true,
+    enableCsvDownload = false,
     removeReportDate,
     showOuterDate,
     searchMethodParams,
@@ -558,7 +558,7 @@ const GenericDocumentListing = ({
                             <div className='flex gap-2 items-center'>
                                 {renderRightFilterComponent}
 
-                                {/* {enableDownLoadIcon && (
+                                {enableDownLoadIcon && (
                                     <IconButton
                                         onClick={downloadCsv}
                                         icon={DownloadChartSvgIcon}
@@ -571,7 +571,7 @@ const GenericDocumentListing = ({
                                                 : 'primary'
                                         }
                                     />
-                                )} */}
+                                )}
                             </div>
                         }
                         onSearchChange={(value) => {

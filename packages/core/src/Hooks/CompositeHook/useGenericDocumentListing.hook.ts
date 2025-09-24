@@ -2,11 +2,7 @@ import { endOfYear, format, startOfYear } from 'date-fns';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useUpdateEffect } from 'react-use';
 
-import {
-    IsFunction,
-    sanitizeFilterData,
-    useFilterContext,
-} from '@finnoto/design-system';
+import { IsFunction, Toast, useFilterContext } from '@finnoto/design-system';
 
 import { useQuery } from '@tanstack/react-query';
 
@@ -37,7 +33,6 @@ import {
     UnsubscribeEvent,
 } from '../../Utils/stateManager.utils';
 import { API_DATE_TIME_FORMAT } from '../../Utils/time.utils';
-import { Toast } from '../../Utils/toast.utils';
 import { Functions } from '../../Utils/ui.utils';
 import { FetchData } from '../useFetchData.hook';
 import { useFetchParams } from '../useFetchParams.hook';
@@ -308,10 +303,12 @@ export const useGenericDocumentListing = (
     };
 
     const downloadCsv = async (next) => {
+        const { hide } = Toast.loading({ description: 'Downloading......' });
         const { response, success } = await fetchDocumentList(undefined, {
             format: { csv: true },
             listing_slug: options?.definitionKey,
         });
+        hide();
         if (success) {
             window.open(response?.url, '_blank');
         }

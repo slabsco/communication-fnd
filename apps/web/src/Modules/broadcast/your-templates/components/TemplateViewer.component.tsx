@@ -24,7 +24,7 @@ export const AsyncTemplateViewer = ({
     sample_contents?: any;
     getData?: Function;
 }) => {
-    const { data, isLoading } = useQuery({
+    const { data, isFetching: isLoading } = useQuery({
         queryKey: ['template_detail', id],
         enabled: !IsUndefinedOrNull(id),
         queryFn: async () => {
@@ -49,8 +49,13 @@ export const AsyncTemplateViewer = ({
         return ConvertRawApiDataIntoFormSuitable(data);
     }, [data]);
 
+    if (!isLoading && IsUndefinedOrNull(id)) {
+        return <div className='text-base-100'>No Template is selected</div>;
+    }
     return isLoading ? (
-        <Loading size='xl' />
+        <div className='w-11 h-10 centralize'>
+            <Loading size='xl' color='primary' />
+        </div>
     ) : (
         <>
             <YourTemplatesPreview

@@ -1,6 +1,7 @@
 import { BaseModel } from '../../../Models/base.models';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
 import { ScheduleBroadcastDto } from '../dto/schedule.broadcast.dto';
+import { ScheduleBroadcastListFilterDto } from '../dto/schedule.broadcast.list.filter.dto';
 import { WhatsappTemplateCreationDto } from '../dto/whatsapp.template.dto';
 
 export class ScheduleBroadcastController extends BaseModel {
@@ -15,7 +16,7 @@ export class ScheduleBroadcastController extends BaseModel {
 
     async messages(id: number) {
         this.api = `${this.endPoint}/${id}/messages`;
-        this.bodyDto = CommonListFilterDto;
+        this.bodyDto = ScheduleBroadcastListFilterDto;
 
         return this.post();
     }

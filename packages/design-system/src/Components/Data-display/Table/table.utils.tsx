@@ -148,13 +148,13 @@ export const handleTableItemDisplay = (
                             'text-polaris-text-critical': !data,
                         })}
                     >
-                        {data ? 'Active' : 'Inactive'}
+                        {data ? 'YES' : 'NO'}
                     </p>
                 );
 
             return (
                 <Badge
-                    label={data ? 'Active' : 'Inactive'}
+                    label={data ? 'YES' : 'NO'}
                     appearance={appearance}
                     size='normal'
                     className={cn({

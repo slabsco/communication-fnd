@@ -13,88 +13,45 @@ import React from 'react';
 import {
     FormatDisplayDate,
     HOME_ROUTE,
-    IsUndefinedOrNull,
     Navigation,
     SCHEDULE_BROADCAST_CREATION_ROUTE,
     useFetchParams,
+    USER_PROFILE_ROUTE,
+    useUserHook,
     WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
-import {
-    Badge,
-    Breadcrumbs,
-    Button,
-    cn,
-    Container,
-    Icon,
-    Tooltip,
-} from '@finnoto/design-system';
+import { Breadcrumbs, Button, cn, Container } from '@finnoto/design-system';
 
-import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
-import { getErrorMessageTeamInbox } from '../../teaminbox/utils/teaminbox.utils';
+import GenericDefinitionListing from '../../../Components/GenericDocumentListing/genericDefinitionListing.component';
 import { openTemplateViewer } from '../your-templates/components/TemplateViewer.component';
 import { useScheduleBroadCastDetail } from './hooks/useScheduleBroadcastDetail.hook';
 
-import { ErrorSvgIcon } from 'assets';
+import { EyeSvgIcon } from 'assets';
 
 const ScheduleBroadcastDetailModule = () => {
     const { id } = useFetchParams();
     const { data } = useScheduleBroadCastDetail(id);
-    const columns: any = [
+
+    const { user } = useUserHook();
+
+    const leftMetricData = [
         {
-            name: 'Dialing Code',
-            key: 'dialing_code',
+            key: 'initiated',
+            count: data?.attributes?.initiated,
+            name: 'Initiated',
+            icon: <SendIcon size={16} />,
+            className: 'bg-red-100',
+            isVisible: data?.attributes?.['error'] ?? false,
         },
         {
-            name: 'Mobile',
-            key: 'mobile',
-        },
-        {
-            name: 'Send At',
-            key: 'sent_at',
-            type: 'date_time',
-        },
-        {
-            name: 'Delivered At',
-            key: 'delivered_at',
-            type: 'date_time',
-        },
-        {
-            name: 'Read At',
-            key: 'read_at',
-            type: 'date_time',
-        },
-        {
-            name: 'Success',
-            key: 'is_error',
-            renderValue: (data) => {
-                const isSuccess = !data?.is_error;
-                return (
-                    <div className='flex gap-2 items-center'>
-                        <Badge
-                            label={isSuccess ? 'Success' : 'Error'}
-                            appearance={isSuccess ? 'success' : 'error'}
-                        />
-                        {!isSuccess && (
-                            <Tooltip
-                                asChild
-                                message={getErrorMessageTeamInbox(data)}
-                            >
-                                <div className='cursor-pointer'>
-                                    <Icon
-                                        isSvg
-                                        source={ErrorSvgIcon}
-                                        iconColor='text-error'
-                                    />
-                                </div>
-                            </Tooltip>
-                        )}
-                    </div>
-                );
-            },
+            key: 'total',
+            count: data?.attributes?.total,
+            name: 'Total',
+            icon: <ListIcon size={16} />,
+            className: 'bg-gray-100',
+            isVisible: data?.attributes?.['total'] ?? false,
         },
     ];
-
-    // Define the data object for the MetricCard components
     const metricData = [
         {
             key: 'sent',
@@ -128,14 +85,6 @@ const ScheduleBroadcastDetailModule = () => {
             className: 'bg-red-100',
             isVisible: data?.attributes?.['error'] ?? false,
         },
-        {
-            key: 'total',
-            count: data?.attributes?.total,
-            name: 'Total',
-            icon: <ListIcon size={16} />,
-            className: 'bg-gray-100',
-            isVisible: data?.attributes?.['total'] ?? false,
-        },
     ];
     return (
         <Container className='flex flex-col p-6 mx-auto space-y-2'>
@@ -146,36 +95,63 @@ const ScheduleBroadcastDetailModule = () => {
                         { name: 'Schedule Detail ' },
                     ]}
                 />
-                <Button
-                    appearance={'primary'}
-                    disabled={!IsUndefinedOrNull(data?.initiated_at)}
-                    color={'primary'}
-                    onClick={() => {
-                        Navigation.navigate({
-                            url: `${SCHEDULE_BROADCAST_CREATION_ROUTE}?id=${data.id}`,
-                        });
-                    }}
-                >
-                    Edit Detail
-                </Button>
+                {!data?.initiated_at && (
+                    <Button
+                        appearance={'primary'}
+                        color={'primary'}
+                        onClick={() => {
+                            Navigation.navigate({
+                                url: `${SCHEDULE_BROADCAST_CREATION_ROUTE}?id=${data.id}`,
+                            });
+                        }}
+                    >
+                        Edit Detail
+                    </Button>
+                )}
             </div>
-            <div className='flex flex-wrap gap-2 items-center'>
-                {metricData?.map((metric) => {
-                    if (metric.isVisible === false) return;
-                    return (
-                        <MetricCard
-                            key={metric.key}
-                            count={metric.count}
-                            name={metric.name}
-                            icon={metric.icon}
-                            className={metric.className}
-                        />
-                    );
-                })}
+            <div className='flex justify-between items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
+                    {metricData?.map((metric) => {
+                        if (metric.isVisible === false) return;
+                        return (
+                            <MetricCard
+                                key={metric.key}
+                                count={metric.count}
+                                name={metric.name}
+                                icon={metric.icon}
+                                className={metric.className}
+                            />
+                        );
+                    })}
+                </div>
+                <div className='flex flex-wrap gap-2 items-center'>
+                    {leftMetricData?.map((metric) => {
+                        if (metric.isVisible === false) return;
+                        return (
+                            <MetricCard
+                                key={metric.key}
+                                count={metric.count}
+                                name={metric.name}
+                                icon={metric.icon}
+                                className={metric.className}
+                            />
+                        );
+                    })}
+                </div>
             </div>
             <div className='grid grid-cols-2 gap-3'>
                 <div className='p-3 bg-white rounded transition-all hover:shadow'>
-                    <h3 className='text-lg font-semibold'>Detail</h3>
+                    <div className='flex justify-between items-center'>
+                        <h3 className='text-lg font-semibold'>Detail</h3>
+                        {!user?.mobile_verified_at && (
+                            <Link href={USER_PROFILE_ROUTE}>
+                                <span className='text-xs underline text-error'>
+                                    ⚠️ Set your mobile number to get real time
+                                    updates
+                                </span>
+                            </Link>
+                        )}
+                    </div>
                     <div className='flex flex-col gap-2 p-2 mt-2 border-t'>
                         <DataComponent name={'Name'} value={data?.name} />
                         <DataComponent
@@ -199,12 +175,16 @@ const ScheduleBroadcastDetailModule = () => {
                             value={FormatDisplayDate(data?.initiated_at, true)}
                         />
                         <DataComponent
-                            name='Completed_at'
+                            name='Completed At'
                             value={FormatDisplayDate(data?.completed_at, true)}
                         />
                         <DataComponent
                             name={'Creator'}
-                            value={data?.updator?.name}
+                            value={
+                                <div className='flex gap-2 items-end'>
+                                    {data?.updator?.name}
+                                </div>
+                            }
                         />
                     </div>
                 </div>
@@ -247,23 +227,54 @@ const ScheduleBroadcastDetailModule = () => {
                 </div>
             </div>
             <div className='overflow-hidden flex-1 min-h-[500px]'>
-                <GenericDocumentListingComponent
-                    table={columns}
+                <GenericDefinitionListing
+                    definitionKey='schedule_broadcast_messages'
                     asInnerTable
                     type='schedule_broadcast'
                     searchMethod='messages'
                     searchMethodParams={id}
                     name='Scheduled Broadcast Lists'
                     tableWrapperClassName='overflow-hidden'
+                    tabFilterKey='status'
+                    enableCsvDownload
+                    tabs={[
+                        {
+                            title: 'Sent',
+                            key: 'sent',
+                            customFilterValue: { status: 'sent_at' },
+                        },
+                        {
+                            title: 'Delivered',
+                            key: 'delivered',
+                            customFilterValue: { status: 'delivered_at' },
+                        },
+                        {
+                            title: 'Read',
+                            key: 'read',
+                            customFilterValue: { status: 'read_at' },
+                        },
+                        {
+                            title: 'Error',
+                            key: 'error',
+                            customFilterValue: { is_error: true },
+                        },
+                        {
+                            title: 'Success',
+                            key: 'success',
+                            customFilterValue: { is_error: false },
+                        },
+                    ]}
                     rowActions={[
                         {
                             name: 'Preview',
+                            icon: EyeSvgIcon,
                             action: (data) => {
                                 openTemplateViewer(data?.template_id, {
                                     sample_contents: getSampleContent(data),
                                 });
                             },
                             key: 'preview',
+                            type: 'outer',
                         },
                     ]}
                 />
