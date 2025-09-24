@@ -5,7 +5,6 @@ import {
     LayoutTemplate,
     Link2,
     MessageCircle,
-    MonitorSpeaker,
     Radio,
     UserIcon,
 } from 'lucide-react';
@@ -33,7 +32,6 @@ import {
 } from '@finnoto/design-system';
 import { ChartOptions } from '@finnoto/design-system/src/Components/Data-display/Chart/chart.types';
 
-import DashboardChartLabels from '../../Components/Dashboard/dashboard.chart.labels';
 import {
     arcChartColors,
     customChartOptions,
@@ -234,20 +232,8 @@ const ExpiredActiveCard = () => {
 };
 
 const LastFiveBroadCast = () => {
-    const { data, isLoading } = useFetchReport('broadcast.stats.report.data');
-
-    if (isLoading)
-        return (
-            <div className='centralize h-[400px]'>
-                <Loading color='primary' size='xl' />
-            </div>
-        );
-    if (IsEmptyArray(data))
-        return (
-            <div className='centralize h-[400px]'>
-                <NoDataFound />
-            </div>
-        );
+    const { data } = useFetchReport('broadcast.stats.report.data');
+    if (!data?.length) return <></>;
 
     return (
         <div className='grid grid-cols-2 gap-3'>
