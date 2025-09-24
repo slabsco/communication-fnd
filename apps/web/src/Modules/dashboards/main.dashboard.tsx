@@ -1,10 +1,22 @@
-import { CheckCircle, HeartPulse, Link2, MessageCircle } from 'lucide-react';
+import {
+    CheckCircle,
+    Clock,
+    HeartPulse,
+    LayoutTemplate,
+    Link2,
+    MessageCircle,
+    MonitorSpeaker,
+    Radio,
+    UserIcon,
+} from 'lucide-react';
 import { useMemo } from 'react';
 
 import {
     CopyToClipBoard,
     HOME_ROUTE,
     IsEmptyArray,
+    Navigation,
+    SCHEDULE_BROADCAST_LIST_ROUTE,
     useBusinessPreference,
     useFetchReport,
 } from '@finnoto/core';
@@ -14,6 +26,7 @@ import {
     Chart,
     cn,
     Container,
+    FormatDisplayDateStyled,
     IconButton,
     Loading,
     NoDataFound,
@@ -26,6 +39,7 @@ import {
     customChartOptions,
     customChartTooltip,
 } from '../../Constants/chart-constant/commonChartOption';
+import { MultiColorBroadcastComponent } from '../broadcast/multi.color.broadcast.component';
 
 import { CopySvgIcon } from 'assets';
 
@@ -143,12 +157,10 @@ const MainDashboard = () => {
             </div>
 
             <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
-                <Card title='Broadcast Stats'>
-                    <BroadcastBarGraph />
-                </Card>
                 <Card title='Inbox Stats'>
                     <ExpiredActiveCard />
                 </Card>
+                <LastFiveBroadCast />
             </div>
         </Container>
     );
@@ -221,60 +233,8 @@ const ExpiredActiveCard = () => {
     );
 };
 
-const BroadcastBarGraph = () => {
+const LastFiveBroadCast = () => {
     const { data, isLoading } = useFetchReport('broadcast.stats.report.data');
-    const colors = useMemo(
-        () => [
-            arcChartColors.error, // Error messages
-            '#4CD4FF', // Sent messages
-            arcChartColors.success, // Delivered messages
-            '#FFB400', // Read messages
-        ],
-        []
-    );
-
-    const datasets = useMemo(() => {
-        return data?.map((item) => item.count);
-    }, [data]);
-
-    const labelsWithColor = useMemo(() => {
-        return data?.map((item: any, index) => {
-            return {
-                label: item.type,
-                color: colors[index],
-                rightValue: item?.count,
-            };
-        });
-    }, [colors, data]);
-
-    const labels = useMemo(() => {
-        return data?.map((item) => item.type);
-    }, [data]);
-
-    const options: any = {
-        colors: colors,
-        strokeWidth: 0,
-        enableDataLabels: false,
-        legendPosition: 'right',
-        showLegend: false,
-        ledgendFontSize: ['16px'],
-        stacked: true,
-        ...customChartOptions,
-        tooltipCustom: (data) => {
-            const mapData = data[data.seriesIndex];
-
-            return customChartTooltip(
-                labels,
-                data,
-                'pie',
-                mapData?.count?.[0],
-                'number',
-                mapData?.data?.[0],
-                data.seriesIndex,
-                mapData?.name
-            );
-        },
-    };
 
     if (isLoading)
         return (
@@ -290,16 +250,48 @@ const BroadcastBarGraph = () => {
         );
 
     return (
-        <div className='flex-col gap-3 items-center'>
-            <Chart
-                type='pie'
-                height={400}
-                datasets={datasets}
-                labels={labels}
-                options={options}
-            />
+        <div className='grid grid-cols-2 gap-3'>
+            {data?.map((_val) => {
+                return (
+                    <div
+                        className='gap-4 col-flex cursor-pointer justify-between p-3 rounded border bg-base-100 hover:-translate-y-0.5 transition-all shadow'
+                        onClick={() => {
+                            Navigation.navigate({
+                                url: `${SCHEDULE_BROADCAST_LIST_ROUTE}/${_val?.id}`,
+                            });
+                        }}
+                        key={_val}
+                    >
+                        <div className='flex justify-between items-center'>
+                            <div className='gap-1 col-flex'>
+                                <span className='font-medium'>
+                                    {_val?.name}
+                                </span>
 
-            <DashboardChartLabels type='horizontal' data={labelsWithColor} />
+                                <div className='flex gap-2 items-center text-xs text-base-secondary'>
+                                    <UserIcon size={14} />
+                                    {_val?.creator}
+                                </div>
+                                <div className='flex gap-2 items-center text-xs text-base-secondary'>
+                                    <LayoutTemplate size={14} />
+                                    {_val?.template_name}
+                                </div>
+                                <div className='flex gap-2 items-center text-xs text-base-secondary'>
+                                    <Clock size={14} />
+                                    <FormatDisplayDateStyled
+                                        value={_val?.initiated_at}
+                                    />
+                                </div>
+                            </div>
+                            <div className='flex items-center ml-2'>
+                                <Radio />
+                            </div>
+                        </div>
+
+                        <MultiColorBroadcastComponent data={_val} />
+                    </div>
+                );
+            })}
         </div>
     );
 };

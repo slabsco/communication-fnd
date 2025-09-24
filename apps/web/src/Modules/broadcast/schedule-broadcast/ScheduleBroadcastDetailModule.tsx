@@ -3,6 +3,7 @@
 import {
     AlertTriangleIcon,
     EyeIcon,
+    HelpCircle,
     ListIcon,
     MailCheckIcon,
     SendIcon,
@@ -34,33 +35,7 @@ const ScheduleBroadcastDetailModule = () => {
 
     const { user } = useUserHook();
 
-    const leftMetricData = [
-        {
-            key: 'initiated',
-            count: data?.attributes?.initiated,
-            name: 'Initiated',
-            icon: <SendIcon size={16} />,
-            className: 'bg-red-100',
-            isVisible: data?.attributes?.['error'] ?? false,
-        },
-        {
-            key: 'total',
-            count: data?.attributes?.total,
-            name: 'Total',
-            icon: <ListIcon size={16} />,
-            className: 'bg-gray-100',
-            isVisible: data?.attributes?.['total'] ?? false,
-        },
-    ];
-    const metricData = [
-        {
-            key: 'sent',
-            count: data?.attributes?.sent,
-            name: 'Sent',
-            icon: <SendIcon size={16} />,
-            className: 'bg-green-100',
-            isVisible: data?.attributes?.['sent'] ?? false,
-        },
+    const rightMetric = [
         {
             key: 'delivered',
             count: data?.attributes?.delivered,
@@ -77,6 +52,20 @@ const ScheduleBroadcastDetailModule = () => {
             className: 'bg-yellow-100',
             isVisible: data?.attributes?.['read'] ?? false,
         },
+    ];
+
+    const validData = data?.attributes?.sent + data?.attributes?.error;
+    const unknown = data?.attributes?.total - validData;
+
+    const metricData = [
+        {
+            key: 'sent',
+            count: data?.attributes?.sent,
+            name: 'Sent',
+            icon: <SendIcon size={16} />,
+            className: 'bg-green-100',
+            isVisible: data?.attributes?.['sent'] ?? false,
+        },
         {
             key: 'error',
             count: data?.attributes?.error,
@@ -84,6 +73,22 @@ const ScheduleBroadcastDetailModule = () => {
             icon: <AlertTriangleIcon size={16} />,
             className: 'bg-red-100',
             isVisible: data?.attributes?.['error'] ?? false,
+        },
+        {
+            key: 'Unknown',
+            count: unknown,
+            name: 'Unknown',
+            icon: <HelpCircle size={16} />, // Using react-icons/fi for a "help/unknown" icon
+            className: 'bg-green-100',
+            isVisible: unknown > 0,
+        },
+        {
+            key: 'total',
+            count: data?.attributes?.total,
+            name: 'Total',
+            icon: <ListIcon size={16} />,
+            className: 'bg-gray-100',
+            isVisible: data?.attributes?.['total'] ?? false,
         },
     ];
     return (
@@ -125,7 +130,7 @@ const ScheduleBroadcastDetailModule = () => {
                     })}
                 </div>
                 <div className='flex flex-wrap gap-2 items-center'>
-                    {leftMetricData?.map((metric) => {
+                    {rightMetric?.map((metric) => {
                         if (metric.isVisible === false) return;
                         return (
                             <MetricCard
