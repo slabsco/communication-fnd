@@ -1,11 +1,14 @@
-import { useEffect } from 'react';
+import { addMinutes } from 'date-fns';
 
-import { FetchData, useQuery, useRecursiveFetch } from '@finnoto/core';
+import { FetchData, RefetchGenericListing, useQuery } from '@finnoto/core';
 import { ScheduleBroadcastController } from '@finnoto/core/src/backend/communication/controller/schedule.broadcast.controller';
 
 export const useScheduleBroadCastDetail = (id: number) => {
-    const { data, isLoading, refetch } = useQuery({
+    const { data, isLoading, refetch, isFetching } = useQuery({
         queryKey: ['schedule_detail'],
+        onSuccess: () => {
+            RefetchGenericListing();
+        },
         queryFn: async () => {
             const { success, response } = await FetchData({
                 className: ScheduleBroadcastController,
@@ -16,28 +19,21 @@ export const useScheduleBroadCastDetail = (id: number) => {
             if (success) return response;
             Promise.reject();
         },
-    });
+        refetchInterval: (data) => {
+            if (!data) return;
 
-    const [trigger] = useRecursiveFetch(refetch, {
-        delay: 4000,
-        repeat: Infinity,
-    });
+            const hasTemMinPassed =
+                addMinutes(new Date(data?.created_at), 10) < new Date();
+            if (hasTemMinPassed) return false;
 
-    useEffect(() => {
-        if (data?.initiated_at && !data?.completed_at) {
-            const initiatedAt = new Date(data.initiated_at).getTime();
-            const now = Date.now();
-            const diffInMs = now - initiatedAt;
-            const oneHourInMs = 60 * 60 * 1000;
-            if (diffInMs < oneHourInMs) {
-                trigger();
-            }
-        }
-        return () => {};
-    }, [trigger, data]);
+            return !data?.completed_at ? 2000 : false;
+        },
+        refetchIntervalInBackground: false,
+    });
 
     return {
         data,
+        isFetching,
         isLoading,
     };
 };

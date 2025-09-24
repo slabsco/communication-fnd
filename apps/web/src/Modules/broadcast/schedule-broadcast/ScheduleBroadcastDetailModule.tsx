@@ -1,5 +1,6 @@
 'use client';
 
+import { addMinutes } from 'date-fns';
 import {
     AlertTriangleIcon,
     EyeIcon,
@@ -9,7 +10,7 @@ import {
     SendIcon,
 } from 'lucide-react';
 import Link from 'next/link';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import {
     FormatDisplayDate,
@@ -91,8 +92,33 @@ const ScheduleBroadcastDetailModule = () => {
             isVisible: data?.attributes?.['total'] ?? false,
         },
     ];
+
+    const enableEdit = useMemo(() => {
+        if (!data?.schedule_at) return false;
+
+        const scheduleTime = new Date(data.schedule_at);
+        const now = new Date();
+
+        const diffMs = scheduleTime.getTime() - now.getTime();
+        const diffMin = diffMs / (1000 * 60);
+
+        return diffMin < 5;
+    }, [data?.schedule_at]);
+
+    const isActive = useMemo(() => {
+        if (data?.completed_at) return false;
+        const hasTemMinPassed =
+            addMinutes(new Date(data?.created_at), 10) < new Date();
+        if (hasTemMinPassed) return false;
+
+        return true;
+    }, [data]);
     return (
-        <Container className='flex flex-col p-6 mx-auto space-y-2'>
+        <Container
+            className={cn('flex flex-col p-6 mx-auto space-y-2', {
+                'animate-pulse': isActive,
+            })}
+        >
             <div className='flex justify-between items-center'>
                 <Breadcrumbs
                     route={[
@@ -100,21 +126,24 @@ const ScheduleBroadcastDetailModule = () => {
                         { name: 'Schedule Detail ' },
                     ]}
                 />
-                {!data?.initiated_at && (
-                    <Button
-                        appearance={'primary'}
-                        color={'primary'}
-                        onClick={() => {
-                            Navigation.navigate({
-                                url: `${SCHEDULE_BROADCAST_CREATION_ROUTE}?id=${data.id}`,
-                            });
-                        }}
-                    >
-                        Edit Detail
-                    </Button>
-                )}
+
+                <div className='flex gap-2 items-center'>
+                    {!data?.initiated_at && enableEdit && (
+                        <Button
+                            appearance={'primary'}
+                            color={'primary'}
+                            onClick={() => {
+                                Navigation.navigate({
+                                    url: `${SCHEDULE_BROADCAST_CREATION_ROUTE}?id=${data.id}`,
+                                });
+                            }}
+                        >
+                            Edit Detail
+                        </Button>
+                    )}
+                </div>
             </div>
-            <div className='flex justify-between items-center'>
+            <div className={cn('flex justify-between items-center')}>
                 <div className='flex flex-wrap gap-2 items-center'>
                     {metricData?.map((metric) => {
                         if (metric.isVisible === false) return;
@@ -144,7 +173,7 @@ const ScheduleBroadcastDetailModule = () => {
                     })}
                 </div>
             </div>
-            <div className='grid grid-cols-2 gap-3'>
+            <div className={cn('grid grid-cols-2 gap-3', {})}>
                 <div className='p-3 bg-white rounded transition-all hover:shadow'>
                     <div className='flex justify-between items-center'>
                         <h3 className='text-lg font-semibold'>Detail</h3>

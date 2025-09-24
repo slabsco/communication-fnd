@@ -218,7 +218,11 @@ const DetailPage = ({ initialData }: any) => {
                     defaultMinWidth
                     disabled={hasError()}
                     appearance='primary'
-                    onClick={handleSubmit}
+                    progress
+                    onClick={async (next) => {
+                        await handleSubmit(next);
+                        next();
+                    }}
                 >
                     Save
                 </Button>
