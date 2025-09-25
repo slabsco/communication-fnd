@@ -149,13 +149,13 @@ const MainDashboard = () => {
                         </div>
                     </Card>
                 </div>
-                <DayWiseMessageChart />
                 <div className='grid grid-cols-1 gap-3 lg:grid-cols-2'>
                     <Card title='Inbox Stats'>
                         <ExpiredActiveCard />
                     </Card>
                     <LastFiveBroadCast />
                 </div>
+                <DayWiseMessageChart />
             </div>
         </Container>
     );
@@ -167,40 +167,55 @@ const ExpiredActiveCard = () => {
     const { data, isLoading } = useFetchReport('teaminbox.stats.report.data', {
         params: {},
     });
-    const chartLabels = useMemo(() => ['Active', 'Expired'], []);
 
-    const chartFinalData = [
-        { name: 'Count', data: [data?.[0]?.count, data?.[1]?.count] },
-    ];
+    const finalData = useMemo(() => {
+        if (!data) return;
 
-    const colors = useMemo(
-        () => [
-            arcChartColors.success, // Delivered messages
-            arcChartColors.error, // Error messages
-        ],
-        []
-    );
+        const activeData = data?.find((_data) => _data?.name === 'active_chat');
+        const broadcastChat = data?.find(
+            (_data) => _data?.name === 'broadcast_chat'
+        );
+        const expiredChat = data?.find(
+            (_data) => _data?.name === 'expired_chat'
+        );
+
+        return {
+            data_set: [
+                activeData?.count || 0,
+                broadcastChat?.count || 0,
+                expiredChat?.count || 0,
+            ],
+            colors: [
+                arcChartColors.success,
+                arcChartColors.warning,
+                arcChartColors.error,
+            ],
+            name: ['Active', 'Only Broadcast', 'Expired'],
+        };
+    }, [data]);
+
+    const chartLabels = finalData?.name;
+    const chartFinalData = finalData?.data_set;
+
     const options: ChartOptions = {
         ...customChartOptions,
-        colors: colors,
+        colors: finalData?.colors,
         barDistributedColors: true,
-        showLegend: false,
-        barColumnWidth: '15%',
+        showLegend: true,
         barBorderRadiusApply: 'end',
         formatLabelY: (value: number) => {
             return String(value);
         },
         tooltipCustom: (data) => {
-            const { dataPointIndex } = data;
-            const activeData = chartFinalData[0]?.data[dataPointIndex];
-
+            const { seriesIndex } = data;
+            const activeData = chartFinalData[seriesIndex];
             return customChartTooltip(
                 chartLabels,
                 data,
-                'bar',
-                activeData[0]?.count,
+                'pie',
+                undefined,
                 'number',
-                activeData[0]?.amount
+                activeData
             );
         },
     };
@@ -219,13 +234,15 @@ const ExpiredActiveCard = () => {
         );
 
     return (
-        <Chart
-            type='bar'
-            labels={chartLabels}
-            height={400}
-            options={options}
-            datasets={chartFinalData}
-        />
+        <div className='gap-3 p-4 w-full h-full col-flex'>
+            <Chart
+                type='pie'
+                labels={chartLabels}
+                height={'100%'}
+                options={options}
+                datasets={chartFinalData}
+            />
+        </div>
     );
 };
 
