@@ -4,7 +4,7 @@ import { ErrorSvgIcon } from 'assets';
 
 const BackendErrorModal = ({ response }) => {
     return (
-        <div className='gap-3 p-5 centralize col-flex max-w-[300px]'>
+        <div className='gap-3 p-5 centralize col-flex'>
             <div className='p-2 rounded-full bg-error/10 text-error-content centralize'>
                 <div className='p-4 rounded-full bg-error'>
                     <Icon source={ErrorSvgIcon} isSvg />

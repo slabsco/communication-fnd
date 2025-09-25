@@ -899,7 +899,7 @@ export const toastBackendErrorModal = (
     return Modal.open({
         component: BackendErrorModal,
         props: { response, defaultMessage },
-        modalSize: 'auto',
+        modalSize: 'sm',
     });
 };
 

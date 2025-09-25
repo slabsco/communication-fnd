@@ -91,6 +91,9 @@ const DetailPage = ({ initialData }: any) => {
             placeholder: 'Please upload your csv.',
             fileSupportText: 'CSV',
             required: true,
+            accept: {
+                'text/csv': [],
+            },
         },
         description: {
             type: 'textarea',
