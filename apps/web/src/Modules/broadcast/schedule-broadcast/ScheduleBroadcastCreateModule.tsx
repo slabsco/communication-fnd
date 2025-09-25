@@ -10,7 +10,6 @@ import {
     Navigation,
     RefetchGenericListing,
     SCHEDULE_BROADCAST_LIST_ROUTE,
-    toastBackendError,
     useFetchParams,
     useFormBuilder,
     useQuery,
@@ -28,6 +27,7 @@ import {
 } from '@finnoto/design-system';
 import { Label } from '@finnoto/design-system/src/Components/Inputs/InputField/label.component';
 
+import { toastBackendErrorModal } from '../../../Utils/functions.utils';
 import { AsyncTemplateViewer } from '../your-templates/components/TemplateViewer.component';
 
 const ScheduleBroadcastCreateModule = () => {
@@ -116,7 +116,7 @@ const DetailPage = ({ initialData }: any) => {
             },
         });
 
-        if (!success) return toastBackendError(response);
+        if (!success) return toastBackendErrorModal(response);
 
         Toast.success({ description: 'Successful !!' });
 
@@ -161,7 +161,10 @@ const DetailPage = ({ initialData }: any) => {
                 <div className='overflow-y-auto col-span-2 gap-3 p-3 col-flex bg-polaris-bg-surface-secondary'>
                     {renderFormFields('name')}
                     <div className='gap-2 col-flex'>
-                        {!isNow && renderFormFields('scheduled_at')}
+                        {renderFormFields('scheduled_at', {
+                            disabled: isNow,
+                            type: 'date_time_separate',
+                        })}
                         <div className='col-flex'>
                             <Label label='Send Now' />
                             <Switch

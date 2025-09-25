@@ -37,7 +37,7 @@ export const MultiColorBroadcastComponent = ({
 
     // Lighter, more subtle colors
     const segments = [
-        { key: 'pending', value: pending, color: '#FCD34D' }, // light amber
+        { key: 'Unknown', value: pending, color: '#D1D5DB' }, // grey
         { key: 'sent', value: sent, color: '#86EFAC' }, // light green
         { key: 'error', value: error, color: '#FCA5A5' }, // light red
     ].filter((segment) => segment.value > 0); // Only show segments with values
@@ -76,7 +76,7 @@ export const MultiColorBroadcastComponent = ({
                         key.charAt(0).toUpperCase() + key.slice(1);
                     const tooltipMessage = `${displayKey}: ${IntToString(
                         value
-                    )}`;
+                    )} (${widthPct}%)`;
 
                     return (
                         <Tooltip message={tooltipMessage} key={`${key}-${idx}`}>

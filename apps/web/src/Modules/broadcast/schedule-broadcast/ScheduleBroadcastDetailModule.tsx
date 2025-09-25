@@ -60,6 +60,14 @@ const ScheduleBroadcastDetailModule = () => {
 
     const metricData = [
         {
+            key: 'total',
+            count: data?.attributes?.total,
+            name: 'All',
+            icon: <ListIcon size={16} />,
+            className: 'bg-gray-100',
+            isVisible: data?.attributes?.['total'] ?? false,
+        },
+        {
             key: 'sent',
             count: data?.attributes?.sent,
             name: 'Sent',
@@ -82,14 +90,6 @@ const ScheduleBroadcastDetailModule = () => {
             icon: <HelpCircle size={16} />, // Using react-icons/fi for a "help/unknown" icon
             className: 'bg-green-100',
             isVisible: unknown > 0,
-        },
-        {
-            key: 'total',
-            count: data?.attributes?.total,
-            name: 'Total',
-            icon: <ListIcon size={16} />,
-            className: 'bg-gray-100',
-            isVisible: data?.attributes?.['total'] ?? false,
         },
     ];
 
@@ -146,7 +146,7 @@ const ScheduleBroadcastDetailModule = () => {
                     )}
                 </div>
             </div>
-            <div className={cn('flex justify-between items-center')}>
+            <div className={cn('flex items-center')}>
                 <div className='flex flex-wrap gap-2 items-center'>
                     {metricData?.map((metric) => {
                         if (metric.isVisible === false) return;
@@ -160,8 +160,6 @@ const ScheduleBroadcastDetailModule = () => {
                             />
                         );
                     })}
-                </div>
-                <div className='flex flex-wrap gap-2 items-center'>
                     {rightMetric?.map((metric) => {
                         if (metric.isVisible === false) return;
                         return (
@@ -281,24 +279,20 @@ const ScheduleBroadcastDetailModule = () => {
                             customFilterValue: { status: 'sent_at' },
                         },
                         {
-                            title: 'Delivered',
-                            key: 'delivered',
-                            customFilterValue: { status: 'delivered_at' },
-                        },
-                        {
-                            title: 'Read',
-                            key: 'read',
-                            customFilterValue: { status: 'read_at' },
-                        },
-                        {
                             title: 'Error',
                             key: 'error',
                             customFilterValue: { is_error: true },
                         },
                         {
-                            title: 'Success',
-                            key: 'success',
-                            customFilterValue: { is_error: false },
+                            title: 'Delivered',
+                            key: 'delivered',
+                            customFilterValue: { status: 'delivered_at' },
+                        },
+
+                        {
+                            title: 'Read',
+                            key: 'read',
+                            customFilterValue: { status: 'read_at' },
                         },
                     ]}
                     rowActions={[
@@ -325,7 +319,7 @@ export default ScheduleBroadcastDetailModule;
 const DataComponent = ({ name, value }: any) => {
     return (
         <p className='flex gap-2 justify-between items-center text-sm'>
-            <span>{name}</span>
+            <span className='font-medium'>{name}</span>
             <span className='text-secondary-foreground'>{value || '-'}</span>
         </p>
     );

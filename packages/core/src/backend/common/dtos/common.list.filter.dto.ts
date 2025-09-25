@@ -93,4 +93,8 @@ export class CommonListFilterDto {
     @IsBoolean()
     @Expose()
     active?: boolean;
+
+    @IsOptional()
+    @Expose()
+    day_filter?: any;
 }

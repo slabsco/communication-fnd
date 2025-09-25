@@ -47,11 +47,10 @@ export const DateTimePicker = forwardRef(
                     label='Time'
                     groupClassName='min-w-0'
                     inputClassName='min-w-0'
-                    disabled={!value}
+                    disabled={!value || rest?.disabled}
                     value={value ? format(value, 'HH:mm') : ''}
                     onChange={(time_value) => {
                         const minutes = convert24HourToMinutes(time_value);
-
                         onChange(addMinutes(startOfDay(value), minutes));
                     }}
                     required={rest?.isRequired}

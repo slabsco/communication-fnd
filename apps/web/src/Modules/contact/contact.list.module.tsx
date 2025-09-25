@@ -1,8 +1,11 @@
+import Link from 'next/link';
+
 import {
     BulkUploadTypeEnum,
     FetchData,
     IsEmptyArray,
     RefetchGenericListing,
+    TEAM_INBOX_SPLIT_LIST,
     toastBackendError,
 } from '@finnoto/core';
 import { ContactController } from '@finnoto/core/src/backend/communication/controller/contact.controller';
@@ -31,9 +34,26 @@ const ContactListModule = () => {
         name: 'Contacts',
         type: 'contact',
         table: [
-            { name: 'Name', key: 'display_name' },
+            {
+                name: 'Name',
+                key: 'display_name',
+            },
             { name: 'Dialling Code', key: 'dialing_code' },
-            { name: 'Mobile', key: 'mobile' },
+            {
+                name: 'Mobile',
+                key: 'mobile',
+                renderValue: (data: any) => {
+                    if (!data?.team_inbox_id) return data?.message;
+                    return (
+                        <Link
+                            className='link link-hover'
+                            href={`${TEAM_INBOX_SPLIT_LIST}/${data?.team_inbox_id}`}
+                        >
+                            {data?.mobile}
+                        </Link>
+                    );
+                },
+            },
             { name: 'active', key: 'active', type: 'activate' },
             {
                 name: 'Custom Attributes',
@@ -78,7 +98,7 @@ const ContactListModule = () => {
             {
                 name: 'Edit',
                 icon: EditSvgIcon,
-                type: 'outer',
+                type: 'inner',
                 action: (data) => {
                     openAddContactForm(data);
                 },

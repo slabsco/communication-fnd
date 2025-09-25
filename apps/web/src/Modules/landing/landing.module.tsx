@@ -1,118 +1,152 @@
-import { AlertTriangle } from 'lucide-react';
-import Link from 'next/link';
+import { AlertCircle, ArrowDown } from 'lucide-react';
+import { useState } from 'react';
+import AnimateHeight from 'react-animate-height';
 
 import {
     BUSINESS_PROFILE_ROUTE,
+    getBusinessErrors,
+    Navigation,
     useLandingPage,
     useOnBoardBusinessWithMeta,
-    WHATSAPP_TEMPLATE_LIST_ROUTE,
+    USER_PROFILE_ROUTE,
 } from '@finnoto/core';
-import { Button, Container, PageLoader } from '@finnoto/design-system';
+import { Icon, Tooltip } from '@finnoto/design-system';
 
-import { RenderBusinessError } from '../businessProfile/business.profile.whatsapp.info.tab';
+import { WarningToastIcon } from 'assets';
 
 const LandingModule = () => {
-    const { user, businessInfo, isBusinessInfoLoading } = useLandingPage();
+    const { user, businessInfo } = useLandingPage();
 
-    if (isBusinessInfoLoading) return <PageLoader />;
-
+    const errors = getBusinessErrors(businessInfo);
+    const { launchWhatsAppSignup } = useOnBoardBusinessWithMeta();
     return (
-        <Container className='overflow-hidden gap-3 py-6 col-flex'>
+        <>
             <h3 className='text-2xl font-semibold'>Welcome, {user.name} </h3>
-            <div className='grid grid-cols-3 gap-4'>
-                <RenderFlowError user={user} businessInfo={businessInfo} />
-                <RenderBusinessError businessInfo={businessInfo} user={user} />
-            </div>
-        </Container>
+            {errors.map((item, index) => (
+                <BusinessErrorCard
+                    key={index}
+                    entityType={item.entity_type}
+                    errors={item.errors}
+                />
+            ))}
+            <WarningAccordion
+                columns={[
+                    {
+                        description: `Your business is not verified. Please verify your business to access all features.`,
+                        onClick: launchWhatsAppSignup,
+                        visible: !user?.business?.internal_access_token,
+                    },
+                    {
+                        description: `Please, onboard with the meta to create and use the whatsapp feature`,
+                        onClick: () => {
+                            Navigation.navigate({
+                                url: BUSINESS_PROFILE_ROUTE,
+                            });
+                        },
+                        visible: !businessInfo?.verified_at,
+                    },
+                    {
+                        description: `Your Number is not registered. Please register your number to access all features.`,
+                        onClick: () => {
+                            Navigation.navigate({
+                                url: BUSINESS_PROFILE_ROUTE,
+                            });
+                        },
+                        visible: !businessInfo?.phone_registered_at,
+                    },
+                    {
+                        description: `Your phone number is not currently configured in your
+                        account. Please update your mobile number to ensure
+                        proper account verification and access to all features.`,
+                        onClick: () => {
+                            Navigation.navigate({
+                                url: USER_PROFILE_ROUTE,
+                                queryParam: {
+                                    open_mobile: true,
+                                },
+                            });
+                        },
+                        visible: !user?.mobile,
+                    },
+                ]}
+            />
+        </>
     );
 };
 
 export default LandingModule;
 
-const RenderFlowError = ({
-    user,
-    businessInfo,
-}: {
-    user: any;
-    businessInfo: any;
-}) => {
-    const { launchWhatsAppSignup } = useOnBoardBusinessWithMeta();
+interface ErrorColumns {
+    description: string;
+    visible: boolean;
+    onClick: () => void;
+}
 
-    if (!user?.business?.internal_access_token) {
-        return (
-            <div className='flex flex-col items-start p-4 w-full max-w-lg bg-white rounded-lg backdrop-blur-md'>
-                <div className='flex items-center space-x-3'>
-                    <AlertTriangle className='text-yellow-500' size={24} />
-                    <p className='font-semibold text-gray-900'>
-                        Please, onboard with the meta to create and use the
-                        whatsapp feature
-                    </p>
-                </div>
-                <Button
-                    onClick={launchWhatsAppSignup}
-                    className='px-4 py-2 mt-4 font-semibold text-white bg-green-600 rounded-lg transition hover:bg-green-700'
-                >
-                    Login With Facebook
-                </Button>
-            </div>
-        );
-    }
-
-    if (!businessInfo?.verified_at) {
-        return <VerificationAlert />;
-    }
-
-    if (!businessInfo?.phone_registered_at) {
-        return (
-            <div className='flex flex-col items-start p-4 w-full max-w-lg bg-white rounded-lg backdrop-blur-md'>
-                <div className='flex items-center space-x-3'>
-                    <AlertTriangle className='text-yellow-500' size={24} />
-                    <p className='font-semibold text-gray-900'>
-                        Your Number is not registered. Please register your
-                        number to access all features.
-                    </p>
-                </div>
-                <Link href={BUSINESS_PROFILE_ROUTE}>
-                    <Button className='px-4 py-2 mt-4 font-semibold text-white bg-green-600 rounded-lg transition hover:bg-green-700'>
-                        Go to Profile
-                    </Button>
-                </Link>
-            </div>
-        );
-    }
+const WarningAccordion = ({ columns }: { columns: ErrorColumns[] }) => {
+    const [open, setOpen] = useState(true);
 
     return (
-        <div className='gap-2 p-4 rounded shadow col-flex bg-polaris-bg-surface'>
-            <p className='flex gap-2 items-center'>
-                WhatsApp templates are the way you can send marketing utility
-                and authentication templates to users for any purpose of your
-                business. Excited? Click on the button below to navigate to the
-                template page.
-            </p>
-            <Link className='w-full' href={WHATSAPP_TEMPLATE_LIST_ROUTE}>
-                <Button appearance='polaris-info' size='md' wide>
-                    Lets Create the Template
-                </Button>
-            </Link>
+        <div className='overflow-hidden rounded transition-all col-flex'>
+            <div
+                onClick={() => {
+                    setOpen((prev) => !prev);
+                }}
+                className='flex justify-between items-center px-3 py-2 w-full font-medium rounded cursor-pointer bg-warning/30 text-warning'
+            >
+                <div className='flex gap-3 items-center'>
+                    <Icon source={WarningToastIcon} isSvg />
+                    Warnings
+                </div>
+                <ArrowDown
+                    className={`transition-transform duration-200 ${
+                        open ? 'rotate-180' : ''
+                    }`}
+                />
+            </div>
+            <AnimateHeight height={open ? '100%' : 0}>
+                <div className='px-6 py-2 bg-base-100'>
+                    <ol className='list-disc'>
+                        {columns?.map((val) => {
+                            if (!val?.visible) return <></>;
+                            return (
+                                <li
+                                    onClick={val?.onClick}
+                                    className='underline cursor-pointer'
+                                    key={val?.description}
+                                >
+                                    {val?.description}
+                                </li>
+                            );
+                        })}
+                    </ol>
+                </div>
+            </AnimateHeight>
         </div>
     );
 };
 
-const VerificationAlert = () => {
+const BusinessErrorCard = ({ entityType, errors }) => {
+    if (entityType?.toLowerCase() === 'business') return <></>;
     return (
-        <div className='flex flex-col items-start p-4 w-full max-w-lg bg-white rounded-lg backdrop-blur-md'>
-            <div className='flex items-center space-x-3'>
-                <AlertTriangle className='text-yellow-500' size={24} />
-                <p className='font-semibold text-gray-900'>
-                    Your business is not verified. Please verify your business
-                    to access all features.
-                </p>
-            </div>
-            <Link href={BUSINESS_PROFILE_ROUTE}>
-                <Button className='px-4 py-2 mt-4 font-semibold text-white bg-green-600 rounded-lg transition hover:bg-green-700'>
-                    Go to Profile
-                </Button>
-            </Link>
+        <div className='p-4 w-full max-w-lg bg-white rounded-lg shadow-sm'>
+            <h2 className='mb-2 text-lg font-semibold'>
+                Error Entity Type: {entityType}
+            </h2>
+
+            {errors.map((error, index) => (
+                <div key={index} className='space-y-3'>
+                    <div className='flex gap-2 items-center'>
+                        <Tooltip message={error.possible_solution}>
+                            <AlertCircle className='mt-1 w-5 h-5 text-red-500 shrink-0' />
+                        </Tooltip>
+                        <div className='flex gap-2 items-start'>
+                            <p className='text-red-500'>
+                                {error.error_description}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 };

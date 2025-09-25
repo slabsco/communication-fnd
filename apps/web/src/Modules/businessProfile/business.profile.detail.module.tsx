@@ -17,8 +17,7 @@ import BusinessProfileWhatsappInfoTab from './business.profile.whatsapp.info.tab
 import { MessageSvgIcon } from 'assets';
 
 const BusinessProfileDetailModule = () => {
-    const { businessInfo, isBusinessInfoLoading, whatsappProfileInfo } =
-        useBusinessPreference();
+    const { businessInfo, isBusinessInfoLoading } = useBusinessPreference();
     if (isBusinessInfoLoading) return <PageLoader />;
 
     return (

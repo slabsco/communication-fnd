@@ -12,7 +12,6 @@ import { useMemo } from 'react';
 
 import {
     CopyToClipBoard,
-    HOME_ROUTE,
     IsEmptyArray,
     Navigation,
     SCHEDULE_BROADCAST_LIST_ROUTE,
@@ -20,7 +19,6 @@ import {
     useFetchReport,
 } from '@finnoto/core';
 import {
-    Breadcrumbs,
     Button,
     Chart,
     cn,
@@ -29,6 +27,7 @@ import {
     IconButton,
     Loading,
     NoDataFound,
+    PageLoader,
 } from '@finnoto/design-system';
 import { ChartOptions } from '@finnoto/design-system/src/Components/Data-display/Chart/chart.types';
 
@@ -38,127 +37,125 @@ import {
     customChartTooltip,
 } from '../../Constants/chart-constant/commonChartOption';
 import { MultiColorBroadcastComponent } from '../broadcast/multi.color.broadcast.component';
+import LandingModule from '../landing/landing.module';
+import DayWiseMessageChart from './day.wise.message.chart';
 
 import { CopySvgIcon } from 'assets';
 
 const MainDashboard = () => {
-    const { businessInfo, verifyNumber } = useBusinessPreference();
+    const { businessInfo, verifyNumber, isBusinessInfoLoading } =
+        useBusinessPreference();
+    if (isBusinessInfoLoading) return <PageLoader />;
 
     return (
-        <Container className='flex overflow-hidden relative flex-col gap-5 py-6 h-content-screen'>
-            <div className='flex justify-between items-center'>
-                <Breadcrumbs
-                    route={[
-                        { name: 'Home', link: HOME_ROUTE },
-                        {
-                            name: 'Dashboard',
-                        },
-                    ]}
-                />
+        <Container className='flex overflow-hidden relative flex-col py-4'>
+            <div className='gap-2 my-3 col-flex'>
+                <LandingModule />
             </div>
-
-            <div className='grid grid-cols-1 gap-4 justify-center sm:grid-cols-2 lg:grid-cols-3'>
-                <Card title='Phone Number Status'>
-                    <div className='flex gap-2 items-center my-2'>
-                        <div
-                            className={cn(
-                                'flex flex-1 gap-2 items-center text-error',
-                                {
-                                    'text-success':
-                                        businessInfo?.phone_registered_at,
-                                }
-                            )}
-                        >
-                            <CheckCircle />
-                            <p className='flex-1'>Connected</p>
-                            {!businessInfo?.phone_registered_at ? (
-                                <Button
-                                    onClick={async (next) => {
-                                        await verifyNumber(
-                                            businessInfo?.internal_number
-                                        );
-                                        next();
-                                    }}
-                                    progress
-                                    size='xs'
-                                    appearance='success'
-                                >
-                                    Connect Number
-                                </Button>
-                            ) : (
-                                <div className='flex gap-3 items-center p-1 rounded bg-base-200'>
-                                    <IconButton
-                                        size='xs'
-                                        onClick={() => {
-                                            CopyToClipBoard(
-                                                businessInfo?.default_mobile
+            <div className='gap-3 col-flex'>
+                <div className='grid grid-cols-1 gap-4 justify-center sm:grid-cols-2 lg:grid-cols-3'>
+                    <Card title='Phone Number Status'>
+                        <div className='flex gap-2 items-center my-2'>
+                            <div
+                                className={cn(
+                                    'flex flex-1 gap-2 items-center text-error',
+                                    {
+                                        'text-success':
+                                            businessInfo?.phone_registered_at,
+                                    }
+                                )}
+                            >
+                                <CheckCircle />
+                                <p className='flex-1'>Connected</p>
+                                {!businessInfo?.phone_registered_at ? (
+                                    <Button
+                                        onClick={async (next) => {
+                                            await verifyNumber(
+                                                businessInfo?.internal_number
                                             );
+                                            next();
                                         }}
-                                        name='Copy Mobile'
-                                        icon={CopySvgIcon}
-                                        outline
-                                    />
-                                </div>
-                            )}
+                                        progress
+                                        size='xs'
+                                        appearance='success'
+                                    >
+                                        Connect Number
+                                    </Button>
+                                ) : (
+                                    <div className='flex gap-3 items-center p-1 rounded bg-base-200'>
+                                        <IconButton
+                                            size='xs'
+                                            onClick={() => {
+                                                CopyToClipBoard(
+                                                    businessInfo?.default_mobile
+                                                );
+                                            }}
+                                            name='Copy Mobile'
+                                            icon={CopySvgIcon}
+                                            outline
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                    {businessInfo?.default_mobile && (
-                        <div className='flex gap-2 items-center p-1 rounded bg-base-200'>
-                            <Link2 /> wa.me/{businessInfo?.default_mobile}{' '}
-                            <IconButton
-                                size='xs'
-                                name='Copy Message link'
-                                onClick={() => {
-                                    CopyToClipBoard(
-                                        `https://wa.me/${businessInfo?.default_mobile}?text=Hello%20there!`
-                                    );
-                                }}
-                                icon={CopySvgIcon}
-                                outline
-                            />
+                        {businessInfo?.default_mobile && (
+                            <div className='flex gap-2 items-center p-1 rounded bg-base-200'>
+                                <Link2 /> wa.me/{businessInfo?.default_mobile}{' '}
+                                <IconButton
+                                    size='xs'
+                                    name='Copy Message link'
+                                    onClick={() => {
+                                        CopyToClipBoard(
+                                            `https://wa.me/${businessInfo?.default_mobile}?text=Hello%20there!`
+                                        );
+                                    }}
+                                    icon={CopySvgIcon}
+                                    outline
+                                />
+                            </div>
+                        )}
+                    </Card>
+                    <Card title='Total Messaging Limit'>
+                        <div className='flex gap-2 items-center my-2'>
+                            <MessageCircle />
+                            <p className='flex-1'>
+                                {businessInfo?.quality_response
+                                    ?.messaging_limit_tier || 0}
+                            </p>
                         </div>
-                    )}
-                </Card>
-                <Card title='Total Messaging Limit'>
-                    <div className='flex gap-2 items-center my-2'>
-                        <MessageCircle />
-                        <p className='flex-1'>
-                            {businessInfo?.quality_response
-                                ?.messaging_limit_tier || 0}
-                        </p>
-                    </div>
-                    <div className='flex gap-3 items-center p-1 rounded bg-base-200'>
-                        {businessInfo?.total_message_limit || 0} Contacts/24
-                        Hours
-                    </div>
-                </Card>
-                <Card title='Health Status'>
-                    <div className='flex gap-2 items-center my-2'>
-                        <HeartPulse />
-                        <p className='flex-1'>Quality Rating</p>
-                    </div>
-                    <div
-                        className={`flex gap-3 rounded items-center p-1 ${
-                            businessInfo?.quality_response?.quality_rating ===
-                            'GREEN'
-                                ? 'bg-success/80 text-white'
-                                : businessInfo?.quality_response
-                                      ?.quality_rating === 'YELLOW'
-                                ? 'bg-warning text-white'
-                                : 'bg-error text-white'
-                        }`}
-                    >
-                        {businessInfo?.quality_response?.quality_rating ||
-                            'ERROR'}
-                    </div>
-                </Card>
-            </div>
-
-            <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
-                <Card title='Inbox Stats'>
-                    <ExpiredActiveCard />
-                </Card>
-                <LastFiveBroadCast />
+                        <div className='flex gap-3 items-center p-1 rounded bg-base-200'>
+                            {businessInfo?.total_message_limit || 0} Contacts/24
+                            Hours
+                        </div>
+                    </Card>
+                    <Card title='Health Status'>
+                        <div className='flex gap-2 items-center my-2'>
+                            <HeartPulse />
+                            <p className='flex-1'>Quality Rating</p>
+                        </div>
+                        <div
+                            className={`flex gap-3 rounded items-center p-1 ${
+                                businessInfo?.quality_response
+                                    ?.quality_rating === 'GREEN'
+                                    ? 'bg-success/80 text-white'
+                                    : businessInfo?.quality_response
+                                          ?.quality_rating === 'YELLOW'
+                                    ? 'bg-warning text-white'
+                                    : 'bg-error text-white'
+                            }`}
+                        >
+                            {businessInfo?.quality_response?.quality_rating ||
+                                'ERROR'}
+                        </div>
+                    </Card>
+                </div>
+                <DayWiseMessageChart />
+                <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+                    <Card title='Inbox Stats'>
+                        <ExpiredActiveCard />
+                    </Card>
+                    <LastFiveBroadCast />
+                </div>
             </div>
         </Container>
     );
@@ -167,8 +164,9 @@ const MainDashboard = () => {
 export default MainDashboard;
 
 const ExpiredActiveCard = () => {
-    const { data, isLoading } = useFetchReport('teaminbox.stats.report.data');
-
+    const { data, isLoading } = useFetchReport('teaminbox.stats.report.data', {
+        params: {},
+    });
     const chartLabels = useMemo(() => ['Active', 'Expired'], []);
 
     const chartFinalData = [
@@ -232,7 +230,9 @@ const ExpiredActiveCard = () => {
 };
 
 const LastFiveBroadCast = () => {
-    const { data } = useFetchReport('broadcast.stats.report.data');
+    const { data } = useFetchReport('broadcast.stats.report.data', {
+        params: {},
+    });
     if (!data?.length) return <></>;
 
     return (
@@ -293,7 +293,7 @@ const Card = ({
     return (
         <div
             className={cn(
-                'p-3 rounded-lg shadow-lg bg-base-100 hover:-translate-y-0.5 transition-all',
+                'p-3 rounded-lg shadow-lg transition-all bg-base-100',
                 className
             )}
         >
