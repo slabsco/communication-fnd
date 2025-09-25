@@ -82,11 +82,28 @@ interface ErrorColumns {
     onClick: () => void;
 }
 
-const WarningAccordion = ({ columns }: { columns: ErrorColumns[] }) => {
+export const WarningAccordion = ({ columns }: { columns: ErrorColumns[] }) => {
     const [open, setOpen] = useState(true);
 
+    const visible = columns?.filter((_col) => _col?.visible);
     const hasVisible = columns?.find((_col) => _col?.visible);
     if (!hasVisible) return;
+
+    if (visible?.length === 1) {
+        return (
+            <div className='flex justify-between items-center px-3 py-2 w-full font-medium rounded cursor-pointer bg-warning/10 text-warning'>
+                <div className='flex gap-3 items-center'>
+                    <Icon source={WarningToastIcon} isSvg />
+                    <span
+                        onClick={visible?.[0]?.onClick}
+                        className='font-medium underline'
+                    >
+                        {visible?.[0]?.description}
+                    </span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className='overflow-hidden rounded transition-all col-flex'>
@@ -94,7 +111,7 @@ const WarningAccordion = ({ columns }: { columns: ErrorColumns[] }) => {
                 onClick={() => {
                     setOpen((prev) => !prev);
                 }}
-                className='flex justify-between items-center px-3 py-2 w-full font-medium rounded cursor-pointer bg-warning/30 text-warning'
+                className='flex justify-between items-center px-3 py-2 w-full font-medium rounded cursor-pointer bg-warning/10 text-warning'
             >
                 <div className='flex gap-3 items-center'>
                     <Icon source={WarningToastIcon} isSvg />

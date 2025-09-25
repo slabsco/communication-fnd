@@ -22,14 +22,24 @@ import {
     useUserHook,
     WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
-import { Breadcrumbs, Button, cn, Container } from '@finnoto/design-system';
+import {
+    Badge,
+    Breadcrumbs,
+    Button,
+    cn,
+    Container,
+    Icon,
+    Tooltip,
+} from '@finnoto/design-system';
 
 import GenericDefinitionListing from '../../../Components/GenericDocumentListing/genericDefinitionListing.component';
 import { getInboxFromWaId } from '../../../Utils/functions.utils';
+import { WarningAccordion } from '../../landing/landing.module';
+import { getErrorMessageTeamInbox } from '../../teaminbox/utils/teaminbox.utils';
 import { openTemplateViewer } from '../your-templates/components/TemplateViewer.component';
 import { useScheduleBroadCastDetail } from './hooks/useScheduleBroadcastDetail.hook';
 
-import { EyeSvgIcon } from 'assets';
+import { ErrorSvgIcon, EyeSvgIcon } from 'assets';
 
 const ScheduleBroadcastDetailModule = () => {
     const { id } = useFetchParams();
@@ -175,19 +185,30 @@ const ScheduleBroadcastDetailModule = () => {
                     })}
                 </div>
             </div>
+            <WarningAccordion
+                columns={[
+                    {
+                        description: `Your phone number is not currently configured in your
+                        account. Please update your mobile number to ensure
+                        proper account verification and access to all features.`,
+                        onClick: () => {
+                            Navigation.navigate({
+                                url: USER_PROFILE_ROUTE,
+                                queryParam: {
+                                    open_mobile: true,
+                                },
+                            });
+                        },
+                        visible: !user?.mobile,
+                    },
+                ]}
+            />
             <div className={cn('grid grid-cols-2 gap-3', {})}>
                 <div className='p-3 bg-white rounded transition-all hover:shadow'>
                     <div className='flex justify-between items-center'>
                         <h3 className='text-lg font-semibold'>Detail</h3>
-                        {!user?.mobile_verified_at && (
-                            <Link href={USER_PROFILE_ROUTE}>
-                                <span className='text-xs underline text-error'>
-                                    ⚠️ Set your mobile number to get real time
-                                    updates
-                                </span>
-                            </Link>
-                        )}
                     </div>
+
                     <div className='flex flex-col gap-2 p-2 mt-2 border-t'>
                         <DataComponent name={'Name'} value={data?.name} />
                         <DataComponent
@@ -332,6 +353,35 @@ const ScheduleBroadcastDetailModule = () => {
                                 );
 
                             return;
+                        },
+                        render_error: (data) => {
+                            const isSuccess = !data?.is_error;
+                            return (
+                                <div className='flex gap-2 items-center'>
+                                    <Badge
+                                        label={isSuccess ? 'Success' : 'Error'}
+                                        appearance={
+                                            isSuccess ? 'success' : 'error'
+                                        }
+                                    />
+                                    {!isSuccess && (
+                                        <Tooltip
+                                            asChild
+                                            message={getErrorMessageTeamInbox(
+                                                data
+                                            )}
+                                        >
+                                            <div className='cursor-pointer'>
+                                                <Icon
+                                                    isSvg
+                                                    source={ErrorSvgIcon}
+                                                    iconColor='text-error'
+                                                />
+                                            </div>
+                                        </Tooltip>
+                                    )}
+                                </div>
+                            );
                         },
                     }}
                 />
