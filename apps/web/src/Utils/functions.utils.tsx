@@ -13,6 +13,7 @@ import {
     EMPLOYEE_REPORT_ROUTE,
     EmptyFunction,
     fetchBusinesses,
+    FetchData,
     FINOPS_DEPARTMENT_DETAIL_ROUTE,
     FINOPS_DESIGNATION_DETAIL_ROUTE,
     FINOPS_EMAIL_MESSAGES_LIST_ROUTE,
@@ -33,8 +34,10 @@ import {
     PRODUCT_IDENTIFIER,
     RefetchGenericListing,
     StoreEvent,
+    toastBackendError,
     UserBusiness,
 } from '@finnoto/core';
+import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import { Menu } from '@finnoto/core/src/Utils/menu.utils';
 import {
     ApiSchema,
@@ -898,4 +901,19 @@ export const toastBackendErrorModal = (
         props: { response, defaultMessage },
         modalSize: 'auto',
     });
+};
+
+export const getInboxFromWaId = async (wa_id: string) => {
+    const { hide } = Toast.loading({ description: 'Getting inbox detail...' });
+
+    const { response, success } = await FetchData({
+        className: TeamInboxController,
+        method: 'showMobile',
+        methodParams: wa_id,
+    });
+
+    hide();
+
+    if (success) return response;
+    return toastBackendError(response, 'Team inbox is not setup yet');
 };

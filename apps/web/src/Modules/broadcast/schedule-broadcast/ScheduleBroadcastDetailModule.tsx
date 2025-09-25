@@ -17,6 +17,7 @@ import {
     HOME_ROUTE,
     Navigation,
     SCHEDULE_BROADCAST_CREATION_ROUTE,
+    TEAM_INBOX_SPLIT_LIST,
     useFetchParams,
     USER_PROFILE_ROUTE,
     useUserHook,
@@ -25,6 +26,7 @@ import {
 import { Breadcrumbs, Button, cn, Container } from '@finnoto/design-system';
 
 import GenericDefinitionListing from '../../../Components/GenericDocumentListing/genericDefinitionListing.component';
+import { getInboxFromWaId } from '../../../Utils/functions.utils';
 import { openTemplateViewer } from '../your-templates/components/TemplateViewer.component';
 import { useScheduleBroadCastDetail } from './hooks/useScheduleBroadcastDetail.hook';
 
@@ -308,6 +310,31 @@ const ScheduleBroadcastDetailModule = () => {
                             type: 'outer',
                         },
                     ]}
+                    macros={{
+                        render_mobile: (item) => {
+                            const { dialing_code, mobile } = item;
+                            const waId = `${dialing_code}${mobile}`;
+
+                            if (waId)
+                                return (
+                                    <div
+                                        onClick={async () => {
+                                            const inbox =
+                                                await getInboxFromWaId(waId);
+                                            if (!inbox) return;
+                                            Navigation.navigate({
+                                                url: `${TEAM_INBOX_SPLIT_LIST}/${inbox.id}`,
+                                            });
+                                        }}
+                                        className='link link-hover'
+                                    >
+                                        +{dialing_code}-{mobile}
+                                    </div>
+                                );
+
+                            return;
+                        },
+                    }}
                 />
             </div>
         </Container>

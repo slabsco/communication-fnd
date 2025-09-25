@@ -88,7 +88,8 @@ const CONTACT_FIELDS: ContactField[] = [
     {
         key: 'phone',
         icon: 'phone',
-        getValue: (data) => data.contact?.mobile,
+        getValue: (data) =>
+            `${data?.contact?.dialing_code}${data.contact?.mobile}`,
     },
     {
         key: 'created_at',

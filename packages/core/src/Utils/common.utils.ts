@@ -577,6 +577,7 @@ export function GetArrayFromObjArray<T>(arr: T[], key: string) {
  * returns current environment
  */
 export function IsProduction() {
+    return true;
     if (
         typeof window !== 'undefined' &&
         window.location.href.includes('dartinbox.com')
