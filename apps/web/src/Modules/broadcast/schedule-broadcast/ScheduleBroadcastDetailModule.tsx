@@ -1,6 +1,5 @@
 'use client';
 
-import { addMinutes } from 'date-fns';
 import {
     AlertTriangleIcon,
     EyeIcon,
@@ -326,7 +325,7 @@ const ScheduleBroadcastDetailModule = () => {
                                                 url: `${TEAM_INBOX_SPLIT_LIST}/${inbox.id}`,
                                             });
                                         }}
-                                        className='link link-hover'
+                                        className='link-hover'
                                     >
                                         +{dialing_code}-{mobile}
                                     </div>
