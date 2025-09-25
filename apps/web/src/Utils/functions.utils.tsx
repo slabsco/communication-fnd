@@ -915,5 +915,5 @@ export const getInboxFromWaId = async (wa_id: string) => {
     hide();
 
     if (success) return response;
-    return toastBackendError(response, 'Team inbox is not setup yet');
+    return toastBackendError(undefined, 'Team inbox is not setup yet');
 };
