@@ -36,6 +36,8 @@ interface MessageData {
 interface GroupedData {
     replied: number;
     unreplied: number;
+    label: string;
+    sortKey: number;
 }
 
 interface ProcessedChartData {
@@ -44,25 +46,96 @@ interface ProcessedChartData {
     colors: string[];
 }
 
-// Utility functions
-const formatDateLabel = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-    });
+type Granularity = 'day' | 'week' | 'month';
+
+// Granularity helpers
+const getGranularity = (dateFilter: string): Granularity => {
+    if (dateFilter === '15 Days') return 'day';
+    if (dateFilter === '1 Month') return 'week';
+    return 'month'; // '3 Month'
 };
 
-const groupDataByDate = (data: MessageData[]): Record<string, GroupedData> => {
+const toUTCDate = (dateString: string) => {
+    // Normalize to UTC midnight for stable grouping across timezones
+    const d = new Date(dateString);
+    return new Date(
+        Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+    );
+};
+
+const getISOWeek = (date: Date): { year: number; week: number } => {
+    // Copy date, set to nearest Thursday: current date + 4 - current day number
+    const d = new Date(
+        Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+    );
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const week = Math.ceil(((+d - +yearStart) / 86400000 + 1) / 7);
+    return { year: d.getUTCFullYear(), week };
+};
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
+const getGroupKeyAndLabel = (dateString: string, granularity: Granularity) => {
+    const d = toUTCDate(dateString);
+    const y = d.getUTCFullYear();
+    const m = d.getUTCMonth() + 1;
+    const day = d.getUTCDate();
+
+    if (granularity === 'day') {
+        const sortKey = +d; // timestamp
+        const label = d.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+        });
+        const key = `${y}-${pad2(m)}-${pad2(day)}`;
+        return { key, label, sortKey };
+    }
+
+    if (granularity === 'week') {
+        // Week within the month, with day range like "Week 1 (1-7)"
+        const dayOfMonth = day; // 1..31
+        const weekInMonth = Math.floor((dayOfMonth - 1) / 7) + 1;
+        const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate(); // last day of month
+        const startDay = (weekInMonth - 1) * 7 + 1;
+        const endDay = Math.min(weekInMonth * 7, daysInMonth);
+
+        const sortKey = y * 10000 + m * 100 + weekInMonth; // YYYYMMWW
+        const key = `${y}-${pad2(m)}-W${weekInMonth}`;
+        const label = `Week ${weekInMonth} (${startDay}-${endDay})`;
+        return { key, label, sortKey };
+    }
+
+    // month
+    const sortKey = y * 100 + m;
+    const key = `${y}-${pad2(m)}`;
+    const label = d.toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+    });
+    return { key, label, sortKey };
+};
+
+// Utility functions
+const groupData = (
+    data: MessageData[],
+    granularity: Granularity
+): Record<string, GroupedData> => {
     return data.reduce((acc, item) => {
-        if (!acc[item.message_date]) {
-            acc[item.message_date] = { replied: 0, unreplied: 0 };
+        const { key, label, sortKey } = getGroupKeyAndLabel(
+            item.message_date,
+            granularity
+        );
+
+        if (!acc[key]) {
+            acc[key] = { replied: 0, unreplied: 0, label, sortKey };
         }
 
         if (item.is_replied) {
-            acc[item.message_date].replied = item.count;
+            acc[key].replied += item.count;
         } else {
-            acc[item.message_date].unreplied = item.count;
+            acc[key].unreplied += item.count;
         }
 
         return acc;
@@ -79,19 +152,26 @@ const processChartData = (
 
     const daysToShow =
         DAYS_MAPPING[dateFilter as keyof typeof DAYS_MAPPING] || 15;
-    const filteredData = data.slice(0, daysToShow * 2); // *2 because we have 2 entries per day
-    const groupedData = groupDataByDate(filteredData);
 
-    const dates = Object.keys(groupedData).sort();
-    const repliedData = dates.map((date) => groupedData[date].replied);
-    const unrepliedData = dates.map((date) => groupedData[date].unreplied);
+    // Limit raw rows roughly by days requested; backend returns 2 rows per day
+    const filteredData = data.slice(0, daysToShow * 2);
+
+    const granularity = getGranularity(dateFilter);
+    const grouped = groupData(filteredData, granularity);
+
+    const buckets = Object.values(grouped).sort(
+        (a, b) => a.sortKey - b.sortKey
+    );
+
+    const repliedData = buckets.map((b) => b.replied);
+    const unrepliedData = buckets.map((b) => b.unreplied);
 
     const chartData = [
         { name: CHART_SERIES_NAMES[0], data: repliedData },
         { name: CHART_SERIES_NAMES[1], data: unrepliedData },
     ];
 
-    const chartLabels = dates.map(formatDateLabel);
+    const chartLabels = buckets.map((b) => b.label);
 
     return { chartData, chartLabels, colors: CHART_COLORS };
 };

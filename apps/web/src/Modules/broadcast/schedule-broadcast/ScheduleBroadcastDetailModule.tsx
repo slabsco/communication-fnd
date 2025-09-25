@@ -325,7 +325,7 @@ const ScheduleBroadcastDetailModule = () => {
                                                 url: `${TEAM_INBOX_SPLIT_LIST}/${inbox.id}`,
                                             });
                                         }}
-                                        className='link-hover'
+                                        className='cursor-pointer link-hover'
                                     >
                                         +{dialing_code}-{mobile}
                                     </div>

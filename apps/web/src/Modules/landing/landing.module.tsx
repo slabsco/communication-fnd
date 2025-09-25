@@ -85,6 +85,9 @@ interface ErrorColumns {
 const WarningAccordion = ({ columns }: { columns: ErrorColumns[] }) => {
     const [open, setOpen] = useState(true);
 
+    const hasVisible = columns?.find((_col) => _col?.visible);
+    if (!hasVisible) return;
+
     return (
         <div className='overflow-hidden rounded transition-all col-flex'>
             <div

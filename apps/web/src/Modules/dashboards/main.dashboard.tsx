@@ -48,7 +48,7 @@ const MainDashboard = () => {
     if (isBusinessInfoLoading) return <PageLoader />;
 
     return (
-        <Container className='flex overflow-hidden relative flex-col py-4'>
+        <Container className='flex overflow-hidden relative flex-col py-4 transition-all'>
             <div className='gap-2 my-3 col-flex'>
                 <LandingModule />
             </div>
@@ -150,7 +150,7 @@ const MainDashboard = () => {
                     </Card>
                 </div>
                 <DayWiseMessageChart />
-                <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+                <div className='grid grid-cols-1 gap-3 lg:grid-cols-2'>
                     <Card title='Inbox Stats'>
                         <ExpiredActiveCard />
                     </Card>

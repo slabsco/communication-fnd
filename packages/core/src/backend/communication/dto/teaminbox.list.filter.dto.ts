@@ -11,6 +11,11 @@ export class TeamInboxListFilterDto extends CommonListFilterDto {
     @IsOptional()
     @IsBoolean()
     @Expose()
+    unread?: boolean;
+
+    @IsOptional()
+    @IsBoolean()
+    @Expose()
     is_assigned_to_bot?: boolean;
 
     @IsOptional()

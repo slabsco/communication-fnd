@@ -23,6 +23,13 @@ import { playNotificationSound } from './useNotificationSound.hook';
 
 export const TeamInboxTabFilter = [
     {
+        title: 'Unread',
+        key: 'unread',
+        customFilterValue: {
+            unread: true,
+        },
+    },
+    {
         title: 'Assigned to me',
         key: 'assign_me',
         customFilterValue: {
