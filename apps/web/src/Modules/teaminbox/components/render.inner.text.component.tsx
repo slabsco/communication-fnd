@@ -20,9 +20,14 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                         src={payload?.image.link}
                     />
 
-                    <span className='text-sm text-primary-950'>
-                        {payload?.image?.caption}
-                    </span>
+                    <span
+                        className='text-sm text-primary-950'
+                        dangerouslySetInnerHTML={{
+                            __html: convertWhatsappFormatToHtml(
+                                payload?.image?.caption
+                            ),
+                        }}
+                    ></span>
                 </div>
             );
         }
@@ -57,9 +62,14 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                         />
                     )}
 
-                    <span className='text-sm text-primary-950'>
-                        {payload?.document?.caption}
-                    </span>
+                    <span
+                        className='text-sm text-primary-950'
+                        dangerouslySetInnerHTML={{
+                            __html: convertWhatsappFormatToHtml(
+                                payload?.document?.caption
+                            ),
+                        }}
+                    ></span>
                 </div>
             );
         }
@@ -73,9 +83,14 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                         controls
                     />
 
-                    <span className='text-sm text-primary-950'>
-                        {payload?.document?.caption}
-                    </span>
+                    <span
+                        className='text-sm text-primary-950'
+                        dangerouslySetInnerHTML={{
+                            __html: convertWhatsappFormatToHtml(
+                                payload?.audio?.caption
+                            ),
+                        }}
+                    ></span>
                 </div>
             );
         }
@@ -91,9 +106,14 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                             />
                         </div>
 
-                        <span className='text-sm text-primary-950'>
-                            {payload?.audio?.caption}
-                        </span>
+                        <span
+                            className='text-sm text-primary-950'
+                            dangerouslySetInnerHTML={{
+                                __html: convertWhatsappFormatToHtml(
+                                    payload?.document?.caption
+                                ),
+                            }}
+                        ></span>
                     </div>
                 </div>
             );
@@ -107,9 +127,12 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                         wordBreak: 'break-word',
                         overflowWrap: 'break-word',
                     }}
-                >
-                    {payload?.text?.body}
-                </span>
+                    dangerouslySetInnerHTML={{
+                        __html: convertWhatsappFormatToHtml(
+                            payload?.text?.body
+                        ),
+                    }}
+                ></span>
             </div>
         );
     };
@@ -124,3 +147,19 @@ export const RenderInnerTextMessage = ({ message }: any) => {
         </div>
     );
 };
+
+function convertWhatsappFormatToHtml(text: string): string {
+    // Convert *bold* to <strong>
+    text = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+
+    // Convert _italic_ to <em>
+    text = text.replace(/_(.*?)_/g, '<em>$1</em>');
+
+    // Convert ~strikethrough~ to <del>
+    text = text.replace(/~(.*?)~/g, '<del>$1</del>');
+
+    // Convert line breaks to <br>
+    text = text.replace(/\n/g, '<br/>');
+
+    return text;
+}
