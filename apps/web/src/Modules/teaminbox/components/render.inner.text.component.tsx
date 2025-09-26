@@ -1,5 +1,5 @@
-import { Link } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { Ellipsis, IsEmptyObject } from '@finnoto/core';
 import { cn, Icon, IconButton } from '@finnoto/design-system';
@@ -87,7 +87,7 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                         className='text-sm text-primary-950'
                         dangerouslySetInnerHTML={{
                             __html: convertWhatsappFormatToHtml(
-                                payload?.audio?.caption
+                                payload?.video?.caption
                             ),
                         }}
                     ></span>
@@ -110,7 +110,7 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                             className='text-sm text-primary-950'
                             dangerouslySetInnerHTML={{
                                 __html: convertWhatsappFormatToHtml(
-                                    payload?.document?.caption
+                                    payload?.audio?.caption
                                 ),
                             }}
                         ></span>
@@ -149,6 +149,8 @@ export const RenderInnerTextMessage = ({ message }: any) => {
 };
 
 function convertWhatsappFormatToHtml(text: string): string {
+    if (!text) return '';
+
     // Convert *bold* to <strong>
     text = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
 
