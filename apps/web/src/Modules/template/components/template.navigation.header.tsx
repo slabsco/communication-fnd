@@ -1,30 +1,24 @@
-import { CheckCheck, Pencil, Settings2, Star } from 'lucide-react';
+import { CheckCheck, Pencil, Settings2 } from 'lucide-react';
 
 import { cn } from '@finnoto/design-system';
 
 import { HeaderNavigationButton } from '../constants/template.format';
+import { templateNavigationGuard } from '../constants/template.reducer';
 import { useTemplate } from '../template.context';
 
 const TemplateNavigationHeader = () => {
-    const { state, setActiveStep } = useTemplate();
+    const { state, dispatch } = useTemplate();
+
     const actions: HeaderNavigationButton[] = [
         {
             name: 'Setup Template',
             key: 'setup_template',
             icon: <Settings2 size={16} />,
-            hasComplete: state.steps.setup_template.status === 'complete',
         },
         {
             name: 'Edit Template',
             key: 'edit_template',
             icon: <Pencil size={16} />,
-            hasComplete: state.steps.edit_template.status === 'complete',
-        },
-        {
-            name: 'Submit For Review',
-            key: 'submit_review',
-            icon: <Star size={16} />,
-            hasComplete: state.steps.submit_review.status === 'complete',
         },
     ];
 
@@ -35,8 +29,15 @@ const TemplateNavigationHeader = () => {
                     <NavigationActionButton
                         {..._action}
                         key={_action?.key}
-                        active={_action?.key === state.activeStep}
-                        onClick={() => setActiveStep(_action?.key)}
+                        active={_action?.key === state?.activeStep}
+                        onClick={() => {
+                            templateNavigationGuard(() => {
+                                dispatch({
+                                    type: 'CHANGE_TEMPLATE_ACTION',
+                                    payload: _action?.key,
+                                });
+                            }, _action?.key === 'setup_template');
+                        }}
                     />
                 );
             })}

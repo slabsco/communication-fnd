@@ -1,16 +1,15 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, Dispatch, useContext, useReducer } from 'react';
 
-import { creationSteps } from './constants/template.format';
+import { TemplateAction } from './constants/template.format';
+import { initialState, templateReducer } from './constants/template.reducer';
+import { TemplateState } from './types/template.category.types';
 
 interface TemplateContextTypes {
-    activeStep: creationSteps;
-    handleActiveStep: (key: creationSteps) => void;
+    state: TemplateState;
+    dispatch: Dispatch<TemplateAction>;
 }
 
-const TemplateContext = createContext<TemplateContextTypes>({
-    activeStep: string,
-    handleActiveStep,
-});
+const TemplateContext = createContext<TemplateContextTypes>(null);
 
 export const useTemplate = () => useContext(TemplateContext);
 
@@ -19,15 +18,10 @@ export const TemplateProvider = ({
 }: {
     children: React.ReactNode;
 }) => {
-    const [activeStep, setActiveStep] =
-        useState<creationSteps>('setup_template');
-
-    const handleActiveStep = (key: creationSteps) => {
-        setActiveStep(key);
-    };
+    const [state, dispatch] = useReducer(templateReducer, initialState);
 
     return (
-        <TemplateContext.Provider value={{ activeStep, handleActiveStep }}>
+        <TemplateContext.Provider value={{ state, dispatch }}>
             {children}
         </TemplateContext.Provider>
     );

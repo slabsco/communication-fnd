@@ -1,9 +1,9 @@
 import { creationSteps } from '../constants/template.format';
 
-export type TemplateCategoryType = '' | 'UTILITY' | 'AUTHENTICATION';
+export type TemplateCategoryType = 'MARKETING' | 'UTILITY' | 'AUTHENTICATION';
 
 export interface MarketingCategory {
-    name: 'TemplateCategoryType';
+    name: TemplateCategoryType;
     type: 'DEFAULT' | 'CALL_PERMISSION' | 'CAROUSEL';
 }
 
@@ -52,6 +52,7 @@ type UrlButton = {
     text: string;
     url: string;
     example: string[];
+    is_dynamic?: boolean; // dynamic vs static URL
 };
 
 type Button = QuickReplyButton | CopyCodeButton | PhoneNumberButton | UrlButton;
@@ -79,37 +80,18 @@ interface ComponentsState {
         text?: string;
     };
     call_permission_request: Record<string, never>;
-    limited_time_offer: {
-        text?: string;
-        has_expiration: boolean;
-    };
+    limited_time_offer: Record<string, never>;
     carousel: {
         cards: unknown[];
     };
     buttons: Button[];
 }
 
-interface EditTemplateStepState {
-    complete: boolean;
-    configuration: {
-        name?: string;
-        language?: string;
-    };
-    components: ComponentsState;
-}
-
-interface SetupTemplateStepState {
-    complete: boolean;
-    category?: CategoryName;
-    type?: CategoryType;
-}
-
-interface StepsState {
-    setup_template: SetupTemplateStepState;
-    edit_template: EditTemplateStepState;
-}
-
 export interface TemplateState {
     activeStep: creationSteps;
-    steps: StepsState;
+    name?: string;
+    language?: string;
+    category?: CategoryName;
+    type?: CategoryType;
+    components: ComponentsState;
 }
