@@ -2,18 +2,16 @@ import axios from 'axios';
 import { FileIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import {
     ACCESS_TOKEN,
     BUSINESS_API_URL,
     Ellipsis,
-    FetchData,
     GetItem,
     IsUndefinedOrNull,
     replaceVariablesInString,
 } from '@finnoto/core';
-import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import {
     FormatDisplayDateStyled,
     IconButton,
@@ -21,8 +19,6 @@ import {
 } from '@finnoto/design-system';
 
 import { useQuery } from '@tanstack/react-query';
-
-import { RefetchTeamInboxListing } from '../hooks/useTeamInboxMessageListing.hook';
 
 import { FileDownloadSvgIcon } from 'assets';
 
@@ -66,22 +62,6 @@ export const RenderUserMessageBubble = ({ message }) => {
 
             return null;
         },
-    });
-
-    const setMessageRead = async (broadcastMessageid: number) => {
-        const { success } = await FetchData({
-            className: TeamInboxController,
-            method: 'markAsRead',
-            methodParams: broadcastMessageid,
-        });
-        if (success) {
-            RefetchTeamInboxListing();
-        }
-    };
-
-    useEffect(() => {
-        if (message?.read_at || !message?.is_replied) return;
-        setMessageRead(message.id);
     });
 
     const repliedContent = useMemo(() => {

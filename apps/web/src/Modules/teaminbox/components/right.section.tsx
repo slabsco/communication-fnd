@@ -1,9 +1,15 @@
 import { addHours } from 'date-fns';
 import { Contact, MessageCircle, User } from 'lucide-react';
-import { ReactNode } from 'react';
+import { ReactNode, useCallback, useEffect } from 'react';
 import { useEffectOnce } from 'react-use';
 
-import { FormatDisplayDate, IsEmptyArray, IsEmptyObject } from '@finnoto/core';
+import {
+    FetchData,
+    FormatDisplayDate,
+    IsEmptyArray,
+    IsEmptyObject,
+} from '@finnoto/core';
+import { TeamInboxController } from '@finnoto/core/src/backend/communication/controller/team.inbox.controller';
 import {
     Avatar,
     Button,
@@ -17,6 +23,7 @@ import {
     RefetchTeamInboxDetail,
     useTeamInbox,
 } from '../context/teaminbox.context.main';
+import { RefetchTeamInboxListing } from '../hooks/useTeamInboxMessageListing.hook';
 import { DisplayTeamInboxStatus } from './chat.message.detail.component';
 import InboxBotMode from './inbox.bot.mode';
 
@@ -479,7 +486,19 @@ export const RightSection = ({
     const { currentInboxDetail: data, isLoading } = useTeamInbox();
     const mode = DISPLAY_MODES[compress ? 'compress' : 'normal'];
 
-    const identifier = data?.contact?.identifier;
+    const setMessageRead = useCallback(async () => {
+        const { success } = await FetchData({
+            className: TeamInboxController,
+            method: 'markAsRead',
+            methodParams: data?.id,
+        });
+        if (success) RefetchTeamInboxListing();
+    }, [data?.id]);
+
+    useEffect(() => {
+        const unread = data?.attributes?.unread_count;
+        if (unread) setMessageRead();
+    }, [data, setMessageRead]);
 
     useEffectOnce(() => {
         RefetchTeamInboxDetail();
