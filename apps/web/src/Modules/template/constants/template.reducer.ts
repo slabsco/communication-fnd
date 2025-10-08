@@ -23,13 +23,6 @@ export const initialState: TemplateState = {
         {
             type: 'BODY',
             text: undefined,
-            example: {
-                body_text_named_params: [],
-            },
-        },
-        {
-            type: 'FOOTER',
-            text: undefined,
         },
         {
             type: 'BUTTONS',
@@ -65,8 +58,10 @@ function updateComponent(
     componentType: 'HEADER' | 'BODY' | 'FOOTER' | 'BUTTONS',
     updates: any
 ): TemplateState {
+    let found = false;
     const updatedComponents = state.components.map((component) => {
         if (component.type === componentType) {
+            found = true;
             return {
                 ...component,
                 ...updates,
@@ -74,6 +69,14 @@ function updateComponent(
         }
         return component;
     });
+
+    // If not found, add a new component of the given type with the updates
+    if (!found) {
+        updatedComponents.push({
+            type: componentType,
+            ...updates,
+        });
+    }
 
     return {
         ...state,

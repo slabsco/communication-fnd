@@ -55,61 +55,6 @@ const YourTemplatesListModule = () => {
                 ],
             },
         ],
-        rowActions: [
-            {
-                name: 'Duplicate',
-                key: 'duplicate',
-                icon: CopySvgIcon,
-                action: (row: any) => {
-                    Navigation.navigate({
-                        url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${row.id}&is_duplicate=true`,
-                    });
-                },
-            },
-            {
-                name: 'Edit',
-                key: 'edit',
-                icon: EditSvgIcon,
-                visible: (row) => {
-                    if (
-                        row.category_id ===
-                        WhatsappTemplateCategoryEnum.AUTHENTICATION
-                    )
-                        return false;
-
-                    return [
-                        WhatsappTemplateStatusEnum.REJECTED,
-                        WhatsappTemplateStatusEnum.APPROVED,
-                        WhatsappTemplateStatusEnum.PAUSED,
-                    ].includes(row.status_id);
-                },
-                action: (row: any) => {
-                    Navigation.navigate({
-                        url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${row.id}`,
-                    });
-                },
-            },
-            {
-                name: 'Delete',
-                key: 'delete',
-                action: (item: ObjectDto) => {
-                    ConfirmUtil({
-                        title: 'Do you want to delete?',
-                        message:
-                            'The action you are about to perform is irreversible.',
-                        icon: DeleteSvgIcon,
-                        isArc: true,
-                        onConfirmPress: () => {
-                            deleteTemplate(item?.id);
-                        },
-                        appearance: 'error',
-                    });
-                },
-                color: 'text-error',
-                isCancel: true,
-                icon: DeleteSvgIcon,
-            },
-        ],
         table: [
             {
                 name: 'Template Name',

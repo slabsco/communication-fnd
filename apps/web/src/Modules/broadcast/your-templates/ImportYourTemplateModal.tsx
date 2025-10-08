@@ -16,6 +16,7 @@ import {
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 
+import { TemplatePreviewer } from '../../template/components/template.preview.component';
 import { YourTemplatesPreview } from './components/YourTemplatesPriview.component';
 
 import { EyeSvgIcon } from 'assets';
@@ -147,17 +148,5 @@ export const openImportYourTemplateModal = (options?: { callback: any }) => {
 };
 
 const ImportTemplatePreview = (propsData: any) => {
-    const {
-        data: { viewer },
-    } = propsData;
-
-    return (
-        <YourTemplatesPreview
-            sampleContent={viewer?.sample_contents}
-            body={viewer?.body?.script}
-            configuration={viewer?.button_configurations}
-            title={viewer?.title}
-            footer={viewer?.footer?.script}
-        />
-    );
+    return <TemplatePreviewer state={propsData?.data} />;
 };

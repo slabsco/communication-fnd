@@ -1537,13 +1537,12 @@ export const newReplaceVariablesInString = (
     params: { param_name: string; example: string }[]
 ): string => {
     if (!message) return '';
+
     const regex = /{{(.*?)}}/g;
     return message.replace(regex, (_, variable) => {
         const trimmedVariable = variable.trim();
-        console.log(trimmedVariable);
-
-        const found = params.find(
-            (param) => param.param_name === trimmedVariable
+        const found = params?.find(
+            (param) => param?.param_name === trimmedVariable
         );
         return found && found.example !== undefined && found.example !== null
             ? found.example

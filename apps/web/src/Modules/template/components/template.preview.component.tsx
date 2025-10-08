@@ -23,16 +23,22 @@ import { convertWhatsappFormatToHtml } from '../../teaminbox/components/render.i
 import { useTemplate } from '../template.context';
 
 const getValue = (components, type) =>
-    components.find((_com) => _com?.type === type);
-const TemplatePreviewComponent = () => {
-    const { state } = useTemplate();
+    components?.find((_com) => _com?.type === type);
 
+const TemplatePreviewComponentContainer = () => {
+    const { state } = useTemplate();
+    return <TemplatePreviewer state={state} />;
+};
+
+export default TemplatePreviewComponentContainer;
+
+export const TemplatePreviewer = ({ state }: { state: any }) => {
     const body = getValue(state?.components, 'BODY');
     const header = getValue(state?.components, 'HEADER');
     const footer = getValue(state?.components, 'FOOTER');
     const { buttons } = getValue(state?.components, 'BUTTONS') || {};
 
-    const { format, text = '' } = header || {};
+    const { format, text = '', example } = header || {};
     const { header_media_detail } = state || {};
 
     const renderTitle = useMemo(() => {
@@ -41,7 +47,10 @@ const TemplatePreviewComponent = () => {
                 <div className='h-[150px] w-full border'>
                     <img
                         alt='image'
-                        src={header_media_detail?.document_url}
+                        src={
+                            header_media_detail?.document_url ||
+                            example?.header_handle?.[0]
+                        }
                         className='w-full h-full'
                     />
                 </div>
@@ -62,7 +71,12 @@ const TemplatePreviewComponent = () => {
         }
 
         return <></>;
-    }, [format, header_media_detail?.document_url, text]);
+    }, [
+        example?.header_handle,
+        format,
+        header_media_detail?.document_url,
+        text,
+    ]);
 
     const renderButton = (button: any) => {
         const { type, text, example } = button;
@@ -192,5 +206,3 @@ const TemplatePreviewComponent = () => {
         </div>
     );
 };
-
-export default TemplatePreviewComponent;

@@ -6,6 +6,7 @@ import TemplateStateBanner from './template.state.banner';
 
 const EditTemplate = () => {
     const { state, activeStep } = useTemplate();
+
     return (
         <div className='gap-4 w-full col-flex'>
             <TemplateStateBanner />

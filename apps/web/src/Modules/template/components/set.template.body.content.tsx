@@ -41,20 +41,18 @@ const SetTemplateBodyContent = () => {
     };
 
     return (
-        <div>
-            <RichTextEditor
-                features={['bold', 'italic', 'underline']}
-                labelProps={{
-                    label: 'Body',
-                    required: true,
-                    className: 'text-lg',
-                }}
-                // error={}
-                html={convertWhatsappFormatToHtml(text)}
-                getHtml={setContent}
-                enablePreview={false}
-            />
-        </div>
+        <RichTextEditor
+            features={['bold', 'italic', 'underline']}
+            labelProps={{
+                label: 'Body',
+                required: true,
+                className: 'text-lg',
+            }}
+            // error={}
+            html={convertWhatsappFormatToHtml(text)}
+            getHtml={setContent}
+            enablePreview={false}
+        />
     );
 };
 

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { createEditor, Editor, Transforms } from 'slate';
 import { withHistory } from 'slate-history';
+import { jsx } from 'slate-hyperscript';
 import { withReact } from 'slate-react';
 
-import { IsEmptyArray, IsUndefinedOrNull, useQuery } from '@finnoto/core';
+import { IsEmptyArray, useQuery } from '@finnoto/core';
 
 import { cn } from '../../../Utils/common.ui.utils';
 import { InputErrorMessage } from '../InputField/inputMessage.component';
@@ -78,13 +79,84 @@ export const RichTextEditor = ({
 
     const deserializeHtml = useMemo(() => {
         if (!html) return;
-        const dom = new DOMParser().parseFromString(html, 'text/html').body;
+
+        // Clean up HTML entities before parsing
+        const cleanHtml = html.replace(/&amp;amp;/g, '&');
+
+        // If the HTML doesn't contain any HTML tags, treat it as plain text
+        if (!/<[^>]+>/.test(cleanHtml)) {
+            // Split by line breaks and create paragraphs
+            const lines = cleanHtml
+                .split('\n')
+                .filter((line) => line.trim() !== '');
+            return lines.map((line) =>
+                jsx('element', { type: 'paragraph' }, [jsx('text', {}, line)])
+            );
+        }
+
+        const dom = new DOMParser().parseFromString(
+            cleanHtml,
+            'text/html'
+        ).body;
 
         const value = deserializeRichText(dom, {}, mentions);
 
-        if (IsUndefinedOrNull(value?.[0]?.type)) return undefined;
-        return value;
+        // Handle different return types from deserializeRichText
+        if (!value) return undefined;
+
+        // If value is a string (empty case), return undefined
+        if (typeof value === 'string') return undefined;
+
+        // If value is a single element object, wrap it in an array
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+            // If it's a fragment, extract its children
+            if (value.type === 'fragment') {
+                return value.children || [];
+            }
+            return [value];
+        }
+
+        // If value is an array, process it properly
+        if (Array.isArray(value)) {
+            // Convert array of text objects to proper Slate structure
+            const processedElements = [];
+
+            for (let i = 0; i < value.length; i++) {
+                const item = value[i];
+
+                // If it's a text object, wrap it in a paragraph
+                if (
+                    item &&
+                    typeof item === 'object' &&
+                    item.text !== undefined
+                ) {
+                    processedElements.push(
+                        jsx('element', { type: 'paragraph' }, [
+                            jsx('text', {}, item.text),
+                        ])
+                    );
+                }
+                // If it's already a proper Slate element, keep it as is
+                else if (item && typeof item === 'object' && item.type) {
+                    processedElements.push(item);
+                }
+                // If it's an empty string (from BR tags), create an empty paragraph
+                else if (item === '') {
+                    processedElements.push(
+                        jsx('element', { type: 'paragraph' }, [
+                            jsx('text', {}, ''),
+                        ])
+                    );
+                }
+            }
+
+            return processedElements.length > 0 ? processedElements : undefined;
+        }
+
+        return undefined;
     }, [html, mentions]);
+
+    console.log({ deserializeHtml });
 
     // Update display on update if is readOnly.
     useEffect(() => {

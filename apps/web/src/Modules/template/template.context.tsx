@@ -27,11 +27,13 @@ const TemplateContext = createContext<TemplateContextTypes>(null);
 export const useTemplate = () => useContext(TemplateContext);
 
 export const TemplateProvider = ({
+    edit_data = initialState,
     children,
 }: {
+    edit_data?: typeof initialState;
     children: React.ReactNode;
 }) => {
-    const [state, dispatch] = useReducer(templateReducer, initialState);
+    const [state, dispatch] = useReducer(templateReducer, edit_data);
 
     const [activeStep, setActiveStep] = useState<activeStep>({
         step: 'setup_template',
