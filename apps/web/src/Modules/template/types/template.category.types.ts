@@ -1,5 +1,3 @@
-import { creationSteps } from '../constants/template.format';
-
 export type TemplateCategoryType = 'MARKETING' | 'UTILITY' | 'AUTHENTICATION';
 
 export interface MarketingCategory {
@@ -58,40 +56,39 @@ type UrlButton = {
 type Button = QuickReplyButton | CopyCodeButton | PhoneNumberButton | UrlButton;
 
 interface HeaderExample {
-    header_text_named_params: string[];
+    header_text_named_params: {
+        example: string;
+        param_name: string;
+    }[];
     header_handle: string[];
+    media_detail: any;
 }
 
 interface BodyExample {
-    body_text_named_params: string[];
+    body_text_named_params: {
+        example: string;
+        param_name: string;
+    }[];
 }
 
-interface ComponentsState {
-    header: {
-        format?: string;
-        text?: string;
-        example: HeaderExample;
+interface CommonComponentTypes {
+    type: 'HEADER' | 'BODY' | 'BUTTONS' | 'FOOTER';
+    format?: string;
+    text?: string;
+    example?: {
+        body_text_named_params?: any;
+        header_text_named_params?: any;
+        header_handle?: any;
     };
-    body: {
-        text?: string;
-        example: BodyExample;
-    };
-    footer: {
-        text?: string;
-    };
-    call_permission_request: Record<string, never>;
-    limited_time_offer: Record<string, never>;
-    carousel: {
-        cards: unknown[];
-    };
-    buttons: Button[];
+    buttons?: Button[];
 }
 
 export interface TemplateState {
-    activeStep: creationSteps;
+    allow_category_change: boolean;
+    parameter_format: string;
+    header_media_detail: any;
     name?: string;
     language?: string;
     category?: CategoryName;
-    type?: CategoryType;
-    components: ComponentsState;
+    components: CommonComponentTypes[];
 }

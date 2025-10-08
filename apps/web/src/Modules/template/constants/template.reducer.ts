@@ -1,17 +1,18 @@
-import { Navigation, WHATSAPP_TEMPLATE_LIST_ROUTE } from '@finnoto/core';
 import { ConfirmAsyncUtil } from '@finnoto/design-system';
 
 import { TemplateState } from '../types/template.category.types';
 import { TemplateAction } from './template.format';
 
 export const initialState: TemplateState = {
-    activeStep: 'setup_template',
+    parameter_format: 'NAMED',
+    allow_category_change: true,
     name: undefined,
-    language: undefined,
+    language: 'en_US',
     category: 'MARKETING',
-    type: 'DEFAULT',
-    components: {
-        header: {
+    header_media_detail: undefined,
+    components: [
+        {
+            type: 'HEADER',
             format: undefined,
             text: undefined,
             example: {
@@ -19,22 +20,22 @@ export const initialState: TemplateState = {
                 header_handle: [],
             },
         },
-        body: {
+        {
+            type: 'BODY',
             text: undefined,
             example: {
                 body_text_named_params: [],
             },
         },
-        footer: {
+        {
+            type: 'FOOTER',
             text: undefined,
         },
-        call_permission_request: {},
-        limited_time_offer: {},
-        carousel: {
-            cards: [],
+        {
+            type: 'BUTTONS',
+            buttons: [],
         },
-        buttons: [],
-    },
+    ],
 };
 
 function setIn<T>(obj: T, path: string, next: any | ((prev: any) => any)): T {
@@ -58,46 +59,99 @@ function setIn<T>(obj: T, path: string, next: any | ((prev: any) => any)): T {
     return clone as T;
 }
 
+// Helper function to update a specific component in the components array
+function updateComponent(
+    state: TemplateState,
+    componentType: 'HEADER' | 'BODY' | 'FOOTER' | 'BUTTONS',
+    updates: any
+): TemplateState {
+    const updatedComponents = state.components.map((component) => {
+        if (component.type === componentType) {
+            return {
+                ...component,
+                ...updates,
+            };
+        }
+        return component;
+    });
+
+    return {
+        ...state,
+        components: updatedComponents,
+    };
+}
+
+// Updated reducer with all component update cases
 export function templateReducer(
     state: TemplateState,
     action: TemplateAction
 ): TemplateState {
     switch (action.type) {
-        case 'CHANGE_TEMPLATE_ACTION': {
-            return { ...initialState, activeStep: action?.payload };
-        }
         case 'UPDATE_CATEGORY':
             return setIn(state, 'category', action?.payload);
-        case 'UPDATE_TYPE':
-            return setIn(state, 'type', action?.payload);
+
         case 'UPDATE_NAME':
             return setIn(state, 'name', action?.payload);
+
         case 'UPDATE_LANGUAGE':
             return setIn(state, 'language', action?.payload);
-        case 'UPDATE_HEADER_FORMAT':
-            return setIn(state, 'components.header.format', action?.payload);
-        case 'UPDATE_HEADER_TEXT':
-            return setIn(state, 'components.header.text', action?.payload);
-        case 'UPDATE_BODY_TEXT':
-            return setIn(state, 'components.body.text', action?.payload);
-        case 'UPDATE_FOOTER_TEXT':
-            return setIn(state, 'components.footer.text', action?.payload);
+
+        // HEADER COMPONENT UPDATES
+        case 'UPDATE_HEADER':
+            return updateComponent(state, 'HEADER', action?.payload);
+
+        case 'UPDATE_HEADER_MEDIA':
+            return setIn(state, 'header_media_detail', action?.payload);
+
+        case 'UPDATE_BODY':
+            return updateComponent(state, 'BODY', action?.payload);
+        case 'UPDATE_FOOTER':
+            return updateComponent(state, 'FOOTER', action?.payload);
         case 'UPDATE_BUTTONS':
-            return setIn(state, 'components.buttons', action?.payload);
-        case 'UPDATE_CAROUSEL':
-            return setIn(state, 'components.carousel', action?.payload);
-        case 'UPDATE_CALL_PERMISSION':
-            return setIn(
-                state,
-                'components.call_permission_request',
-                action?.payload
-            );
-        case 'UPDATE_LIMITED_TIME_OFFER':
-            return setIn(
-                state,
-                'components.limited_time_offer',
-                action?.payload
-            );
+            // Fix: Update only the buttons array, not the entire component
+            return updateComponent(state, 'BUTTONS', {
+                buttons: action?.payload,
+            });
+
+        // case 'UPDATE_HEADER_EXAMPLE':
+        //     return updateComponent(state, 'HEADER', {
+        //         example: {
+        //             ...state.components.find((c) => c.type === 'HEADER')
+        //                 ?.example,
+        //             ...action?.payload,
+        //         },
+        //     });
+
+        // // BODY COMPONENT UPDATES
+        // case 'UPDATE_BODY':
+        //     return updateComponent(state, 'BODY', action?.payload);
+
+        // case 'UPDATE_BODY_TEXT':
+        //     return updateComponent(state, 'BODY', { text: action?.payload });
+
+        // case 'UPDATE_BODY_EXAMPLE':
+        //     return updateComponent(state, 'BODY', {
+        //         example: {
+        //             ...state.components.find((c) => c.type === 'BODY')?.example,
+        //             ...action?.payload,
+        //         },
+        //     });
+
+        // // FOOTER COMPONENT UPDATES
+        // case 'UPDATE_FOOTER':
+        //     return updateComponent(state, 'FOOTER', action?.payload);
+
+        // case 'UPDATE_FOOTER_TEXT':
+        //     return updateComponent(state, 'FOOTER', { text: action?.payload });
+
+        // // BUTTON COMPONENT UPDATES
+        // case 'UPDATE_BUTTONS':
+        //     return updateComponent(state, 'BUTTONS', action?.payload);
+
+        // case 'UPDATE_BUTTON_ARRAY':
+        //     return updateComponent(state, 'BUTTONS', {
+        //         buttons: action?.payload,
+        //     });
 
         default:
             return state;

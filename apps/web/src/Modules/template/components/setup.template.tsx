@@ -9,8 +9,8 @@ import {
 import { useTemplate } from '../template.context';
 
 const SetupTemplate = () => {
-    const { state, dispatch } = useTemplate();
-    const { category, type } = state;
+    const { state, dispatch, handleChangeType, activeStep } = useTemplate();
+    const { category } = state;
 
     const TemplateCategoryTypes = [
         {
@@ -23,15 +23,15 @@ const SetupTemplate = () => {
                 TemplateCategoryConstant.utility,
             ],
         },
-        {
-            name: 'Calling Permission Request',
-            description: 'Ask customers if you can call them on WhatsApp.',
-            key: 'CALLING_PERMISSION_REQUEST',
-            supportedCategory: [
-                TemplateCategoryConstant.utility,
-                TemplateCategoryConstant.marketing,
-            ],
-        },
+        // {
+        //     name: 'Calling Permission Request',
+        //     description: 'Ask customers if you can call them on WhatsApp.',
+        //     key: 'CALLING_PERMISSION_REQUEST',
+        //     supportedCategory: [
+        //         TemplateCategoryConstant.utility,
+        //         TemplateCategoryConstant.marketing,
+        //     ],
+        // },
         {
             name: 'One Time Password',
             description: 'Send a one time password to your customers.',
@@ -66,12 +66,9 @@ const SetupTemplate = () => {
 
                         dispatch({
                             type: 'UPDATE_CATEGORY',
-                            payload: {
-                                category: val,
-                                type: type.key,
-                                complete: false,
-                            },
+                            payload: val,
                         });
+                        handleChangeType(type.key);
                     }}
                     filters={[
                         {
@@ -96,15 +93,12 @@ const SetupTemplate = () => {
 
                 return (
                     <CategoryTypeSelector
-                        active={type === _val.key}
+                        active={activeStep?.type === _val.key}
                         key={_val.name}
                         description={_val.description}
                         header={_val.name}
                         onClick={() => {
-                            dispatch({
-                                type: 'UPDATE_TYPE',
-                                payload: _val.key,
-                            });
+                            handleChangeType(_val.key);
                         }}
                     />
                 );

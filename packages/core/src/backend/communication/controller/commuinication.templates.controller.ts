@@ -2,6 +2,7 @@ import { BaseModel } from '../../../Models/base.models';
 import { CommonListFilterDto } from '../../common/dtos/common.list.filter.dto';
 import { IdsPayloadDto } from '../../common/dtos/ids.payload.dto';
 import { StringSearchDto } from '../../common/dtos/string.search.dto';
+import { UploadToFacebookDto } from '../dto/upload.to.facebook.dto';
 import { WhatsappTemplateCreationDto } from '../dto/whatsapp.template.dto';
 
 export class CommunicationTemplateController extends BaseModel {
@@ -28,6 +29,12 @@ export class CommunicationTemplateController extends BaseModel {
     async remove(id: number) {
         this.api = `${this.endPoint}/${id}`;
         return this.delete();
+    }
+    async uploadToFacebook(id: number) {
+        this.api = `${this.endPoint}/upload-to-facebook`;
+        this.bodyDto = UploadToFacebookDto;
+
+        return this.post();
     }
     async create() {
         this.api = `${this.endPoint}`;

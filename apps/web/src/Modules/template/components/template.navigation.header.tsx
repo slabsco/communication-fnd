@@ -7,7 +7,7 @@ import { templateNavigationGuard } from '../constants/template.reducer';
 import { useTemplate } from '../template.context';
 
 const TemplateNavigationHeader = () => {
-    const { state, dispatch } = useTemplate();
+    const { activeStep, handleChangeStep } = useTemplate();
 
     const actions: HeaderNavigationButton[] = [
         {
@@ -29,13 +29,10 @@ const TemplateNavigationHeader = () => {
                     <NavigationActionButton
                         {..._action}
                         key={_action?.key}
-                        active={_action?.key === state?.activeStep}
+                        active={_action?.key === activeStep?.step}
                         onClick={() => {
                             templateNavigationGuard(() => {
-                                dispatch({
-                                    type: 'CHANGE_TEMPLATE_ACTION',
-                                    payload: _action?.key,
-                                });
+                                handleChangeStep(_action?.key);
                             }, _action?.key === 'setup_template');
                         }}
                     />

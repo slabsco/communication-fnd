@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
     Button,
     IconButton,
@@ -22,7 +20,9 @@ const typeOptions = [
 
 const SetTemplateButton = () => {
     const { state, dispatch } = useTemplate();
-    const buttons = state.components.buttons || [];
+    const buttons =
+        state.components.find((_component) => _component?.type === 'BUTTONS')
+            ?.buttons || [];
 
     const updateButtons = (next: typeof buttons) => {
         dispatch({ type: 'UPDATE_BUTTONS', payload: next });
@@ -83,6 +83,9 @@ const SetTemplateButton = () => {
                             <div className='flex flex-1 gap-3 items-center'>
                                 <SelectBox
                                     width={220}
+                                    menuPlacement='top'
+                                    menuPosition='fixed'
+                                    size='sm'
                                     label='Type'
                                     value={btn?.type}
                                     options={typeOptions}
@@ -111,10 +114,9 @@ const SetTemplateButton = () => {
                                             <InputField
                                                 label='Offer code'
                                                 value={btn?.example ?? ''}
-                                                onChange={(e) =>
+                                                onChange={(val) =>
                                                     updateAt(index, {
-                                                        example:
-                                                            e?.target?.value,
+                                                        example: val,
                                                     })
                                                 }
                                                 placeholder='Enter sample'
@@ -127,9 +129,9 @@ const SetTemplateButton = () => {
                                             <InputField
                                                 label='Button Text'
                                                 value={btn?.text ?? ''}
-                                                onChange={(e) =>
+                                                onChange={(val) =>
                                                     updateAt(index, {
-                                                        text: e?.target?.value,
+                                                        text: val,
                                                     })
                                                 }
                                                 placeholder='Call phone number'
@@ -137,10 +139,9 @@ const SetTemplateButton = () => {
                                             <InputField
                                                 label='Phone number'
                                                 value={btn?.phone_number ?? ''}
-                                                onChange={(e) =>
+                                                onChange={(val) =>
                                                     updateAt(index, {
-                                                        phone_number:
-                                                            e?.target?.value,
+                                                        phone_number: val,
                                                     })
                                                 }
                                                 placeholder='+1 555 000 0000'
@@ -153,9 +154,9 @@ const SetTemplateButton = () => {
                                             <InputField
                                                 label='Button Text'
                                                 value={btn?.text ?? ''}
-                                                onChange={(e) =>
+                                                onChange={(val) =>
                                                     updateAt(index, {
-                                                        text: e?.target?.value,
+                                                        text: val,
                                                     })
                                                 }
                                                 placeholder='Visit website'
@@ -202,9 +203,9 @@ const SetTemplateButton = () => {
                                                 className='w-full'
                                                 label='Website URL'
                                                 value={btn?.url ?? ''}
-                                                onChange={(e) =>
+                                                onChange={(val) =>
                                                     updateAt(index, {
-                                                        url: e?.target?.value,
+                                                        url: val,
                                                     })
                                                 }
                                                 placeholder='https://www.example.com'

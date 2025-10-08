@@ -11,10 +11,18 @@ const SetTemplateNameLanguage = () => {
             <h3 className='text-lg font-medium'>Template name and language</h3>
             <div className='flex gap-2 items-center mt-2'>
                 <InputField
+                    value={state?.name}
                     label='Name your template'
                     className='w-full'
                     maxLength={512}
                     placeholder='Template name'
+                    onBlur={(val) => {
+                        const updated_value = val?.replaceAll(' ', '_');
+                        dispatch({
+                            type: 'UPDATE_NAME',
+                            payload: updated_value,
+                        });
+                    }}
                 />
                 <ReferenceSelectBox
                     controller={CommunicationTemplateController}

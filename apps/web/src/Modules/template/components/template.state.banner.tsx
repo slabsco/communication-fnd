@@ -4,7 +4,7 @@ import React from 'react';
 import { useTemplate } from '../template.context';
 
 const TemplateStateBanner = () => {
-    const { state } = useTemplate();
+    const { state, activeStep } = useTemplate();
 
     return (
         <div className='flex gap-4 items-center p-2 bg-base-100'>
@@ -20,7 +20,7 @@ const TemplateStateBanner = () => {
                 <p className='flex gap-1 items-center text-sm text-base-secondary'>
                     {state.category}
                     <span className='w-1 h-1 bg-gray-500 rounded-full'></span>
-                    {state.type}
+                    {activeStep.type}
                 </p>
             </div>
         </div>

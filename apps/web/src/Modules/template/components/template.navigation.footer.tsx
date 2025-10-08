@@ -1,25 +1,40 @@
-import { useEffect } from 'react';
-
-import { Navigation, WHATSAPP_TEMPLATE_LIST_ROUTE } from '@finnoto/core';
+import {
+    FetchData,
+    Navigation,
+    WHATSAPP_TEMPLATE_LIST_ROUTE,
+} from '@finnoto/core';
+import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { Button } from '@finnoto/design-system';
 
+import { toastBackendErrorModal } from '../../../Utils/functions.utils';
 import { templateNavigationGuard } from '../constants/template.reducer';
 import { useTemplate } from '../template.context';
 
 const TemplateNavigationFooter = () => {
-    const { dispatch, state } = useTemplate();
+    const { state, activeStep, handleChangeStep } = useTemplate();
+
+    const sendForApproval = async (next: any) => {
+        const { response, success } = await FetchData({
+            className: CommunicationTemplateController,
+            method: 'create',
+            classParams: state,
+        });
+
+        if (!success) {
+            toastBackendErrorModal(response);
+        }
+
+        return next();
+    };
 
     return (
         <div className='flex static gap-3 justify-between items-center p-4 rounded bg-base-100'>
-            {state.activeStep === 'edit_template' ? (
+            {activeStep.step === 'edit_template' ? (
                 <Button
                     outline
                     onClick={() => {
                         templateNavigationGuard(() => {
-                            dispatch({
-                                type: 'CHANGE_TEMPLATE_ACTION',
-                                payload: 'setup_template',
-                            });
+                            handleChangeStep('setup_template');
                         });
                     }}
                 >
@@ -37,18 +52,27 @@ const TemplateNavigationFooter = () => {
                     Discard
                 </Button>
             )}
-            <Button
-                appearance='primary'
-                defaultMinWidth
-                onClick={() => {
-                    dispatch({
-                        type: 'CHANGE_TEMPLATE_ACTION',
-                        payload: 'edit_template',
-                    });
-                }}
-            >
-                Next
-            </Button>
+
+            {activeStep.step === 'edit_template' ? (
+                <Button
+                    appearance='primary'
+                    defaultMinWidth
+                    // progress
+                    onClick={sendForApproval}
+                >
+                    Submit
+                </Button>
+            ) : (
+                <Button
+                    appearance='primary'
+                    defaultMinWidth
+                    onClick={() => {
+                        handleChangeStep('edit_template');
+                    }}
+                >
+                    Next
+                </Button>
+            )}
         </div>
     );
 };

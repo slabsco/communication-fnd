@@ -25,7 +25,7 @@ const TemplateModule = () => {
 
     return (
         <TemplateProvider>
-            <Container className='overflow-hidden relative gap-3 py-4 col-flex h-content-screen'>
+            <div className='overflow-hidden relative gap-3 p-7 col-flex h-content-screen'>
                 <Breadcrumbs route={routes} />
                 <div className='flex overflow-hidden flex-1 gap-4'>
                     <div className='overflow-hidden flex-1 gap-2 col-flex'>
@@ -35,7 +35,7 @@ const TemplateModule = () => {
                     </div>
                     <TemplatePreviewComponent />
                 </div>
-            </Container>
+            </div>
         </TemplateProvider>
     );
 };

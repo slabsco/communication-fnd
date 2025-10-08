@@ -9,6 +9,11 @@ export type creationSteps =
     | 'edit_template'
     | 'submit_review';
 
+export type activeStep = {
+    step: creationSteps;
+    type: string;
+};
+
 export interface HeaderNavigationButton {
     name: string;
     key: creationSteps;
@@ -19,19 +24,14 @@ export interface HeaderNavigationButton {
 }
 
 export type templateActionType =
-    | 'CHANGE_TEMPLATE_ACTION'
     | 'UPDATE_CATEGORY'
-    | 'UPDATE_TYPE'
     | 'UPDATE_NAME'
     | 'UPDATE_LANGUAGE'
-    | 'UPDATE_HEADER_FORMAT'
-    | 'UPDATE_HEADER_TEXT'
-    | 'UPDATE_BODY_TEXT'
-    | 'UPDATE_FOOTER_TEXT'
-    | 'UPDATE_BUTTONS'
-    | 'UPDATE_CAROUSEL'
-    | 'UPDATE_CALL_PERMISSION'
-    | 'UPDATE_LIMITED_TIME_OFFER';
+    | 'UPDATE_HEADER'
+    | 'UPDATE_HEADER_MEDIA'
+    | 'UPDATE_BODY'
+    | 'UPDATE_FOOTER'
+    | 'UPDATE_BUTTONS';
 
 export type TemplateCategorySupport =
     | 'MARKETING'
