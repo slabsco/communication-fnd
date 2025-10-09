@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { FetchData, IsEmptyArray, toastBackendError } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
@@ -16,8 +16,7 @@ import {
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { TemplatePreviewer } from '../../template/components/template.preview.component';
-import { YourTemplatesPreview } from './components/YourTemplatesPriview.component';
+import { TemplatePreviewer } from './template.preview.component';
 
 import { EyeSvgIcon } from 'assets';
 

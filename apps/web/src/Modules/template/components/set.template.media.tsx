@@ -63,13 +63,17 @@ const MEDIA_FORMAT_OPTIONS = [
 const SetTemplateMedia = () => {
     const { dispatch, state } = useTemplate();
 
-    const { format, text, example } = state.components.find(
-        (_val) => _val?.type === 'HEADER'
-    );
-
-    console.log({ state });
+    const { format, text, example } =
+        state.components.find((_val) => _val?.type === 'HEADER') || {};
 
     const handleFormatChange = (option: any) => {
+        if (!option?.value) {
+            dispatch({
+                type: 'REMOVE_COMPONENT',
+                payload: 'HEADER',
+            });
+            return;
+        }
         dispatch({
             type: 'UPDATE_HEADER',
             payload: {
@@ -118,7 +122,7 @@ const SetTemplateMedia = () => {
             <SelectBox
                 width={200}
                 value={format}
-                size='md'
+                size='sm'
                 label='Media sample'
                 onChange={handleFormatChange}
                 options={MEDIA_FORMAT_OPTIONS as any}

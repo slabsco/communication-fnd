@@ -43,6 +43,7 @@ export * from './Inputs/DropdownMenu/selectable.dropdown.menu.component';
 
 export * from './Inputs/ColorPicker/color.picker.component';
 export * from './Inputs/ColorPicker/color.picker.input';
+export * from './Inputs/react-quill/react.quill.composite';
 
 // Navigation Exports
 export * from './Navigation/BasicFilter/basicFilterButton.components';

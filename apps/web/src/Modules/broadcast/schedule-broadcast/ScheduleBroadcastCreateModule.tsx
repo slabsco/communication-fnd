@@ -28,7 +28,7 @@ import {
 import { Label } from '@finnoto/design-system/src/Components/Inputs/InputField/label.component';
 
 import { toastBackendErrorModal } from '../../../Utils/functions.utils';
-import { AsyncTemplateViewer } from '../your-templates/components/TemplateViewer.component';
+import { AsyncTemplateViewer } from '../../template/components/TemplateViewer.component';
 
 const ScheduleBroadcastCreateModule = () => {
     const { id } = useFetchParams();

@@ -1,19 +1,13 @@
-import { useMemo } from 'react';
 import { useUpdateEffect } from 'react-use';
 
-import {
-    FetchData,
-    IsEmptyObject,
-    IsFunction,
-    IsUndefinedOrNull,
-} from '@finnoto/core';
+import { FetchData, IsFunction, IsUndefinedOrNull } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { Loading, Modal } from '@finnoto/design-system';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { ConvertRawApiDataIntoFormSuitable } from './YourTemplateEditor.component';
-import { YourTemplatesPreview } from './YourTemplatesPriview.component';
+import { initializeVariablesInState } from '../constants/template.format';
+import { TemplatePreviewer } from './template.preview.component';
 
 export const AsyncTemplateViewer = ({
     id,
@@ -44,29 +38,21 @@ export const AsyncTemplateViewer = ({
         getData?.(data);
     }, [data]);
 
-    const defaultData = useMemo(() => {
-        if (IsEmptyObject(data)) return {} as any;
-        return ConvertRawApiDataIntoFormSuitable(data);
-    }, [data]);
-
     if (!isLoading && IsUndefinedOrNull(id)) {
         return <div className='text-base-100'>No Template is selected</div>;
     }
+
     return isLoading ? (
         <div className='w-11 h-10 centralize'>
             <Loading size='xl' color='primary' />
         </div>
     ) : (
         <>
-            <YourTemplatesPreview
-                sampleContent={sample_contents || defaultData.sample_contents}
-                footer={defaultData?.footer}
-                body={defaultData?.body}
-                configuration={defaultData?.button_configurations}
-                title={{
-                    type: defaultData?.title?.type || 'text',
-                    value: defaultData?.title?.value || '',
-                }}
+            <TemplatePreviewer
+                state={initializeVariablesInState(
+                    data?.template_config,
+                    sample_contents
+                )}
             />
         </>
     );

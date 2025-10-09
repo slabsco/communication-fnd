@@ -10,7 +10,7 @@ import { CommunicationTemplateController } from '@finnoto/core/src/backend/commu
 import { ActionTypeEnum } from '@finnoto/core/src/backend/communication/controller/keyword.details.controller';
 import { Button, cn, IconButton } from '@finnoto/design-system';
 
-import { openTemplateViewer } from '../../broadcast/your-templates/components/TemplateViewer.component';
+import { openTemplateViewer } from '../../template/components/TemplateViewer.component';
 import GenericActionComponent from './generic.action.component';
 
 import { DeleteSvgIcon } from 'assets';

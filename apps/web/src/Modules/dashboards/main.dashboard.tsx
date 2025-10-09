@@ -36,8 +36,8 @@ import {
     customChartOptions,
     customChartTooltip,
 } from '../../Constants/chart-constant/commonChartOption';
-import { MultiColorBroadcastComponent } from '../broadcast/multi.color.broadcast.component';
 import LandingModule from '../landing/landing.module';
+import { MultiColorBroadcastComponent } from '../template/components/multi.color.broadcast.component';
 import DayWiseMessageChart from './day.wise.message.chart';
 
 import { CopySvgIcon } from 'assets';

@@ -33,4 +33,8 @@ export class WhatsappTemplateCreationDto extends IdPayloadDto {
     @Expose()
     @IsOptional()
     header_media_detail: any;
+
+    @Expose()
+    @IsOptional()
+    active_step: any;
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { EmptyFunction } from '@finnoto/core';
 import { BasicFilterButton, cn } from '@finnoto/design-system';
 
 import {
@@ -9,7 +10,8 @@ import {
 import { useTemplate } from '../template.context';
 
 const SetupTemplate = () => {
-    const { state, dispatch, handleChangeType, activeStep } = useTemplate();
+    const { state, dispatch, handleChangeType, activeStep, resetState } =
+        useTemplate();
     const { category } = state;
 
     const TemplateCategoryTypes = [
@@ -64,6 +66,7 @@ const SetupTemplate = () => {
                             )
                         );
 
+                        resetState(true);
                         dispatch({
                             type: 'UPDATE_CATEGORY',
                             payload: val,
@@ -109,11 +112,11 @@ const SetupTemplate = () => {
 
 export default SetupTemplate;
 
-const CategoryTypeSelector = ({
+export const CategoryTypeSelector = ({
     active,
     header,
     description,
-    onClick,
+    onClick = EmptyFunction,
 }: {
     active?: boolean;
     header: string;

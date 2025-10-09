@@ -17,7 +17,9 @@ const SetTemplateNameLanguage = () => {
                     maxLength={512}
                     placeholder='Template name'
                     onBlur={(val) => {
-                        const updated_value = val?.replaceAll(' ', '_');
+                        const updated_value = val
+                            ?.replaceAll(' ', '_')
+                            ?.toLowerCase();
                         dispatch({
                             type: 'UPDATE_NAME',
                             payload: updated_value,

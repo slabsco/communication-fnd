@@ -1,6 +1,6 @@
 import { Badge, Loading, NoDataFound, Tooltip } from '@finnoto/design-system';
 
-import { TeamInboxStatusTypeEnum } from '../../broadcast/your-templates/enums/whatsapp.template.category.enum';
+import { TeamInboxStatusTypeEnum } from '../../template/constants/whatsapp.template.category.enum';
 import { useTeamInbox } from '../context/teaminbox.context.main';
 import { ChatMessageListingMain } from './chat.message.main.listing';
 import { MessageChat } from './message.chat.component';

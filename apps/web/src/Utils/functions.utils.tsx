@@ -82,7 +82,9 @@ import NewProductSelector from '@Modules/AuthPage/Components/newProductSelector.
 import OwnershipTransferInvitations from '@Modules/AuthPage/Components/ownershipTransferInvitation.component';
 import ChangeOrgNameForm from '@Modules/user_profile/Forms/changeOrgName.form';
 
-import BackendErrorModal from '../Components/backend.error.modal';
+import BackendErrorModal, {
+    EnhancedBackendErrorModal,
+} from '../Components/backend.error.modal';
 import BulkUploadModal from '../Components/bulkUploadModal.component';
 import UserDetailsModal from '../Components/userDetailsModal';
 
@@ -897,7 +899,7 @@ export const toastBackendErrorModal = (
     defaultMessage?: string
 ) => {
     return Modal.open({
-        component: BackendErrorModal,
+        component: EnhancedBackendErrorModal,
         props: { response, defaultMessage },
         modalSize: 'sm',
     });

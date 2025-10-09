@@ -1,3 +1,3 @@
-import YourTemplatesListModule from '../../src/Modules/broadcast/your-templates/YourTempalatesListModule';
+import YourTemplatesListModule from '../../src/Modules/template/YourTempalatesListModule';
 
 export default YourTemplatesListModule;

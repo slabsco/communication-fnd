@@ -36,7 +36,7 @@ import GenericDefinitionListing from '../../../Components/GenericDocumentListing
 import { getInboxFromWaId } from '../../../Utils/functions.utils';
 import { WarningAccordion } from '../../landing/landing.module';
 import { getErrorMessageTeamInbox } from '../../teaminbox/utils/teaminbox.utils';
-import { openTemplateViewer } from '../your-templates/components/TemplateViewer.component';
+import { openTemplateViewer } from '../../template/components/TemplateViewer.component';
 import { useScheduleBroadCastDetail } from './hooks/useScheduleBroadcastDetail.hook';
 
 import { ErrorSvgIcon, EyeSvgIcon } from 'assets';

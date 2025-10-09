@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { InputField } from '@finnoto/design-system';
 
@@ -9,20 +9,44 @@ interface ParamItem {
     example: string;
 }
 
-const SetVariableSample = () => {
+// Memoized parameter input component
+const ParamInput = React.memo(
+    ({
+        param,
+        paramType,
+        onChange,
+    }: {
+        param: ParamItem;
+        paramType: 'body' | 'header';
+        onChange: (
+            paramName: string,
+            value: string,
+            type: 'body' | 'header'
+        ) => void;
+    }) => (
+        <InputField
+            placeholder={`Enter ${param.param_name}`}
+            value={param.example || ''}
+            onChange={(val) => onChange(param.param_name, val, paramType)}
+        />
+    )
+);
+
+const SetVariableSample = React.memo(() => {
     const { dispatch, state } = useTemplate();
 
-    // Get components
+    // Get components - memoize with more specific dependencies
     const headerComponent = useMemo(
         () => state?.components?.find((c: any) => c.type === 'HEADER'),
         [state?.components]
     );
+
     const bodyComponent = useMemo(
         () => state?.components?.find((c: any) => c.type === 'BODY'),
         [state?.components]
     );
 
-    // Get parameters from state
+    // Get parameters - use JSON.stringify for deep comparison
     const bodyParams = useMemo(
         () => bodyComponent?.example?.body_text_named_params || [],
         [bodyComponent?.example?.body_text_named_params]
@@ -33,22 +57,30 @@ const SetVariableSample = () => {
         [headerComponent?.example?.header_text_named_params]
     );
 
-    // Simple parameter update handler
+    // Simplified parameter update handler with minimal dependencies
     const handleParamChange = useCallback(
         (paramName: string, newValue: string, paramType: 'body' | 'header') => {
+            console.log('in');
+
             if (paramType === 'body') {
-                const updatedParams = (bodyParams as ParamItem[]).map(
-                    (param: ParamItem) =>
-                        param.param_name === paramName
-                            ? { ...param, example: newValue }
-                            : param
+                // Get current body component to avoid stale closure
+                const currentBodyComponent = state?.components?.find(
+                    (c: any) => c.type === 'BODY'
+                );
+                const currentParams =
+                    currentBodyComponent?.example?.body_text_named_params || [];
+
+                const updatedParams = currentParams.map((param: ParamItem) =>
+                    param.param_name === paramName
+                        ? { ...param, example: newValue }
+                        : param
                 );
 
                 dispatch({
-                    type: 'UPDATE_BODY',
+                    type: 'UPDATE_BODY_PARAMS_ONLY',
                     payload: {
                         example: {
-                            ...(bodyComponent?.example || {}),
+                            ...(currentBodyComponent?.example || {}),
                             body_text_named_params: updatedParams,
                         },
                     },
@@ -56,45 +88,30 @@ const SetVariableSample = () => {
                 return;
             }
 
-            const updatedParams = (headerParams as ParamItem[]).map(
-                (param: ParamItem) =>
-                    param.param_name === paramName
-                        ? { ...param, example: newValue }
-                        : param
+            // Similar for header
+            const currentHeaderComponent = state?.components?.find(
+                (c: any) => c.type === 'HEADER'
+            );
+            const currentHeaderParams =
+                currentHeaderComponent?.example?.header_text_named_params || [];
+
+            const updatedParams = currentHeaderParams.map((param: ParamItem) =>
+                param.param_name === paramName
+                    ? { ...param, example: newValue }
+                    : param
             );
 
             dispatch({
                 type: 'UPDATE_HEADER',
                 payload: {
                     example: {
-                        ...(headerComponent?.example || {}),
+                        ...(currentHeaderComponent?.example || {}),
                         header_text_named_params: updatedParams,
                     },
                 },
             });
         },
-        [
-            bodyParams,
-            headerParams,
-            dispatch,
-            bodyComponent?.example,
-            headerComponent?.example,
-        ]
-    );
-
-    // Render parameter input
-    const renderParamInput = (
-        param: ParamItem,
-        paramType: 'body' | 'header'
-    ) => (
-        <InputField
-            key={`${paramType}-${param.param_name}`}
-            placeholder={`Enter ${param.param_name}`}
-            value={param.example || ''}
-            onChange={(val) =>
-                handleParamChange(param.param_name, val, paramType)
-            }
-        />
+        [dispatch, state?.components] // Only depend on dispatch and components array
     );
 
     // Don't render if no parameters
@@ -114,22 +131,32 @@ const SetVariableSample = () => {
             {headerParams.length > 0 && (
                 <div className='gap-2 mt-4 col-flex'>
                     <h3 className='font-medium'>Header</h3>
-                    {headerParams.map((param: ParamItem) =>
-                        renderParamInput(param, 'header')
-                    )}
+                    {headerParams.map((param: ParamItem) => (
+                        <ParamInput
+                            key={`header-${param.param_name}`}
+                            param={param}
+                            paramType='header'
+                            onChange={handleParamChange}
+                        />
+                    ))}
                 </div>
             )}
 
             {bodyParams.length > 0 && (
                 <div className='gap-2 mt-4 col-flex'>
                     <h3 className='font-medium'>Body</h3>
-                    {bodyParams.map((param: ParamItem) =>
-                        renderParamInput(param, 'body')
-                    )}
+                    {bodyParams.map((param: ParamItem) => (
+                        <ParamInput
+                            key={`body-${param.param_name}`}
+                            param={param}
+                            paramType='body'
+                            onChange={handleParamChange}
+                        />
+                    ))}
                 </div>
             )}
         </div>
     );
-};
+});
 
 export default SetVariableSample;

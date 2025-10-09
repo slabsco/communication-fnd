@@ -11,14 +11,14 @@ import {
 import { Badge, ConfirmUtil } from '@finnoto/design-system';
 import { BadgeInterface } from '@finnoto/design-system/src/Components/Data-display/Badge/badge.types';
 
-import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
-import { GenericDocumentListingProps } from '../../../Components/GenericDocumentListing/genericDocumentListing.types';
+import GenericDocumentListingComponent from '../../Components/GenericDocumentListing/genericDocumentListing.component';
+import { GenericDocumentListingProps } from '../../Components/GenericDocumentListing/genericDocumentListing.types';
+import { openImportYourTemplateModal } from './components/ImportYourTemplateModal';
 import {
     WhatsappTemplateCategoryEnum,
     WhatsappTemplateStatusEnum,
-} from './enums/whatsapp.template.category.enum';
+} from './constants/whatsapp.template.category.enum';
 import { useHandleTemplate } from './hooks/useHandleTemplate.hook';
-import { openImportYourTemplateModal } from './ImportYourTemplateModal';
 
 import { CopySvgIcon, DeleteSvgIcon, EditSvgIcon } from 'assets';
 

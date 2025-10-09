@@ -55,22 +55,6 @@ type UrlButton = {
 
 type Button = QuickReplyButton | CopyCodeButton | PhoneNumberButton | UrlButton;
 
-interface HeaderExample {
-    header_text_named_params: {
-        example: string;
-        param_name: string;
-    }[];
-    header_handle: string[];
-    media_detail: any;
-}
-
-interface BodyExample {
-    body_text_named_params: {
-        example: string;
-        param_name: string;
-    }[];
-}
-
 interface CommonComponentTypes {
     type: 'HEADER' | 'BODY' | 'BUTTONS' | 'FOOTER';
     format?: string;
@@ -81,11 +65,14 @@ interface CommonComponentTypes {
         header_handle?: any;
     };
     buttons?: Button[];
+    add_security_recommendation?: boolean; // body
+    code_expiration_minutes?: boolean; // footer
 }
 
 export interface TemplateState {
     allow_category_change: boolean;
     parameter_format: string;
+    message_send_ttl_seconds?: number;
     header_media_detail: any;
     name?: string;
     language?: string;

@@ -7,6 +7,7 @@ import { WhatsappTemplateCreationDto } from '../dto/whatsapp.template.dto';
 
 export class CommunicationTemplateController extends BaseModel {
     protected endPoint = 'api/b/communication-whatsapp-templates';
+    protected showToast = false;
 
     async list() {
         this.api = `${this.endPoint}/search`;

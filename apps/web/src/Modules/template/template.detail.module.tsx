@@ -18,9 +18,9 @@ import {
 } from '@finnoto/design-system';
 
 import DropdownActionButton from '../../Components/DropdownButton/dropdown.action.button';
-import { WhatsappTemplateStatusEnum } from '../broadcast/your-templates/enums/whatsapp.template.category.enum';
-import { useHandleTemplate } from '../broadcast/your-templates/hooks/useHandleTemplate.hook';
 import { TemplatePreviewer } from './components/template.preview.component';
+import { WhatsappTemplateStatusEnum } from './constants/whatsapp.template.category.enum';
+import { useHandleTemplate } from './hooks/useHandleTemplate.hook';
 
 import { CopySvgIcon, DeleteSvgIcon } from 'assets';
 

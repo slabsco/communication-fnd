@@ -96,6 +96,11 @@ export function templateReducer(
         case 'UPDATE_NAME':
             return setIn(state, 'name', action?.payload);
 
+        case 'UPDATE_ALLOW_CATEGORY_CHANGE':
+            return setIn(state, 'allow_category_change', action?.payload);
+        case 'UPDATE_PARAMETER_FORMAT':
+            return setIn(state, 'parameter_format', action?.payload);
+
         case 'UPDATE_LANGUAGE':
             return setIn(state, 'language', action?.payload);
 
@@ -108,54 +113,38 @@ export function templateReducer(
 
         case 'UPDATE_BODY':
             return updateComponent(state, 'BODY', action?.payload);
+
+        case 'UPDATE_BODY_PARAMS_ONLY':
+            return updateComponent(state, 'BODY', {
+                example: {
+                    ...state.components.find((c) => c.type === 'BODY')?.example,
+                    ...action?.payload.example,
+                },
+            });
+
         case 'UPDATE_FOOTER':
             return updateComponent(state, 'FOOTER', action?.payload);
+
         case 'UPDATE_BUTTONS':
             // Fix: Update only the buttons array, not the entire component
             return updateComponent(state, 'BUTTONS', {
                 buttons: action?.payload,
             });
 
-        // case 'UPDATE_HEADER_EXAMPLE':
-        //     return updateComponent(state, 'HEADER', {
-        //         example: {
-        //             ...state.components.find((c) => c.type === 'HEADER')
-        //                 ?.example,
-        //             ...action?.payload,
-        //         },
-        //     });
+        case 'UPDATE_TIME_TO_LIVE':
+            return setIn(state, 'message_send_ttl_seconds', action?.payload);
+        case 'RESET_STATE':
+            return { ...state, ...action?.payload };
 
-        // // BODY COMPONENT UPDATES
-        // case 'UPDATE_BODY':
-        //     return updateComponent(state, 'BODY', action?.payload);
-
-        // case 'UPDATE_BODY_TEXT':
-        //     return updateComponent(state, 'BODY', { text: action?.payload });
-
-        // case 'UPDATE_BODY_EXAMPLE':
-        //     return updateComponent(state, 'BODY', {
-        //         example: {
-        //             ...state.components.find((c) => c.type === 'BODY')?.example,
-        //             ...action?.payload,
-        //         },
-        //     });
-
-        // // FOOTER COMPONENT UPDATES
-        // case 'UPDATE_FOOTER':
-        //     return updateComponent(state, 'FOOTER', action?.payload);
-
-        // case 'UPDATE_FOOTER_TEXT':
-        //     return updateComponent(state, 'FOOTER', { text: action?.payload });
-
-        // // BUTTON COMPONENT UPDATES
-        // case 'UPDATE_BUTTONS':
-        //     return updateComponent(state, 'BUTTONS', action?.payload);
-
-        // case 'UPDATE_BUTTON_ARRAY':
-        //     return updateComponent(state, 'BUTTONS', {
-        //         buttons: action?.payload,
-        //     });
-
+        case 'REMOVE_COMPONENT': {
+            const typeToRemove = action?.payload;
+            return {
+                ...state,
+                components: state.components.filter(
+                    (component) => component.type !== typeToRemove
+                ),
+            };
+        }
         default:
             return state;
     }
