@@ -6,6 +6,7 @@ import { ColorMode } from 'react-terminal-ui';
 import {
     CopyToClipBoard,
     HOME_ROUTE,
+    PARTNER_DASHBOARD_ROUTE,
     useClientConfig,
     useLogs,
     useOpenProperties,
@@ -37,7 +38,7 @@ import {
     WarningErrorSvgIcon,
 } from 'assets';
 
-const ClientConfigModule = () => {
+const PartnerClientConfigModule = () => {
     const {
         changeStatus,
         clientSecrets,
@@ -54,16 +55,7 @@ const ClientConfigModule = () => {
         });
     };
     return (
-        <Container className='overflow-hidden gap-3 py-5 col-flex h-content-screen'>
-            <ArcBreadcrumbs
-                mainClassName='rounded py-4 rounded-none pb-2'
-                title={'Configure Client'}
-                route={[
-                    { name: 'Home', link: HOME_ROUTE },
-                    { name: 'Developers' },
-                    { name: 'API Docs' },
-                ]}
-            />
+        <Container className='overflow-hidden gap-3 py-5 h-full col-flex'>
             <div className='flex-1 gap-4 p-4 rounded col-flex bg-polaris-bg-surface'>
                 <div>
                     <div className='flex gap-3 justify-between items-center'>
@@ -124,11 +116,11 @@ const ClientConfigModule = () => {
 
                                         <DropdownMenu
                                             actions={[
-                                                // {
-                                                //     name: 'Change Name',
-                                                //     action: () =>
-                                                //         openConfirmModal(val),
-                                                // },
+                                                {
+                                                    name: 'Change Name',
+                                                    action: () =>
+                                                        openConfirmModal(val),
+                                                },
                                                 {
                                                     name: 'Inactive',
                                                     action: () => {
@@ -197,7 +189,7 @@ const ClientConfigModule = () => {
     );
 };
 
-export default ClientConfigModule;
+export default PartnerClientConfigModule;
 
 const GenerateSecret = ({
     generateSecret,

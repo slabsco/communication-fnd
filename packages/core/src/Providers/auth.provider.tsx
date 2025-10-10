@@ -26,6 +26,7 @@ import {
     ArcAdminWrapper,
     ExpenseWrappers,
     PageLoader,
+    PartnerModuleWrapper,
 } from '../Utils/ui.utils';
 
 export const AuthProvider = ({ children }: any) => {
@@ -48,6 +49,7 @@ export const AuthProvider = ({ children }: any) => {
     );
 
     const businessExpired = user?.userObject?.business?.expired_at;
+    const isPartnerAccount = user?.userObject?.business?.is_partner_account;
 
     const validateProduct = useCallback(
         ({
@@ -268,6 +270,11 @@ export const AuthProvider = ({ children }: any) => {
                 </SomethingWentWrong>
             );
         }
+
+        if (isPartnerAccount)
+            return (
+                <PartnerModuleWrapper>{dashboardChildren}</PartnerModuleWrapper>
+            );
 
         if (isExpense && IsObjectHaveKeys(ExpenseWrappers) && expenseType) {
             const ExpenseWrapper = ExpenseWrappers[expenseType];
