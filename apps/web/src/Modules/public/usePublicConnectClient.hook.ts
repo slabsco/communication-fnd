@@ -9,72 +9,6 @@ export const usePublicConnectClient = () => {
     const [sentAccessToken, setSentAccessToken] = useState(false);
     const [sentWaBaId, setSentWaBaId] = useState(false);
 
-    useEffect(() => {
-        // Initialize Facebook Pixel
-        if (!window.fbq) {
-            window.fbq = function () {
-                window.fbq.callMethod
-                    ? window.fbq.callMethod.apply(window.fbq, arguments)
-                    : window.fbq.queue.push(arguments);
-            };
-            if (!window._fbq) window._fbq = window.fbq;
-            window.fbq.push = window.fbq;
-            window.fbq.loaded = true;
-            window.fbq.version = '2.0';
-            window.fbq.queue = [];
-
-            const pixelScript = document.createElement('script');
-            pixelScript.async = true;
-            pixelScript.src = 'https://connect.facebook.net/en_US/fbevents.js';
-            document.head.appendChild(pixelScript);
-        }
-
-        // Initialize Facebook SDK
-        window.fbAsyncInit = function () {
-            window.FB.init({
-                appId: '2535913113279344', // Use actual app ID
-                cookie: true,
-                xfbml: true,
-                version: 'v19.0',
-            });
-            setFacebookSDKLoaded(true);
-        };
-
-        // Load Facebook SDK
-        if (!document.getElementById('facebook-jssdk')) {
-            const sdkScript = document.createElement('script');
-            sdkScript.id = 'facebook-jssdk';
-            sdkScript.src = 'https://connect.facebook.net/en_US/sdk.js';
-            document.head.appendChild(sdkScript);
-        }
-
-        // Track page view
-        window.fbq('init', 'your-pixel-id-goes-here');
-        window.fbq('track', 'PageView');
-
-        // Session logging message event listener
-        window.addEventListener('message', (event) => {
-            if (
-                event.origin !== 'https://www.facebook.com' &&
-                event.origin !== 'https://web.facebook.com'
-            )
-                return;
-            try {
-                const data = JSON.parse(event.data);
-                if (data.type === 'WA_EMBEDDED_SIGNUP') {
-                    sendEventData(data?.data);
-                }
-            } catch {
-                console.log('message event error: ', event.data); // remove after testing
-                // your code goes here
-            }
-        });
-
-        return () => {
-            // Cleanup if needed
-        };
-    }, []);
-
     const sendData = useCallback(
         async (data: any) => {
             const response = await fetch(`${backend_url}auth/connect-client`, {
@@ -139,6 +73,72 @@ export const usePublicConnectClient = () => {
             }
         );
     };
+
+    useEffect(() => {
+        // Initialize Facebook Pixel
+        if (!window.fbq) {
+            window.fbq = function () {
+                window.fbq.callMethod
+                    ? window.fbq.callMethod.apply(window.fbq, arguments)
+                    : window.fbq.queue.push(arguments);
+            };
+            if (!window._fbq) window._fbq = window.fbq;
+            window.fbq.push = window.fbq;
+            window.fbq.loaded = true;
+            window.fbq.version = '2.0';
+            window.fbq.queue = [];
+
+            const pixelScript = document.createElement('script');
+            pixelScript.async = true;
+            pixelScript.src = 'https://connect.facebook.net/en_US/fbevents.js';
+            document.head.appendChild(pixelScript);
+        }
+
+        // Initialize Facebook SDK
+        window.fbAsyncInit = function () {
+            window.FB.init({
+                appId: '2535913113279344', // Use actual app ID
+                cookie: true,
+                xfbml: true,
+                version: 'v19.0',
+            });
+            setFacebookSDKLoaded(true);
+        };
+
+        // Load Facebook SDK
+        if (!document.getElementById('facebook-jssdk')) {
+            const sdkScript = document.createElement('script');
+            sdkScript.id = 'facebook-jssdk';
+            sdkScript.src = 'https://connect.facebook.net/en_US/sdk.js';
+            document.head.appendChild(sdkScript);
+        }
+
+        // Track page view
+        window.fbq('init', 'your-pixel-id-goes-here');
+        window.fbq('track', 'PageView');
+
+        // Session logging message event listener
+        window.addEventListener('message', (event) => {
+            if (
+                event.origin !== 'https://www.facebook.com' &&
+                event.origin !== 'https://web.facebook.com'
+            )
+                return;
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'WA_EMBEDDED_SIGNUP') {
+                    sendEventData(data?.data);
+                }
+            } catch {
+                console.log('message event error: ', event.data); // remove after testing
+                // your code goes here
+            }
+        });
+
+        return () => {
+            // Cleanup if needed
+        };
+    }, [sendEventData, token, backend_url]);
 
     return { launchWhatsAppSignup, sentWaBaId, sentAccessToken };
 };
