@@ -1,8 +1,6 @@
-// @ts-nocheck
+import { useCallback, useEffect, useState } from 'react';
 
-import { useEffect, useState } from 'react';
-
-import { useFetchParams } from '@finnoto/core';
+import { toastBackendError, useFetchParams } from '@finnoto/core';
 
 export const usePublicConnectClient = () => {
     const { backend_url, token } = useFetchParams();
@@ -77,7 +75,7 @@ export const usePublicConnectClient = () => {
         };
     }, []);
 
-    const sendData = React.useCallback(
+    const sendData = useCallback(
         async (data: any) => {
             const response = await fetch(`${backend_url}auth/connect-client`, {
                 method: 'POST',
@@ -87,7 +85,8 @@ export const usePublicConnectClient = () => {
                 body: JSON.stringify({ token, ...data }),
             });
 
-            console.log({ data });
+            if (!response.ok)
+                toastBackendError(undefined, 'Something went wrong');
         },
         [backend_url, token]
     );
@@ -120,7 +119,7 @@ export const usePublicConnectClient = () => {
                     console.log({ response });
 
                     const code = response.authResponse.code;
-                    sendCode(code, backend_url);
+                    sendCode(code);
 
                     console.log('Authorization code:', code);
                     // Handle the code (e.g., send to backend)
