@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useFetchParams } from '@finnoto/core';
 
@@ -77,17 +77,20 @@ export const usePublicConnectClient = () => {
         };
     }, []);
 
-    const sendData = async (data: any) => {
-        const response = await fetch(`${backend_url}auth/connect-client`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token, ...data }),
-        });
+    const sendData = React.useCallback(
+        async (data: any) => {
+            const response = await fetch(`${backend_url}auth/connect-client`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token, ...data }),
+            });
 
-        console.log({ data });
-    };
+            console.log({ data });
+        },
+        [backend_url, token]
+    );
 
     const sendEventData = async (data: any) => {
         await sendData(data);
@@ -100,7 +103,7 @@ export const usePublicConnectClient = () => {
         setSentAccessToken(true);
     };
 
-    const launchWhatsAppSignup = useCallback(() => {
+    const launchWhatsAppSignup = () => {
         if (!facebookSDKLoaded || typeof window.FB === 'undefined') {
             setTimeout(launchWhatsAppSignup, 100);
             return;
@@ -117,7 +120,7 @@ export const usePublicConnectClient = () => {
                     console.log({ response });
 
                     const code = response.authResponse.code;
-                    sendCode(code);
+                    sendCode(code, backend_url);
 
                     console.log('Authorization code:', code);
                     // Handle the code (e.g., send to backend)
@@ -136,7 +139,7 @@ export const usePublicConnectClient = () => {
                 },
             }
         );
-    }, [facebookSDKLoaded]);
+    };
 
     return { launchWhatsAppSignup, sentWaBaId, sentAccessToken };
 };
