@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { useFetchParams } from '@finnoto/core';
+import { toastBackendError, useFetchParams } from '@finnoto/core';
 
 export const usePublicConnectClient = () => {
     const { backend_url, token } = useFetchParams();
@@ -11,8 +11,6 @@ export const usePublicConnectClient = () => {
 
     const sendData = useCallback(
         async (data: any) => {
-            if (backend_url) return;
-
             const response = await fetch(`${backend_url}auth/connect-client`, {
                 method: 'POST',
                 headers: {
@@ -137,7 +135,7 @@ export const usePublicConnectClient = () => {
         return () => {
             // Cleanup if needed
         };
-    }, [backend_url]);
+    }, [token, backend_url, sendEventData]);
 
     return { launchWhatsAppSignup, sentWaBaId, sentAccessToken };
 };
