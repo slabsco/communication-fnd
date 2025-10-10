@@ -18,19 +18,31 @@ export const usePublicConnectClient = () => {
                 },
                 body: JSON.stringify({ token, ...data }),
             });
+
+            return response.json();
         },
         [backend_url, token]
     );
 
-    const sendEventData = async (data: any) => {
-        await sendData(data);
-        setSentWaBaId(true);
-    };
+    const sendEventData = useCallback(
+        async (data: any) => {
+            const response = await sendData(data);
+            if (response?.message) {
+                toastBackendError(response.message);
+            } else {
+                setSentWaBaId(true);
+            }
+        },
+        [sendData]
+    );
 
     const sendCode = async (access_code: any) => {
-        const payload = { code: access_code };
-        await sendData(payload);
-        setSentAccessToken(true);
+        const response = await sendData({ code: access_code });
+        if (response?.message) {
+            toastBackendError(response.message);
+        } else {
+            setSentAccessToken(true);
+        }
     };
 
     const launchWhatsAppSignup = () => {
