@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 import { useFetchParams } from '@finnoto/core';
@@ -105,14 +106,18 @@ const ConnectClientModule = () => {
                         {/* Header Section */}
                         <div className='mb-8 text-center'>
                             <div className='mb-6 centralize'>
-                                <div className='w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full shadow-lg centralize'>
-                                    <Icon
-                                        source={IntegrationWhatsappSvgIcon}
-                                        isSvg
-                                        size={40}
-                                        iconColor='text-white'
-                                    />
-                                </div>
+                                <Image
+                                    src={'/logo.png'}
+                                    alt='Brand Logo'
+                                    height={150}
+                                    width={150}
+                                    style={{
+                                        objectFit: 'contain',
+                                        objectPosition: 'left',
+                                    }}
+                                    unoptimized
+                                    priority
+                                />
                             </div>
                             <Typography
                                 variant='h1'
