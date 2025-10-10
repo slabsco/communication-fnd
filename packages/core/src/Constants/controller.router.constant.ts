@@ -13,6 +13,7 @@ import { SourceMapController } from '../backend/common/controllers/source.map.co
 import TallyGroupController from '../backend/common/controllers/tally.group.controller';
 import UserNotificationController from '../backend/common/controllers/user.notification.controller';
 import { ActionDetailsController } from '../backend/communication/controller/action.details.controller';
+import { BusinessPartnerController } from '../backend/communication/controller/business.partner.controller';
 import { BusinessUserInvitationController } from '../backend/communication/controller/business.user.invitation.controller';
 import { ChatbotFLowController } from '../backend/communication/controller/chatbot.flow.controller';
 import { CommunicationTemplateController } from '../backend/communication/controller/commuinication.templates.controller';
@@ -81,6 +82,7 @@ export const LISTING_CONTROLLER_ROUTER = {
     keyword_details: KeywordDetailsController,
     action_details: ActionDetailsController,
     chat_bot_flow: ChatbotFLowController,
+    business_parent: BusinessPartnerController,
 } as const;
 
 export const SPOTLIGHT_QUERY_CONTROLLER_ROUTE = {

@@ -20,6 +20,7 @@ export * from './dashboard.slug.constant';
 export * from './arcPrefrence.constant';
 export * from './arc.source.constant';
 export * from './paymentRouteName.constant';
+export * from './partner.route.constants';
 
 export * from './spotlight.search.constant';
 export * from './colors.constant';

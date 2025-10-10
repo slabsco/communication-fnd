@@ -57,6 +57,8 @@ import '../src/Styles/global.scss';
 
 import { useSearchParams } from 'next/navigation';
 
+import PartnerModuleWrapper from '../src/Modules/Partner/partner.module';
+
 const UATBanner = Functions.loadDynamicPage(
     () => import('@Components/UATBanner/uatBanner.component'),
     false,
@@ -92,6 +94,7 @@ InitLibrary({
 InitUI({
     adminWrapperComponent: AdminWrapper,
     arcAdminWrapperComponent: ArcAdminWrapper,
+    partnerModuleWrapper: PartnerModuleWrapper,
     expenseWrapperComponents: {
         vendor: VendorExpenseWrapper,
         employee: EmployeeExpenseWrapper,

@@ -6,6 +6,7 @@ import {
 
 interface InitUIProps {
     adminWrapperComponent?: React.FC<AdminWrapperProps>;
+    partnerModuleWrapper?: React.FC<AdminWrapperProps>;
     arcAdminWrapperComponent?: React.FC<AdminWrapperProps>;
     pageLoaderComponent: React.FC<PageLoaderProps>;
     formElementsComponent: React.FC<FormBuilderElementProps>;
@@ -26,6 +27,9 @@ let AdminWrapper: React.FC<AdminWrapperProps> = ({ children }) => (
 let ArcAdminWrapper: React.FC<AdminWrapperProps> = ({ children }) => (
     <>{children}</>
 );
+let PartnerModuleWrapper: React.FC<AdminWrapperProps> = ({ children }) => (
+    <>{children}</>
+);
 let ExpenseWrappers: {
     vendor?: React.FC<AdminWrapperProps>;
     employee?: React.FC<AdminWrapperProps>;
@@ -39,6 +43,7 @@ let ConfirmUtil: (options: any) => void = () => null;
 let CommentConfirmUtil: (options: any) => void = () => null;
 
 export const InitUI = ({
+    partnerModuleWrapper,
     adminWrapperComponent,
     arcAdminWrapperComponent,
     expenseWrapperComponents,
@@ -52,6 +57,7 @@ export const InitUI = ({
     AdminWrapper = adminWrapperComponent || AdminWrapper;
     ArcAdminWrapper = arcAdminWrapperComponent || ArcAdminWrapper;
     ExpenseWrappers = expenseWrapperComponents || ExpenseWrappers;
+    PartnerModuleWrapper = partnerModuleWrapper || PartnerModuleWrapper;
     PageLoader = pageLoaderComponent || PageLoader;
     formElements = formElementsComponent || formElements;
     Functions = functionMethods || Functions;
@@ -70,4 +76,5 @@ export {
     Functions,
     PageLoader,
     ThemeCustomizer,
+    PartnerModuleWrapper,
 };

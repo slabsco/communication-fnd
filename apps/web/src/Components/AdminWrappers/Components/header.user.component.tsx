@@ -18,6 +18,7 @@ import {
 } from '@finnoto/core';
 import {
     Avatar,
+    Badge,
     cn,
     DropdownMenu,
     DropdownMenuActionProps,
@@ -237,10 +238,24 @@ export const ArcHeaderPopover = ({ children }: any) => {
         return businesses?.map((bu) => bu?.business);
     }, [businesses]);
 
-    const switchOrgActions = useMemo(() => {
+    const switchOrgActions: any = useMemo(() => {
         return groupedBusinesses?.map((val, index) => {
             return {
-                name: val?.name,
+                name: (
+                    <div>
+                        {val?.name}{' '}
+                        {val?.is_partner_account ? (
+                            <Badge
+                                className='ml-2'
+                                appearance='orange'
+                                size='xs'
+                                label={'Partner Account'}
+                            />
+                        ) : (
+                            <></>
+                        )}
+                    </div>
+                ),
                 action: () => {
                     authenticateBusiness(
                         { ...val, business_id: val?.id },
