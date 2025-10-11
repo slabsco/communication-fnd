@@ -247,11 +247,26 @@ const ExpiredActiveCard = () => {
 };
 
 const LastFiveBroadCast = () => {
-    const { data } = useFetchReport('broadcast.stats.report.data', {
+    const { data, isLoading } = useFetchReport('broadcast.stats.report.data', {
         params: {},
     });
-    if (!data?.length) return <></>;
 
+    if (isLoading)
+        return (
+            <div className='w-full h-full centralize bg-base-100'>
+                <Loading size='lg' color='primary' />
+            </div>
+        );
+
+    if (!data?.length)
+        return (
+            <div className='w-full h-full centralize bg-base-100'>
+                <NoDataFound
+                    description='No any broadcast has been created on this account.'
+                    title='No Broadcast initiated'
+                />
+            </div>
+        );
     return (
         <div className='grid grid-cols-2 gap-3'>
             {data?.map((_val) => {
