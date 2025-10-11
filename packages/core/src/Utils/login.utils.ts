@@ -6,6 +6,7 @@ import {
     CLIENT_INVITATION_DATA,
     HOME_ROUTE,
     LOGIN_ROUTE,
+    PARTNER_DASHBOARD_ROUTE,
     PRODUCT_IDENTIFIER,
     PRODUCT_PATH_STATE,
     REFERRER_STORE,
@@ -57,8 +58,16 @@ const initializeUser = (data: any) => {
     }
 
     StoreUserToken({ access_token: userObj?.access_token });
-
     storeProductPathState(1, '');
+
+    const current_business = businesses?.find(
+        (_gBusiness) =>
+            _gBusiness?.business_id === userObj?.auth_attributes?.business_id
+    );
+
+    const isPartnerAccount = current_business?.is_partner_account;
+    if (isPartnerAccount)
+        return window.location.replace(PARTNER_DASHBOARD_ROUTE);
 
     const isAvailable = Menu.isMenuAvailable(HOME_ROUTE);
 
@@ -91,6 +100,13 @@ export const handleLoginNextScreen = async (data: ObjectDto) => {
     }
 
     const groupedBusiness = groupBusiness(businesses);
+
+    const hasPartnerBusiness = groupedBusiness?.find(
+        (_business) => _business?.is_partner_account
+    );
+    if (hasPartnerBusiness) {
+        return authenticateBusiness(hasPartnerBusiness, data);
+    }
     if (groupedBusiness.length === 1)
         return authenticateBusiness(businesses[0], data);
 
@@ -104,7 +120,7 @@ export const authenticateBusiness = async (
     userData?: any
 ) => {
     const businessApiUrl = UserBusiness.getBusinessAPIUrl();
-    const { user } = userData;
+    const { user } = userData || {};
 
     const accessToken = user?.access_token || GetItem(ACCESS_TOKEN, false);
 

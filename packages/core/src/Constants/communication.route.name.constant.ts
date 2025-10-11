@@ -22,3 +22,5 @@ export const KEYWORD_ACTION_CREATION_ROUTE =
 export const USER_PROFILE_ROUTE = HOME_ROUTE + 'user-profile';
 export const TEAM_MANAGEMENT_ROUTE = HOME_ROUTE + 'business-users';
 export const INVITE_USER_ROUTE = HOME_ROUTE + 'invite-user';
+
+export const CLIENT_CONFIG = HOME_ROUTE + 'client-config';

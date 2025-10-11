@@ -28,6 +28,7 @@ export const PUBLIC_EXPENSE_CREATION_ROUTE = HOME_ROUTE + 'p/expense/c';
 export const PUBLIC_EXPENSE_DETAIL_ROUTE = HOME_ROUTE + 'p/expense/d/[id]';
 export const PUBLIC_ADVANCE_DETAIL_ROUTE = HOME_ROUTE + 'p/advance/d/[id]';
 export const PUBLIC_CONVERSATION_ROUTE = HOME_ROUTE + 'p/conversation';
+export const CONNECT_CLIENT_PUBLIC = HOME_ROUTE + 'p/connect-client';
 
 export const IGNORE_AUTH_ROUTES = [
     VERIFY_EMAIL_ROUTE,
