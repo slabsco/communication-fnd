@@ -1,12 +1,9 @@
-import { AlertCircle, AlertTriangle, User2Icon } from 'lucide-react';
+import { User2Icon } from 'lucide-react';
 import Link from 'next/link';
 
 import {
     FormatDisplayDate,
-    getBusinessErrors,
-    IsEmptyArray,
     useBusinessPreference,
-    USER_PROFILE_ROUTE,
     UserBusiness,
 } from '@finnoto/core';
 import {
@@ -22,7 +19,6 @@ import {
     Modal,
     ModalBody,
     ModalContainer,
-    Tooltip,
 } from '@finnoto/design-system';
 
 import { EditSvgIcon, InfoCircleSvgIcon } from 'assets';
@@ -49,7 +45,7 @@ const BusinessProfileWhatsappInfoTab = () => {
                     </p>
                     <Link
                         target='_blank'
-                        href={'https://business.facebook.com/'}
+                        href={`https://business.facebook.com/latest/settings/security_center`}
                     >
                         <Button appearance='success' size='xs'>
                             Verify Your Business

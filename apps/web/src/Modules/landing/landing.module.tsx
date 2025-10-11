@@ -32,19 +32,21 @@ const LandingModule = () => {
             <WarningAccordion
                 columns={[
                     {
-                        description: `Your business is not verified. Please verify your business to access all features.`,
+                        description: `Please, onboard with the meta to create and use the whatsapp feature`,
                         onClick: launchWhatsAppSignup,
                         visible: !user?.business?.internal_access_token,
                     },
                     {
-                        description: `Please, onboard with the meta to create and use the whatsapp feature`,
+                        description: `Your business is not verified. Please verify your business to access all features.`,
                         onClick: () => {
-                            Navigation.navigate({
-                                url: BUSINESS_PROFILE_ROUTE,
-                            });
+                            window.open(
+                                'https://business.facebook.com/latest/settings/security_center',
+                                '_blank'
+                            );
                         },
                         visible: !businessInfo?.verified_at,
                     },
+
                     {
                         description: `Your Number is not registered. Please register your number to access all features.`,
                         onClick: () => {

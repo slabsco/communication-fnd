@@ -67,8 +67,57 @@ const ConnectClientModule = () => {
                                 buttonIcon={IntegrationWhatsappSvgIcon}
                                 buttonIconAlign='left'
                             >
-                                Go to Home
+                                Verify With Facebook
                             </Button>
+
+                            {/* Next Steps Section */}
+                            <div className='p-4 mt-6 bg-blue-50 rounded-lg border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800'>
+                                <Typography
+                                    variant='h3'
+                                    weight='medium'
+                                    className='mb-3 text-blue-800 dark:text-blue-200'
+                                >
+                                    Next Steps Required:
+                                </Typography>
+                                <div className='space-y-3'>
+                                    <div className='flex gap-3 items-start'>
+                                        <div className='flex-shrink-0 mt-2 w-2 h-2 bg-blue-500 rounded-full'></div>
+                                        <div>
+                                            <Typography className='mb-1 text-sm text-blue-700 dark:text-blue-300'>
+                                                Verify your business
+                                            </Typography>
+                                            <a
+                                                href='https://business.facebook.com/latest/settings/security_center'
+                                                target='_blank'
+                                                rel='noopener noreferrer'
+                                                className='text-xs text-blue-600 dark:text-blue-400 hover:underline'
+                                            >
+                                                Complete Business Verification →
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div className='flex gap-3 items-start'>
+                                        <div className='flex-shrink-0 mt-2 w-2 h-2 bg-green-500 rounded-full'></div>
+                                        <div>
+                                            <Typography className='mb-1 text-sm text-blue-700 dark:text-blue-300'>
+                                                Add payment method
+                                            </Typography>
+                                            <a
+                                                href='https://business.facebook.com/billing_hub/accounts/details'
+                                                target='_blank'
+                                                rel='noopener noreferrer'
+                                                className='text-xs text-blue-600 dark:text-blue-400 hover:underline'
+                                            >
+                                                Set up Payment Method →
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Typography className='mt-3 text-xs italic text-blue-600 dark:text-blue-400'>
+                                    These steps are required to run your
+                                    WhatsApp Business smoothly
+                                </Typography>
+                            </div>
 
                             {/* Trust Indicators */}
                             <div className='pt-6 mt-8 border-t border-base-300'>
@@ -191,15 +240,17 @@ const ConnectClientModule = () => {
                             <p className='text-base-tertiary'>
                                 By connecting, you agree to our{' '}
                                 <a
-                                    href='/privacy-policy'
+                                    href='https://dartinbox.com/privacy-policy.html'
                                     className='link link-hover text-primary'
+                                    target='_blank'
                                 >
                                     Privacy Policy
                                 </a>{' '}
                                 and{' '}
                                 <a
-                                    href='/terms'
+                                    href='https://dartinbox.com/terms.html'
                                     className='link link-hover text-primary'
+                                    target='_blank'
                                 >
                                     Terms of Service
                                 </a>
