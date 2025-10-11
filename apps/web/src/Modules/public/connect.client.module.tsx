@@ -59,7 +59,11 @@ const ConnectClientModule = () => {
 
                             {/* Primary Action */}
                             <Button
-                                onClick={() => router.push('/')}
+                                onClick={() =>
+                                    router.push(
+                                        'https://business.facebook.com/latest/settings/security_center'
+                                    )
+                                }
                                 appearance='primary'
                                 size='lg'
                                 block
