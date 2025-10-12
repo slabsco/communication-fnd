@@ -11,14 +11,14 @@ import {
 import { Badge, ConfirmUtil } from '@finnoto/design-system';
 import { BadgeInterface } from '@finnoto/design-system/src/Components/Data-display/Badge/badge.types';
 
-import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
-import { GenericDocumentListingProps } from '../../../Components/GenericDocumentListing/genericDocumentListing.types';
+import GenericDocumentListingComponent from '../../Components/GenericDocumentListing/genericDocumentListing.component';
+import { GenericDocumentListingProps } from '../../Components/GenericDocumentListing/genericDocumentListing.types';
+import { openImportYourTemplateModal } from './components/ImportYourTemplateModal';
 import {
     WhatsappTemplateCategoryEnum,
     WhatsappTemplateStatusEnum,
-} from './enums/whatsapp.template.category.enum';
+} from './constants/whatsapp.template.category.enum';
 import { useHandleTemplate } from './hooks/useHandleTemplate.hook';
-import { openImportYourTemplateModal } from './ImportYourTemplateModal';
 
 import { CopySvgIcon, DeleteSvgIcon, EditSvgIcon } from 'assets';
 
@@ -53,61 +53,6 @@ const YourTemplatesListModule = () => {
                         action: openImportYourTemplateModal,
                     },
                 ],
-            },
-        ],
-        rowActions: [
-            {
-                name: 'Duplicate',
-                key: 'duplicate',
-                icon: CopySvgIcon,
-                action: (row: any) => {
-                    Navigation.navigate({
-                        url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${row.id}&is_duplicate=true`,
-                    });
-                },
-            },
-            {
-                name: 'Edit',
-                key: 'edit',
-                icon: EditSvgIcon,
-                visible: (row) => {
-                    if (
-                        row.category_id ===
-                        WhatsappTemplateCategoryEnum.AUTHENTICATION
-                    )
-                        return false;
-
-                    return [
-                        WhatsappTemplateStatusEnum.REJECTED,
-                        WhatsappTemplateStatusEnum.APPROVED,
-                        WhatsappTemplateStatusEnum.PAUSED,
-                    ].includes(row.status_id);
-                },
-                action: (row: any) => {
-                    Navigation.navigate({
-                        url: `${WHATSAPP_TEMPLATE_CREATION_ROUTE}?id=${row.id}`,
-                    });
-                },
-            },
-            {
-                name: 'Delete',
-                key: 'delete',
-                action: (item: ObjectDto) => {
-                    ConfirmUtil({
-                        title: 'Do you want to delete?',
-                        message:
-                            'The action you are about to perform is irreversible.',
-                        icon: DeleteSvgIcon,
-                        isArc: true,
-                        onConfirmPress: () => {
-                            deleteTemplate(item?.id);
-                        },
-                        appearance: 'error',
-                    });
-                },
-                color: 'text-error',
-                isCancel: true,
-                icon: DeleteSvgIcon,
             },
         ],
         table: [

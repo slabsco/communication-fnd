@@ -1,3 +1,3 @@
-import YourTemplatesDetailModule from '../../../src/Modules/broadcast/your-templates/YourTemplatesDetailModule';
+import TemplateDetailModule from '../../../src/Modules/template/template.detail.module';
 
-export default YourTemplatesDetailModule;
+export default TemplateDetailModule;

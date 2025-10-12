@@ -1,0 +1,168 @@
+import { ConfirmAsyncUtil } from '@finnoto/design-system';
+
+import { TemplateState } from '../types/template.category.types';
+import { TemplateAction } from './template.format';
+
+export const initialState: TemplateState = {
+    parameter_format: 'NAMED',
+    allow_category_change: true,
+    name: undefined,
+    language: 'en_US',
+    category: 'MARKETING',
+    header_media_detail: undefined,
+    components: [
+        {
+            type: 'HEADER',
+            format: undefined,
+            text: undefined,
+            example: {
+                header_text_named_params: [],
+                header_handle: [],
+            },
+        },
+        {
+            type: 'BODY',
+            text: undefined,
+        },
+        {
+            type: 'BUTTONS',
+            buttons: [],
+        },
+    ],
+};
+
+function setIn<T>(obj: T, path: string, next: any | ((prev: any) => any)): T {
+    if (!path) return obj;
+    const keys = path.split('.');
+    const [key, ...rest] = keys;
+    const isIndex = !isNaN(Number(key));
+
+    const curr: any = (obj as any) ?? (isIndex ? [] : {});
+    const clone: any = Array.isArray(curr) ? curr.slice() : { ...curr };
+
+    if (rest.length === 0) {
+        const prevVal = clone[key as any];
+        clone[key as any] =
+            typeof next === 'function' ? (next as any)(prevVal) : next;
+        return clone as T;
+    }
+
+    const child = clone[key as any];
+    clone[key as any] = setIn(child, rest.join('.'), next);
+    return clone as T;
+}
+
+// Helper function to update a specific component in the components array
+function updateComponent(
+    state: TemplateState,
+    componentType: 'HEADER' | 'BODY' | 'FOOTER' | 'BUTTONS',
+    updates: any
+): TemplateState {
+    let found = false;
+    const updatedComponents = state.components.map((component) => {
+        if (component.type === componentType) {
+            found = true;
+            return {
+                ...component,
+                ...updates,
+            };
+        }
+        return component;
+    });
+
+    // If not found, add a new component of the given type with the updates
+    if (!found) {
+        updatedComponents.push({
+            type: componentType,
+            ...updates,
+        });
+    }
+
+    return {
+        ...state,
+        components: updatedComponents,
+    };
+}
+
+// Updated reducer with all component update cases
+export function templateReducer(
+    state: TemplateState,
+    action: TemplateAction
+): TemplateState {
+    switch (action.type) {
+        case 'UPDATE_CATEGORY':
+            return setIn(state, 'category', action?.payload);
+
+        case 'UPDATE_NAME':
+            return setIn(state, 'name', action?.payload);
+
+        case 'UPDATE_ALLOW_CATEGORY_CHANGE':
+            return setIn(state, 'allow_category_change', action?.payload);
+        case 'UPDATE_PARAMETER_FORMAT':
+            return setIn(state, 'parameter_format', action?.payload);
+
+        case 'UPDATE_LANGUAGE':
+            return setIn(state, 'language', action?.payload);
+
+        // HEADER COMPONENT UPDATES
+        case 'UPDATE_HEADER':
+            return updateComponent(state, 'HEADER', action?.payload);
+
+        case 'UPDATE_HEADER_MEDIA':
+            return setIn(state, 'header_media_detail', action?.payload);
+
+        case 'UPDATE_BODY':
+            return updateComponent(state, 'BODY', action?.payload);
+
+        case 'UPDATE_BODY_PARAMS_ONLY':
+            return updateComponent(state, 'BODY', {
+                example: {
+                    ...state.components.find((c) => c.type === 'BODY')?.example,
+                    ...action?.payload.example,
+                },
+            });
+
+        case 'UPDATE_FOOTER':
+            return updateComponent(state, 'FOOTER', action?.payload);
+
+        case 'UPDATE_BUTTONS':
+            // Fix: Update only the buttons array, not the entire component
+            return updateComponent(state, 'BUTTONS', {
+                buttons: action?.payload,
+            });
+
+        case 'UPDATE_TIME_TO_LIVE':
+            return setIn(state, 'message_send_ttl_seconds', action?.payload);
+        case 'RESET_STATE':
+            return { ...state, ...action?.payload };
+
+        case 'REMOVE_COMPONENT': {
+            const typeToRemove = action?.payload;
+            return {
+                ...state,
+                components: state.components.filter(
+                    (component) => component.type !== typeToRemove
+                ),
+            };
+        }
+        default:
+            return state;
+    }
+}
+
+const showDiscardTemplateModal = async () => {
+    return await ConfirmAsyncUtil({
+        isArc: true,
+        title: 'Changes will be lost if you go back',
+        message: `You started editing this template, but haven't submitted it yet. If you discard now, all your progress will be lost`,
+    });
+};
+
+export const templateNavigationGuard = async (
+    fn: () => void,
+    show: boolean = true
+) => {
+    const result = show ? await showDiscardTemplateModal() : true;
+    if (!result) return;
+    return fn();
+};

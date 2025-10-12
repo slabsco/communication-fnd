@@ -2,13 +2,10 @@ import { useMemo } from 'react';
 
 import {
     FetchData,
-    FormBuilderSubmitType,
     IsEmptyObject,
     IsUndefinedOrNull,
-    Navigation,
     RefetchGenericListing,
     toastBackendError,
-    WHATSAPP_TEMPLATE_LIST_ROUTE,
 } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { Toast } from '@finnoto/design-system';
@@ -20,26 +17,6 @@ export const useHandleTemplate = (
     options?: { is_duplicate?: boolean }
 ) => {
     const queryClient = useQueryClient();
-
-    const onSubmit: FormBuilderSubmitType = async (
-        value: any,
-        { setError }
-    ) => {
-        const formValue = value;
-        if (options?.is_duplicate) formValue.id = undefined;
-
-        const { success, response } = await FetchData({
-            className: CommunicationTemplateController,
-            method: 'create',
-            classParams: formValue,
-        });
-
-        if (response?.columns) return setError(response?.columns);
-        if (!success) return toastBackendError(response);
-
-        queryClient.invalidateQueries({ queryKey: ['template_detail', id] });
-        Navigation.navigate({ url: WHATSAPP_TEMPLATE_LIST_ROUTE });
-    };
 
     const {
         data: response,
@@ -91,7 +68,6 @@ export const useHandleTemplate = (
     });
 
     return {
-        onSubmit,
         isLoading,
         defaultData,
         isFetched,

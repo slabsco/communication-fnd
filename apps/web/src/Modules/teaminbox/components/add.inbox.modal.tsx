@@ -27,8 +27,9 @@ import {
     ModalFooter,
 } from '@finnoto/design-system';
 
-import { AsyncTemplateViewer } from '../../broadcast/your-templates/components/TemplateViewer.component';
 import { openAddContactForm } from '../../contact/add.contact.modal.form';
+import { AsyncTemplateViewer } from '../../template/components/TemplateViewer.component';
+import { getVariableExamples } from '../../template/constants/template.format';
 
 const AddInboxModal = ({
     contact_id,
@@ -65,16 +66,21 @@ const AddInboxModal = ({
         },
     };
 
+    const api_sample_contents = useMemo(() => {
+        if (!templateData) return {};
+        return getVariableExamples(templateData?.template_config);
+    }, [templateData]);
+
     const isAllAttributesFilled = useMemo(() => {
-        if (IsEmptyObject(templateData?.sample_contents)) return true;
+        if (IsEmptyObject(api_sample_contents)) return true;
         if (IsEmptyObject(attributes)) return false;
 
-        const sample_contents = Object.values(templateData?.sample_contents);
+        const sample_contents = Object.values(api_sample_contents);
         const att = RemoveEmptyArray(Object.values(attributes));
 
         if (sample_contents.length === att.length) return true;
         return false;
-    }, [attributes, templateData?.sample_contents]);
+    }, [attributes, api_sample_contents]);
 
     const onSubmit: FormBuilderSubmitType = async (
         values: ObjectDto,
@@ -157,6 +163,7 @@ const AddInboxModal = ({
                     <Button
                         appearance='primary'
                         defaultMinWidth
+                        progress
                         onClick={handleSubmit}
                         disabled={!isAllAttributesFilled || hasError()}
                     >
@@ -215,11 +222,13 @@ const DisplayAttributesField = ({
             </div>
         );
 
-    if (IsEmptyObject(data?.sample_contents)) return <></>;
+    const sample_contents = getVariableExamples(data?.template_config);
+
+    if (IsEmptyObject(sample_contents)) return <></>;
 
     return (
         <div className='gap-2 items-center p-2 mt-4 w-full rounded col-flex bg-base-300'>
-            {Object.entries(data?.sample_contents)?.map(([key, value]) => {
+            {Object.entries(sample_contents)?.map(([key, value]) => {
                 return (
                     <InputField
                         label={key}
@@ -228,7 +237,7 @@ const DisplayAttributesField = ({
                         key={key}
                         placeholder={key}
                         className='w-full'
-                        value={attributes?.[key]}
+                        value={attributes?.[key] || value}
                         onChange={(e) => {
                             setAttributes((prev) => ({ ...prev, [key]: e }));
                         }}

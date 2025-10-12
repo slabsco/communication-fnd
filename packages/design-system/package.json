@@ -65,6 +65,7 @@
         "react-mentions": "^4.4.10",
         "react-pdf": "^6.2.2",
         "react-querybuilder": "^6.5.1",
+        "react-quill": "^2.0.0",
         "react-slick": "^0.29.0",
         "react-text-mask": "^5.5.0",
         "react-toastify": "^10.0.5",

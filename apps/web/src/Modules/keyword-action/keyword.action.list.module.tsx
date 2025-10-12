@@ -23,7 +23,7 @@ import {
 
 import GenericDocumentListingComponent from '../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../Components/GenericDocumentListing/genericDocumentListing.types';
-import { openTemplateViewer } from '../broadcast/your-templates/components/TemplateViewer.component';
+import { openTemplateViewer } from '../template/components/TemplateViewer.component';
 
 import { DeleteSvgIcon, EditSvgIcon } from 'assets';
 

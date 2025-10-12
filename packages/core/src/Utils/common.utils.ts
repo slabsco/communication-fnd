@@ -1512,6 +1512,9 @@ export const getVariableParamsFromString = (input: string): string[] => {
     let match;
 
     while ((match = regex.exec(input)) !== null) {
+        const value = match[1].trim();
+        if (variables.includes(value)) continue;
+
         variables.push(match[1].trim());
     }
 
@@ -1522,10 +1525,28 @@ export const replaceVariablesInString = (
     message: string,
     params: Record<string, string>
 ): string => {
+    if (!message) return;
     const regex = /{{(.*?)}}/g;
     return message.replace(regex, (_, variable) => {
         const trimmedVariable = variable.trim();
         return trimmedVariable in params ? params[trimmedVariable] : _;
+    });
+};
+export const newReplaceVariablesInString = (
+    message: string,
+    params: { param_name: string; example: string }[]
+): string => {
+    if (!message) return '';
+
+    const regex = /{{(.*?)}}/g;
+    return message.replace(regex, (_, variable) => {
+        const trimmedVariable = variable.trim();
+        const found = params?.find(
+            (param) => param?.param_name === trimmedVariable
+        );
+        return found && found.example !== undefined && found.example !== null
+            ? found.example
+            : _;
     });
 };
 

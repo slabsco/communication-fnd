@@ -148,19 +148,12 @@ export const RenderInnerTextMessage = ({ message }: any) => {
     );
 };
 
-function convertWhatsappFormatToHtml(text: string): string {
+export function convertWhatsappFormatToHtml(text: string): string {
     if (!text) return '';
 
-    // Convert *bold* to <strong>
     text = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
-
-    // Convert _italic_ to <em>
     text = text.replace(/_(.*?)_/g, '<em>$1</em>');
-
-    // Convert ~strikethrough~ to <del>
     text = text.replace(/~(.*?)~/g, '<del>$1</del>');
-
-    // Convert line breaks to <br>
     text = text.replace(/\n/g, '<br/>');
 
     return text;

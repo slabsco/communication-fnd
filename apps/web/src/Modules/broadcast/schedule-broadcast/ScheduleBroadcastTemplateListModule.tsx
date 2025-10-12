@@ -14,8 +14,8 @@ import { ConfirmUtil, Modal } from '@finnoto/design-system';
 
 import GenericDocumentListingComponent from '../../../Components/GenericDocumentListing/genericDocumentListing.component';
 import { GenericDocumentListingProps } from '../../../Components/GenericDocumentListing/genericDocumentListing.types';
-import { MultiColorBroadcastComponent } from '../multi.color.broadcast.component';
-import { openTemplateViewer } from '../your-templates/components/TemplateViewer.component';
+import { MultiColorBroadcastComponent } from '../../template/components/multi.color.broadcast.component';
+import { openTemplateViewer } from '../../template/components/TemplateViewer.component';
 
 import { DeleteSvgIcon } from 'assets';
 

@@ -27,31 +27,14 @@ export class WhatsappTemplateCreationDto extends IdPayloadDto {
     language_id: number;
 
     @Expose()
-    @IsOptional()
-    title?: {
-        type: 'text' | 'image' | 'video' | 'document';
-        value: string;
-    };
+    @IsNotEmpty()
+    raw_json: any;
 
     @Expose()
     @IsOptional()
-    @IsString()
-    body: string;
+    header_media_detail: any;
 
     @Expose()
     @IsOptional()
-    @IsString()
-    footer: string;
-
-    @Expose()
-    @IsOptional()
-    button_configurations: { [key: string]: any };
-
-    @Expose()
-    @IsOptional()
-    sample_contents: { [key: string]: string | number };
-
-    @Expose()
-    @IsOptional()
-    authConfig?: any;
+    active_step: any;
 }

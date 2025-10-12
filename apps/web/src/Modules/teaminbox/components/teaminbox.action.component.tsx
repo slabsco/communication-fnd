@@ -3,7 +3,7 @@ import { TeamInboxController } from '@finnoto/core/src/backend/communication/con
 import { ConfirmUtil } from '@finnoto/design-system';
 
 import DropdownActionButton from '../../../Components/DropdownButton/dropdown.action.button';
-import { TeamInboxStatusTypeEnum } from '../../broadcast/your-templates/enums/whatsapp.template.category.enum';
+import { TeamInboxStatusTypeEnum } from '../../template/constants/whatsapp.template.category.enum';
 import { addAssignee } from '../add.assignee.form.util';
 import {
     RefetchTeamInboxDetail,
