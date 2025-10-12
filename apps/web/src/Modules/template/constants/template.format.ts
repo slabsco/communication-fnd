@@ -78,6 +78,8 @@ export const initializeVariablesInState = (
 
     if (state && state.category === 'AUTHENTICATION') {
         (params as any).code = '*****';
+    } else {
+        delete params.code;
     }
 
     if (IsEmptyObject(params)) return state;

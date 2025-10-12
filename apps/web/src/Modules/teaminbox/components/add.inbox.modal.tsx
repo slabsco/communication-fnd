@@ -237,7 +237,7 @@ const DisplayAttributesField = ({
                         key={key}
                         placeholder={key}
                         className='w-full'
-                        value={attributes?.[key] || value}
+                        value={attributes?.[key]}
                         onChange={(e) => {
                             setAttributes((prev) => ({ ...prev, [key]: e }));
                         }}

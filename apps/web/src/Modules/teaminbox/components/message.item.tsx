@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 
 import { cn, FormatDisplayDateStyled, Tooltip } from '@finnoto/design-system';
 
+import { MessageSectionPreview } from '../../broadcast/your-templates/components/YourTemplatesPriview.component';
 import { TemplateMessagePreview } from '../../template/components/template.preview.component';
 import { initializeVariablesInState } from '../../template/constants/template.format';
 import { RenderInnerTextMessage } from './render.inner.text.component';
@@ -67,14 +68,29 @@ export const MessageItem = ({ message }: { message: any }) => {
             {component ? (
                 <div className='flex flex-row-reverse gap-2 items-end'>
                     <RenderSeenUnseen message={message} />
-                    <TemplateMessagePreview
-                        state={initializeVariablesInState(
-                            message?.template_config,
-                            sampleContent
-                        )}
-                        className='max-w-[50%] bg-green-200'
-                        showTime={false}
-                    />
+                    {message?.template_config ? (
+                        <TemplateMessagePreview
+                            state={initializeVariablesInState(
+                                message?.template_config,
+                                sampleContent
+                            )}
+                            className='max-w-[50%] bg-green-200'
+                            showTime={false}
+                        />
+                    ) : (
+                        <MessageSectionPreview
+                            sampleContent={sampleContent}
+                            configuration={
+                                message?.template_button_configurations
+                            }
+                            title={message?.template_title}
+                            footer={message?.template_footer}
+                            body={message?.template_body}
+                            className='max-w-[50%] bg-green-200'
+                            showTime={false}
+                        />
+                    )}
+
                     <MessageBubbleTimePopper message={message} />
                 </div>
             ) : isSentBySystem ? (
