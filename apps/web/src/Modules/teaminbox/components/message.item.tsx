@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 
 import { cn, FormatDisplayDateStyled, Tooltip } from '@finnoto/design-system';
 
+import { MessageSectionPreview } from '../../broadcast/your-templates/components/YourTemplatesPriview.component';
 import { TemplateMessagePreview } from '../../template/components/template.preview.component';
 import { initializeVariablesInState } from '../../template/constants/template.format';
 import { RenderInnerTextMessage } from './render.inner.text.component';
