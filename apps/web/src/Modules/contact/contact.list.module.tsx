@@ -43,7 +43,7 @@ const ContactListModule = () => {
                 name: 'Mobile',
                 key: 'mobile',
                 renderValue: (data: any) => {
-                    if (!data?.team_inbox_id) return data?.message;
+                    if (!data?.team_inbox_id) return data?.mobile;
                     return (
                         <Link
                             className='link link-hover'
