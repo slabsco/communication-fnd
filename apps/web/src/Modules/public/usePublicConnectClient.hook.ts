@@ -78,6 +78,8 @@ export const usePublicConnectClient = () => {
                 override_default_response_type: true,
                 extras: {
                     sessionInfoVersion: 2,
+                    version: 'v4',
+                    featureType: 'whatsapp_business_app_onboarding',
                 },
             }
         );
@@ -109,7 +111,8 @@ export const usePublicConnectClient = () => {
                 appId: '2535913113279344', // Use actual app ID
                 cookie: true,
                 xfbml: true,
-                version: 'v19.0',
+                autoLogAppEvents: true,
+                version: 'v24.0',
             });
             setFacebookSDKLoaded(true);
         };
@@ -136,7 +139,7 @@ export const usePublicConnectClient = () => {
             try {
                 const data = JSON.parse(event.data);
                 if (data.type === 'WA_EMBEDDED_SIGNUP') {
-                    sendEventData(data?.data);
+                    sendEventData(data);
                 }
             } catch {
                 console.log('message event error: ', event.data); // remove after testing
