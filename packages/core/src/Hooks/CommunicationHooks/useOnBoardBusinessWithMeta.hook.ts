@@ -165,6 +165,8 @@ export const useOnBoardBusinessWithMeta = () => {
                 override_default_response_type: true,
                 extras: {
                     sessionInfoVersion: 2,
+                    version: 'v4',
+                    featureType: 'whatsapp_business_app_onboarding',
                 },
             }
         );
