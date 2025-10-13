@@ -76,7 +76,7 @@ export const useOnBoardBusinessWithMeta = () => {
             try {
                 const data = JSON.parse(event.data);
                 if (data.type === 'WA_EMBEDDED_SIGNUP') {
-                    sendEventData(data?.data);
+                    sendEventData(data);
                 }
             } catch {
                 console.log('message event error: ', event.data); // remove after testing
