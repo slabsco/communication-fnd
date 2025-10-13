@@ -42,7 +42,7 @@ export const MessageBubbleTimePopper = ({ message }: { message: any }) => {
     return (
         <div className='flex gap-2'>
             <span className='text-base-secondary text-[10px]'>
-                {message?.creator || 'Bot'},
+                {message?.creator || message?.attributes?.custom_name || 'Bot'},
             </span>
             {FormatDisplayDateStyled({
                 value: message?.created_at,
