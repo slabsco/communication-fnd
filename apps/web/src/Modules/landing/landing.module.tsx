@@ -16,9 +16,8 @@ import { WarningToastIcon } from 'assets';
 
 const LandingModule = () => {
     const { user, businessInfo } = useLandingPage();
-
     const errors = getBusinessErrors(businessInfo);
-    const { launchWhatsAppSignup } = useOnBoardBusinessWithMeta();
+
     return (
         <>
             <h3 className='text-2xl font-semibold'>Welcome, {user.name} </h3>
@@ -29,49 +28,46 @@ const LandingModule = () => {
                     errors={item.errors}
                 />
             ))}
-            <WarningAccordion
-                columns={[
-                    {
-                        description: `Please, onboard with the meta to create and use the whatsapp feature`,
-                        onClick: launchWhatsAppSignup,
-                        visible: !user?.business?.internal_access_token,
-                    },
-                    {
-                        description: `Your business is not verified. Please verify your business to access all features.`,
-                        onClick: () => {
-                            window.open(
-                                'https://business.facebook.com/latest/settings/security_center',
-                                '_blank'
-                            );
+            {businessInfo?.internal_access_token && (
+                <WarningAccordion
+                    columns={[
+                        {
+                            description: `Your business is not verified. Please verify your business to access all features.`,
+                            onClick: () => {
+                                window.open(
+                                    'https://business.facebook.com/latest/settings/security_center',
+                                    '_blank'
+                                );
+                            },
+                            visible: !businessInfo?.verified_at,
                         },
-                        visible: !businessInfo?.verified_at,
-                    },
 
-                    {
-                        description: `Your Number is not registered. Please register your number to access all features.`,
-                        onClick: () => {
-                            Navigation.navigate({
-                                url: BUSINESS_PROFILE_ROUTE,
-                            });
+                        {
+                            description: `Your Number is not registered. Please register your number to access all features.`,
+                            onClick: () => {
+                                Navigation.navigate({
+                                    url: BUSINESS_PROFILE_ROUTE,
+                                });
+                            },
+                            visible: !businessInfo?.phone_registered_at,
                         },
-                        visible: !businessInfo?.phone_registered_at,
-                    },
-                    {
-                        description: `Your phone number is not currently configured in your
+                        {
+                            description: `Your phone number is not currently configured in your
                         account. Please update your mobile number to ensure
                         proper account verification and access to all features.`,
-                        onClick: () => {
-                            Navigation.navigate({
-                                url: USER_PROFILE_ROUTE,
-                                queryParam: {
-                                    open_mobile: true,
-                                },
-                            });
+                            onClick: () => {
+                                Navigation.navigate({
+                                    url: USER_PROFILE_ROUTE,
+                                    queryParam: {
+                                        open_mobile: true,
+                                    },
+                                });
+                            },
+                            visible: !user?.mobile,
                         },
-                        visible: !user?.mobile,
-                    },
-                ]}
-            />
+                    ]}
+                />
+            )}
         </>
     );
 };
@@ -121,8 +117,7 @@ export const WarningAccordion = ({ columns }: { columns: ErrorColumns[] }) => {
                 </div>
                 <ArrowDown
                     className={`transition-transform duration-200 ${
-                        open ? 'rotate-180' : ''
-                    }`}
+                        open ? 'rotate-180' : ''}`}
                 />
             </div>
             <AnimateHeight height={open ? '100%' : 0}>

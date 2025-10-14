@@ -79,8 +79,9 @@ export const useOnBoardBusinessWithMeta = () => {
                     sendEventData(data);
                 }
             } catch {
-                console.log('message event error: ', event.data); // remove after testing
-                // your code goes here
+                toastBackendError({
+                    message: 'Something went wrong processing your request..',
+                });
             }
         });
 
@@ -154,8 +155,9 @@ export const useOnBoardBusinessWithMeta = () => {
                     console.log('Authorization code:', code);
                     // Handle the code (e.g., send to backend)
                 } else {
-                    console.log(
-                        'User cancelled login or did not fully authorize.'
+                    toastBackendError(
+                        response,
+                        'Something went wrong processing your request..'
                     );
                 }
             },

@@ -144,8 +144,9 @@ const MainDashboard = () => {
 
                                     <Button
                                         onClick={launchWhatsAppSignup}
-                                        size='xs'
+                                        size='lg'
                                         appearance='success'
+                                        className='!text-lg'
                                     >
                                         Connect Whatsapp
                                     </Button>

@@ -153,7 +153,7 @@ const CardMainContent = ({ data }: any) => {
                         })}
                         title={data?.contact_name}
                     >
-                        {data?.contact_name}
+                        {data?.contact_name || data?.wa_id || data?.mobile}
                     </span>
                 </div>
                 <div className='mt-0'>
