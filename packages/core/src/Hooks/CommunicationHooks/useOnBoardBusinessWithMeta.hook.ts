@@ -1,7 +1,9 @@
 // @ts-nocheck
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUpdateEffect } from 'react-use';
+
+import { ConfirmUtil } from '@finnoto/design-system';
 
 import { MetaBusinessController } from '../../backend/meta/controllers/meta.business.controller';
 import { toastBackendError } from '../../Utils/common.utils';
@@ -133,9 +135,25 @@ export const useOnBoardBusinessWithMeta = () => {
         });
     };
 
-    const launchWhatsAppSignup = useCallback(() => {
+    const launchWhatsAppSignup = (retryTime: number = 0) => {
         if (!facebookSDKLoaded || typeof window.FB === 'undefined') {
-            setTimeout(launchWhatsAppSignup, 100);
+            if (retryTime > 10) {
+                return ConfirmUtil({
+                    title: 'Facebook Initialization Issue',
+                    message:
+                        'Due to a Facebook initialization issue, the page will be reloaded. Please click the button again after the reload to initiate the request.',
+                    isArc: true,
+                    cancelAppearance: 'error',
+                    confirmAppearance: 'success',
+                    confirmText: 'Reload Now',
+                    appearance: 'success',
+                    cancelText: 'Cancel',
+                    onConfirmPress: () => {
+                        window.location.reload();
+                    },
+                });
+            }
+            setTimeout(() => launchWhatsAppSignup(retryTime + 1), 100);
             return;
         }
 
@@ -172,7 +190,7 @@ export const useOnBoardBusinessWithMeta = () => {
                 },
             }
         );
-    }, [facebookSDKLoaded]);
+    };
 
     return { launchWhatsAppSignup };
 };

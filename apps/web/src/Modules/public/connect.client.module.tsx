@@ -7,6 +7,7 @@ import {
     Button,
     Card,
     CardBody,
+    cn,
     Icon,
     PageLoader,
     Typography,
@@ -442,15 +443,22 @@ const ConnectionSuccessComponent = ({
 };
 
 // Component for initial connection
-const InitialConnectionComponent = ({
+export const InitialConnectionComponent = ({
     business_name,
     launchWhatsAppSignup,
+    className,
 }: {
     business_name: string;
+    className?: string;
     launchWhatsAppSignup: () => void;
 }) => {
     return (
-        <div className='h-screen bg-gradient-to-br from-blue-50 to-indigo-100 centralize bg-base-200 dark:from-gray-900 dark:to-gray-800'>
+        <div
+            className={cn(
+                'h-screen bg-gradient-to-br from-blue-50 to-indigo-100 centralize bg-base-200 dark:from-gray-900 dark:to-gray-800',
+                className
+            )}
+        >
             <div className='mx-4 w-full max-w-md'>
                 <Card className='border-0 shadow-2xl backdrop-blur-sm bg-white/80 dark:bg-gray-800/80'>
                     <CardBody className='p-8'>
@@ -526,7 +534,7 @@ const InitialConnectionComponent = ({
 
                         {/* Connect Button */}
                         <Button
-                            onClick={launchWhatsAppSignup}
+                            onClick={() => launchWhatsAppSignup()}
                             appearance='primary'
                             size='lg'
                             block

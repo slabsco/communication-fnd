@@ -38,6 +38,7 @@ import {
     customChartTooltip,
 } from '../../Constants/chart-constant/commonChartOption';
 import LandingModule from '../landing/landing.module';
+import { InitialConnectionComponent } from '../public/connect.client.module';
 import { MultiColorBroadcastComponent } from '../template/components/multi.color.broadcast.component';
 import DayWiseMessageChart from './day.wise.message.chart';
 
@@ -49,6 +50,16 @@ const MainDashboard = () => {
     const { launchWhatsAppSignup } = useOnBoardBusinessWithMeta();
     if (isBusinessInfoLoading) return <PageLoader />;
 
+    if (!businessInfo?.internal_id) {
+        return (
+            <InitialConnectionComponent
+                className='!h-content-screen'
+                business_name={businessInfo?.name}
+                launchWhatsAppSignup={launchWhatsAppSignup}
+            />
+        );
+    }
+
     return (
         <Container className='flex overflow-hidden relative flex-col py-4 transition-all'>
             <div className='gap-2 my-3 col-flex'>
@@ -56,105 +67,72 @@ const MainDashboard = () => {
             </div>
             <div className='gap-3 col-flex'>
                 <div className='grid grid-cols-1 gap-4 justify-center sm:grid-cols-2 lg:grid-cols-3'>
-                    {businessInfo?.internal_number ? (
-                        <Card title='Phone Number Status'>
-                            <div className='flex gap-2 items-center my-2'>
-                                <div
-                                    className={cn(
-                                        'flex flex-1 gap-2 items-center text-error',
-                                        {
-                                            'text-success':
-                                                businessInfo?.phone_registered_at,
-                                        }
-                                    )}
-                                >
-                                    <CheckCircle />
-                                    <p className='flex-1'>
-                                        {businessInfo?.phone_registered_at
-                                            ? 'Connected'
-                                            : 'Not Connected'}
-                                    </p>
-                                    {!businessInfo?.phone_registered_at ? (
-                                        <Button
-                                            onClick={async (next) => {
-                                                await verifyNumber(
-                                                    businessInfo?.internal_number
-                                                );
-                                                next();
-                                            }}
-                                            progress
-                                            size='xs'
-                                            appearance='success'
-                                        >
-                                            Connect Number
-                                        </Button>
-                                    ) : (
-                                        <div className='flex gap-3 items-center p-1 rounded bg-base-200'>
-                                            <IconButton
-                                                size='xs'
-                                                onClick={() => {
-                                                    CopyToClipBoard(
-                                                        businessInfo?.default_mobile
-                                                    );
-                                                }}
-                                                name='Copy Mobile'
-                                                icon={CopySvgIcon}
-                                                outline
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            {businessInfo?.default_mobile && (
-                                <div className='flex gap-2 items-center p-1 rounded bg-base-200'>
-                                    <Link2 /> wa.me/
-                                    {businessInfo?.default_mobile}{' '}
-                                    <IconButton
-                                        size='xs'
-                                        name='Copy Message link'
-                                        onClick={() => {
-                                            CopyToClipBoard(
-                                                `https://wa.me/${businessInfo?.default_mobile}?text=Hello%20there!`
-                                            );
-                                        }}
-                                        icon={CopySvgIcon}
-                                        outline
-                                    />
-                                </div>
-                            )}
-                        </Card>
-                    ) : (
-                        <Card title='On Board With Meta'>
-                            <div className='flex gap-2 items-center my-2'>
-                                <div
-                                    className={cn(
-                                        'flex flex-1 gap-2 items-center text-error',
-                                        {
-                                            'text-success':
-                                                businessInfo?.phone_registered_at,
-                                        }
-                                    )}
-                                >
-                                    <CheckCircle />
-                                    <p className='flex-1'>
-                                        {businessInfo?.phone_registered_at
-                                            ? 'Connected'
-                                            : 'Not Connected'}
-                                    </p>
-
+                    <Card title='Phone Number Status'>
+                        <div className='flex gap-2 items-center my-2'>
+                            <div
+                                className={cn(
+                                    'flex flex-1 gap-2 items-center text-error',
+                                    {
+                                        'text-success':
+                                            businessInfo?.phone_registered_at,
+                                    }
+                                )}
+                            >
+                                <CheckCircle />
+                                <p className='flex-1'>
+                                    {businessInfo?.phone_registered_at
+                                        ? 'Connected'
+                                        : 'Not Connected'}
+                                </p>
+                                {!businessInfo?.phone_registered_at ? (
                                     <Button
-                                        onClick={launchWhatsAppSignup}
-                                        size='lg'
+                                        onClick={async (next) => {
+                                            await verifyNumber(
+                                                businessInfo?.internal_number
+                                            );
+                                            next();
+                                        }}
+                                        progress
+                                        size='xs'
                                         appearance='success'
-                                        className='!text-lg'
                                     >
-                                        Connect Whatsapp
+                                        Connect Number
                                     </Button>
-                                </div>
+                                ) : (
+                                    <div className='flex gap-3 items-center p-1 rounded bg-base-200'>
+                                        <IconButton
+                                            size='xs'
+                                            onClick={() => {
+                                                CopyToClipBoard(
+                                                    businessInfo?.default_mobile
+                                                );
+                                            }}
+                                            name='Copy Mobile'
+                                            icon={CopySvgIcon}
+                                            outline
+                                        />
+                                    </div>
+                                )}
                             </div>
-                        </Card>
-                    )}
-
+                        </div>
+                        {businessInfo?.default_mobile && (
+                            <div className='flex gap-2 items-center p-1 rounded bg-base-200'>
+                                <Link2 /> wa.me/
+                                {businessInfo?.default_mobile}{' '}
+                                <IconButton
+                                    size='xs'
+                                    name='Copy Message link'
+                                    onClick={() => {
+                                        CopyToClipBoard(
+                                            `https://wa.me/${businessInfo?.default_mobile}?text=Hello%20there!`
+                                        );
+                                    }}
+                                    icon={CopySvgIcon}
+                                    outline
+                                />
+                            </div>
+                        )}
+                    </Card>
                     <Card title='Total Messaging Limit'>
                         <div className='flex gap-2 items-center my-2'>
                             <MessageCircle />
