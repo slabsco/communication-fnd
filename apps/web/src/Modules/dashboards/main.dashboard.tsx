@@ -87,6 +87,15 @@ const MainDashboard = () => {
                                 {!businessInfo?.phone_registered_at ? (
                                     <Button
                                         onClick={async (next) => {
+                                            if (
+                                                !businessInfo?.internal_number
+                                            ) {
+                                                window.open(
+                                                    'https://business.facebook.com/latest/settings/security_center',
+                                                    '_blank'
+                                                );
+                                                return;
+                                            }
                                             await verifyNumber(
                                                 businessInfo?.internal_number
                                             );
