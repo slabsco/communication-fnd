@@ -12,7 +12,15 @@ export interface TeamInboxUiContextType {
 const TeamInboxUiContext = createContext<TeamInboxUiContextType>({});
 
 export const TeamInboxUiProvider = ({ children }: { children: ReactNode }) => {
-    const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true);
+    // Detect if device is a tablet (width between 641px and 1024px, assume landscape and portrait)
+    const isTablet =
+        typeof window !== 'undefined'
+            ? window.matchMedia('(min-width: 641px) and (max-width: 1124px)')
+                  .matches
+            : false;
+
+    // On tablets, left panel starts closed. Otherwise, open.
+    const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(() => !isTablet);
     const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
 
     const handleSwitchPanel = (panel: panelType, value?: boolean) => {

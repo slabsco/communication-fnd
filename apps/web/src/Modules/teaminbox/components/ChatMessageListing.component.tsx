@@ -148,10 +148,15 @@ const CardMainContent = ({ data }: any) => {
             <div className='flex-1 min-w-0'>
                 <div className='flex gap-2 items-center min-w-0'>
                     <span
-                        className={cn('font-normal min-w-0 truncate', {
-                            'font-medium': data?.attributes?.unread_count,
-                        })}
-                        title={data?.contact_name}
+                        className={cn(
+                            'font-normal min-w-0 truncate max-w-[160px] inline-block align-middle',
+                            {
+                                'font-medium': data?.attributes?.unread_count,
+                            }
+                        )}
+                        title={
+                            data?.contact_name || data?.wa_id || data?.mobile
+                        }
                     >
                         {data?.contact_name || data?.wa_id || data?.mobile}
                     </span>
