@@ -94,11 +94,11 @@ const MainDashboard = () => {
                                                     'https://business.facebook.com/latest/settings/security_center',
                                                     '_blank'
                                                 );
-                                                return;
+                                            } else {
+                                                await verifyNumber(
+                                                    businessInfo?.internal_number
+                                                );
                                             }
-                                            await verifyNumber(
-                                                businessInfo?.internal_number
-                                            );
                                             next();
                                         }}
                                         progress

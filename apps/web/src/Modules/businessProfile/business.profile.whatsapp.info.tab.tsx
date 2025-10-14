@@ -122,9 +122,16 @@ const BusinessProfileWhatsappInfoTab = () => {
                             {!businessInfo?.phone_registered_at && (
                                 <Button
                                     onClick={async (next) => {
-                                        await verifyNumber(
-                                            businessInfo?.internal_number
-                                        );
+                                        if (!businessInfo?.internal_number) {
+                                            window.open(
+                                                'https://business.facebook.com/latest/settings/security_center',
+                                                '_blank'
+                                            );
+                                        } else {
+                                            await verifyNumber(
+                                                businessInfo?.internal_number
+                                            );
+                                        }
                                         next();
                                     }}
                                     progress
