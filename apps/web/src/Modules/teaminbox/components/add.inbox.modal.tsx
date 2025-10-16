@@ -12,7 +12,6 @@ import {
     TEAM_INBOX_SPLIT_LIST,
     toastBackendError,
     useFormBuilder,
-    useQuery,
 } from '@finnoto/core';
 import { CommunicationTemplateController } from '@finnoto/core/src/backend/communication/controller/commuinication.templates.controller';
 import { ContactController } from '@finnoto/core/src/backend/communication/controller/contact.controller';
@@ -20,7 +19,6 @@ import { TeamInboxController } from '@finnoto/core/src/backend/communication/con
 import {
     Button,
     InputField,
-    Loading,
     Modal,
     ModalBody,
     ModalContainer,
@@ -134,13 +132,32 @@ const AddInboxModal = ({
                         )}
                     </div>
                     {renderFormFields('template_id')}
-                    {!IsUndefinedOrNull(templateData) && (
-                        <DisplayAttributesField
-                            template_id={watch('template_id')}
-                            setAttributes={setAttributes}
-                            attributes={attributes}
-                        />
-                    )}
+                    {!IsUndefinedOrNull(templateData) &&
+                        !IsEmptyObject(api_sample_contents) && (
+                            <div className='gap-2 items-center p-2 mt-4 w-full rounded col-flex bg-base-300'>
+                                {Object.entries(api_sample_contents)?.map(
+                                    ([key, value]) => {
+                                        return (
+                                            <InputField
+                                                label={key}
+                                                size='sm'
+                                                required
+                                                key={key}
+                                                placeholder={key}
+                                                className='w-full'
+                                                value={attributes?.[key]}
+                                                onChange={(e) => {
+                                                    setAttributes((prev) => ({
+                                                        ...prev,
+                                                        [key]: e,
+                                                    }));
+                                                }}
+                                            />
+                                        );
+                                    }
+                                )}
+                            </div>
+                        )}
                 </div>
                 <div className='flex justify-center items-center p-4 rounded bg-primary h-[650px]'>
                     <AsyncTemplateViewer
@@ -184,66 +201,4 @@ export const openAddInbox = (options?: {
         modalSize: 'lg',
         props: { ...options },
     });
-};
-
-const DisplayAttributesField = ({
-    template_id,
-    setAttributes,
-    attributes,
-}: {
-    template_id: number;
-    setAttributes: (data: any) => void;
-    attributes: any;
-}) => {
-    const { isFetching, data } = useQuery({
-        queryKey: ['template_detail', template_id],
-        enabled: !IsUndefinedOrNull(template_id),
-        cacheTime: Infinity,
-        staleTime: Infinity,
-        retry: 5,
-        queryFn: async () => {
-            const { success, response } = await FetchData({
-                className: CommunicationTemplateController,
-                method: 'show',
-                methodParams: template_id,
-            });
-
-            if (!success) return Promise.reject(response);
-
-            return response;
-        },
-    });
-
-    if (!template_id) return <></>;
-    if (isFetching)
-        return (
-            <div className='flex justify-center items-center mt-4'>
-                <Loading size='lg' color='primary' />
-            </div>
-        );
-
-    const sample_contents = getVariableExamples(data?.template_config);
-
-    if (IsEmptyObject(sample_contents)) return <></>;
-
-    return (
-        <div className='gap-2 items-center p-2 mt-4 w-full rounded col-flex bg-base-300'>
-            {Object.entries(sample_contents)?.map(([key, value]) => {
-                return (
-                    <InputField
-                        label={key}
-                        size='sm'
-                        required
-                        key={key}
-                        placeholder={key}
-                        className='w-full'
-                        value={attributes?.[key]}
-                        onChange={(e) => {
-                            setAttributes((prev) => ({ ...prev, [key]: e }));
-                        }}
-                    />
-                );
-            })}
-        </div>
-    );
 };

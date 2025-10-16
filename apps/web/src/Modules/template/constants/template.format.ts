@@ -75,13 +75,6 @@ export const initializeVariablesInState = (
     params: ObjectDto
 ): TemplateState => {
     if (!state) return;
-
-    if (state && state.category === 'AUTHENTICATION') {
-        (params as any).code = '*****';
-    } else {
-        if (params?.code) delete params.code;
-    }
-
     if (IsEmptyObject(params)) return state;
 
     // Create a new state with updated components
@@ -299,6 +292,11 @@ export const hasVariable = (
 export const getVariableExamples = (
     state: TemplateState
 ): Record<string, string | undefined> => {
+    if (state?.category === 'AUTHENTICATION') {
+        return {
+            code: '*****',
+        };
+    }
     const availableVariables = extractAvailableVariables(state);
     if (!availableVariables) return {};
 

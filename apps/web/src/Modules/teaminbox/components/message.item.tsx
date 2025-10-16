@@ -31,7 +31,7 @@ export const MessageItem = ({ message }: { message: any }) => {
         const allData = [...header, ...footer, ...body];
 
         allData?.forEach((element) => {
-            content[element?.parameter_name] = element?.text;
+            content[element?.parameter_name || 'code'] = element?.text;
         });
 
         return content;

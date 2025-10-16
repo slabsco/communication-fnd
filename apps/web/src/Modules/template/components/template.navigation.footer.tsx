@@ -16,7 +16,8 @@ import { useTemplate } from '../template.context';
 import { TemplateState } from '../types/template.category.types';
 
 const formatRemoveEmpty = (templateState: TemplateState) => {
-    const newState = structuredClone(templateState);
+    const newState: any = structuredClone(templateState);
+    newState.id = undefined;
 
     if (newState.components) {
         newState.components = newState.components

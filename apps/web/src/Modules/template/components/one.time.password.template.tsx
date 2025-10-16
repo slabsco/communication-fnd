@@ -46,17 +46,14 @@ const OneTimePasswordTemplate = () => {
             ],
         });
         dispatch({
-            type: 'UPDATE_BODY_PARAMS_ONLY',
+            type: 'UPDATE_BODY',
             payload: {
-                example: {
-                    body_text_named_params: [
-                        {
-                            param_name: 'code',
-                            example: '{{12}}',
-                        },
-                    ],
-                },
+                text: undefined,
             },
+        });
+        dispatch({
+            type: 'UPDATE_FOOTER',
+            payload: { text: undefined },
         });
     };
 

@@ -201,13 +201,7 @@ export const TemplateMessagePreview = ({
                 <h3 className='font-bold'>{renderTitle}</h3>
                 {state?.category === 'AUTHENTICATION' ? (
                     <span className='text-xs text-primary-950'>
-                        <b>
-                            {newReplaceVariablesInString(
-                                '{{code}} ',
-                                body?.example?.body_text_named_params
-                            )}
-                        </b>
-                        is your verification code.{' '}
+                        <b>******</b> is your verification code.{' '}
                         {body?.add_security_recommendation &&
                             ' For your security, do not share this code.'}
                     </span>
@@ -225,7 +219,7 @@ export const TemplateMessagePreview = ({
             </div>
             <div className='flex items-end text-muted-foreground'>
                 <span className='flex-1 text-xs text-base-secondary'>
-                    {footer?.text}{' '}
+                    {footer?.text}
                     {footer?.code_expiration_minutes &&
                         `Expires in ${footer?.code_expiration_minutes}  minutes.`}
                 </span>
