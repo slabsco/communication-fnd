@@ -10,6 +10,7 @@ import { WhatsappTemplateCreationDto } from '@finnoto/core/src/backend/communica
 import { Button } from '@finnoto/design-system';
 
 import { toastBackendErrorModal } from '../../../Utils/functions.utils';
+import { TemplateConfigState } from '../constants/template.config.reducer';
 import { templateNavigationGuard } from '../constants/template.reducer';
 import { WhatsappTemplateCategoryEnum } from '../constants/whatsapp.template.category.enum';
 import { useTemplate } from '../template.context';
@@ -84,13 +85,18 @@ const formatRemoveEmpty = (templateState: TemplateState) => {
 };
 
 const TemplateNavigationFooter = () => {
-    const { state, activeStep, handleChangeStep } = useTemplate();
+    const { state, activeStep, handleChangeStep, configState } = useTemplate();
 
     const sendForApproval = useCallback(
-        async (next: any, templateState: TemplateState) => {
+        async (
+            next: any,
+            templateState: TemplateState,
+            config: TemplateConfigState
+        ) => {
             const { header_media_detail, ...restPayload } = templateState;
 
             const payload: WhatsappTemplateCreationDto = {
+                is_unsubscribe_template: config?.is_unsubscribe_template,
                 header_media_detail,
                 active_step: activeStep,
                 category_id: WhatsappTemplateCategoryEnum[state.category],
@@ -146,7 +152,7 @@ const TemplateNavigationFooter = () => {
                     appearance='primary'
                     defaultMinWidth
                     progress
-                    onClick={(n) => sendForApproval(n, state)}
+                    onClick={(n) => sendForApproval(n, state, configState)}
                 >
                     Submit
                 </Button>

@@ -1,13 +1,19 @@
 import {
     createContext,
     Dispatch,
-    useCallback, // Add this import
+    useCallback,
     useContext,
-    useMemo, // Add this import
+    useMemo,
     useReducer,
     useState,
 } from 'react';
 
+import {
+    TemplateConfigAction,
+    templateConfigInitialState,
+    templateConfigReducer,
+    TemplateConfigState,
+} from './constants/template.config.reducer';
 import {
     activeStep,
     creationSteps,
@@ -23,6 +29,8 @@ interface TemplateContextTypes {
     activeStep?: activeStep;
     handleChangeStep?: (name: creationSteps) => void;
     handleChangeType?: (type: string) => void;
+    configState: TemplateConfigState;
+    configDispatch: Dispatch<TemplateConfigAction>;
 }
 
 const TemplateContext = createContext<TemplateContextTypes>(null);
@@ -36,19 +44,24 @@ const defaultStep: activeStep = {
 
 export const TemplateProvider = ({
     edit_data = initialState,
+    templateConfigState = templateConfigInitialState,
     defaultActiveState = defaultStep,
     children,
 }: {
     edit_data?: typeof initialState;
+    templateConfigState?: typeof templateConfigInitialState;
     children: React.ReactNode;
     defaultActiveState?: activeStep;
 }) => {
     const [state, dispatch] = useReducer(templateReducer, edit_data);
+    const [configState, configDispatch] = useReducer(
+        templateConfigReducer,
+        templateConfigState
+    );
 
     const [activeStep, setActiveStep] =
         useState<activeStep>(defaultActiveState);
 
-    // Memoize these functions
     const handleChangeStep = useCallback((name: creationSteps) => {
         setActiveStep((prev) => ({
             ...prev,
@@ -70,11 +83,11 @@ export const TemplateProvider = ({
                 payload: hard_reset ? initialState : edit_data,
             });
             handleChangeType('DEFAULT');
+            configDispatch({ type: 'RESET_TEMPLATE_CONFIG' });
         },
-        [dispatch, edit_data, handleChangeType]
+        [dispatch, edit_data, handleChangeType, configDispatch]
     );
 
-    // Memoize the context value
     const contextValue = useMemo(
         () => ({
             state,
@@ -83,6 +96,8 @@ export const TemplateProvider = ({
             handleChangeStep,
             handleChangeType,
             resetState,
+            configState,
+            configDispatch,
         }),
         [
             state,
@@ -91,6 +106,8 @@ export const TemplateProvider = ({
             handleChangeStep,
             handleChangeType,
             resetState,
+            configState,
+            configDispatch,
         ]
     );
 

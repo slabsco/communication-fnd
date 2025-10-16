@@ -6,6 +6,7 @@ import {
     IsEnum,
     IsOptional,
     IsNumber,
+    IsBoolean,
 } from 'class-validator';
 import { IdPayloadDto } from '../../common/dtos/id.payload.dto';
 
@@ -37,4 +38,9 @@ export class WhatsappTemplateCreationDto extends IdPayloadDto {
     @Expose()
     @IsOptional()
     active_step: any;
+
+    @Expose()
+    @IsOptional()
+    @IsBoolean()
+    is_unsubscribe_template?: boolean;
 }
