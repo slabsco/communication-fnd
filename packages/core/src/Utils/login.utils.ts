@@ -27,7 +27,6 @@ import {
 } from './common.utils';
 import { ExpenseRouteUtils } from './expenseRoute.utils';
 import { GetItem, SetItem } from './localStorage.utils';
-import { Menu } from './menu.utils';
 import { Navigation, SerializeObj } from './navigation.utils';
 import { GetSessionItem } from './sessionStorage.utils';
 import { StoreEvent } from './stateManager.utils';
@@ -69,7 +68,9 @@ const initializeUser = (data: any) => {
     if (isPartnerAccount)
         return window.location.replace(PARTNER_DASHBOARD_ROUTE);
 
-    const isAvailable = Menu.isMenuAvailable(HOME_ROUTE);
+    const isAvailable = userObj?.role_identifiers?.some(
+        (_role) => _role === 'ua_dashboard_manager'
+    );
 
     if (isAvailable) {
         window.location.replace(HOME_ROUTE);
