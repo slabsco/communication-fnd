@@ -1,13 +1,58 @@
+import axios from 'axios';
+import { FileIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Ellipsis, IsEmptyObject } from '@finnoto/core';
-import { cn, Icon, IconButton } from '@finnoto/design-system';
+import {
+    ACCESS_TOKEN,
+    BUSINESS_API_URL,
+    Ellipsis,
+    GetItem,
+    IsEmptyObject,
+    IsUndefinedOrNull,
+    useQuery,
+} from '@finnoto/core';
+import { cn, IconButton } from '@finnoto/design-system';
 
-import { DocumentSvgIcon, FileDownloadSvgIcon } from 'assets';
+import { FileDownloadSvgIcon } from 'assets';
 
 export const RenderInnerTextMessage = ({ message }: any) => {
     const payload = message?.payload;
+
+    const identifierPayload =
+        payload?.image ||
+        payload?.document ||
+        payload?.video ||
+        payload?.audio ||
+        payload?.sticker;
+
+    const { data, isLoading } = useQuery({
+        queryKey: ['document', message?.id],
+        enabled: !IsUndefinedOrNull(identifierPayload?.id),
+        cacheTime: Infinity,
+        queryFn: async () => {
+            const baseurl = GetItem(BUSINESS_API_URL, true);
+
+            const response = await axios.get(
+                `${baseurl}api/b/team-inbox/${identifierPayload?.id}/get-document`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${GetItem(ACCESS_TOKEN, false)}`,
+                    },
+                    responseType: 'blob', // Changed from 'stream' to 'blob'
+                }
+            );
+
+            if (response.status === 200) {
+                const blob = new Blob([response.data], {
+                    type: response.headers['content-type'],
+                });
+                return URL.createObjectURL(blob);
+            }
+
+            return null;
+        },
+    });
 
     const renderComponent = () => {
         if (!IsEmptyObject(payload?.image)) {
@@ -17,7 +62,7 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                         height={300}
                         width={300}
                         alt='image'
-                        src={payload?.image.link}
+                        src={payload?.image.link || data}
                     />
 
                     <span
@@ -31,22 +76,36 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                 </div>
             );
         }
-        if (!IsEmptyObject(payload?.document)) {
-            const isNotPdf = !(payload?.document?.link as string).endsWith(
-                '.pdf'
+        if (!IsEmptyObject(payload?.sticker)) {
+            return (
+                <div className='flex flex-col gap-2'>
+                    <Image height={300} width={300} alt='image' src={data} />
+                    <span
+                        className='text-sm text-primary-950'
+                        dangerouslySetInnerHTML={{
+                            __html: convertWhatsappFormatToHtml(
+                                payload?.image?.caption
+                            ),
+                        }}
+                    ></span>
+                </div>
             );
+        }
+        if (!IsEmptyObject(payload?.document)) {
+            const isNotPdf = !(
+                payload?.document?.link || payload?.document?.filename
+            )?.endsWith('.pdf');
             return (
                 <div className='flex flex-col gap-2'>
                     {isNotPdf ? (
                         <div className='flex gap-2 items-center px-3 py-1 rounded bg-base-200'>
-                            <Icon source={DocumentSvgIcon} isSvg />
+                            <FileIcon size={14} />
                             <span className='text-sm'>
-                                {Ellipsis({ text: payload?.document?.link })}
+                                {Ellipsis({
+                                    text: payload?.document?.filename,
+                                })}
                             </span>
-                            <Link
-                                href={payload?.document?.link}
-                                target='_blank'
-                            >
+                            <Link href={data || ''} target='_blank'>
                                 <IconButton
                                     icon={FileDownloadSvgIcon}
                                     size='xs'
@@ -56,7 +115,7 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                         </div>
                     ) : (
                         <iframe
-                            src={payload?.document?.link}
+                            src={payload?.document?.link || data}
                             width='100%'
                             height='100%'
                         />
@@ -77,7 +136,7 @@ export const RenderInnerTextMessage = ({ message }: any) => {
             return (
                 <div className='flex flex-col gap-2'>
                     <video
-                        src={payload?.video?.link}
+                        src={payload?.video?.link || data}
                         width='100%'
                         height='100%'
                         controls
@@ -101,7 +160,7 @@ export const RenderInnerTextMessage = ({ message }: any) => {
                         <div className='h-[40px] w-[300px] flex items-center justify-center overflow-hidden'>
                             <audio
                                 controls
-                                src={payload?.audio?.link}
+                                src={payload?.audio?.link || data}
                                 className='w-full'
                             />
                         </div>
