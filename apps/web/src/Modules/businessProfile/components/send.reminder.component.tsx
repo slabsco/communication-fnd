@@ -25,7 +25,7 @@ interface SendReminderComponentProps {
 }
 
 const ViewModal = ({
-    preference,
+    preference = {},
     setPreference,
 }: SendReminderComponentProps) => {
     const [reminder, setReminder] = useState(preference);
