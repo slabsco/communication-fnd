@@ -152,7 +152,7 @@ const getExpirationDate = (data: any) => {
         value: FormatDisplayDateStyled({
             value: addHours(
                 new Date(data?.last_activity_at || data?.created_at),
-                23
+                24
             ) as any,
         }),
     };
