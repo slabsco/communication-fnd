@@ -13,8 +13,9 @@ import {
 } from '@finnoto/design-system';
 
 import BusinessProfileWhatsappInfoTab from './business.profile.whatsapp.info.tab';
+import BusinessSettings from './business.settings';
 
-import { MessageSvgIcon } from 'assets';
+import { ArcSettingsSvgIcon, MessageSvgIcon } from 'assets';
 
 const BusinessProfileDetailModule = () => {
     const { businessInfo, isBusinessInfoLoading } = useBusinessPreference();
@@ -99,12 +100,12 @@ const BusinessProfileDetailModule = () => {
                             title: 'Whatsapp Info',
                             component: <BusinessProfileWhatsappInfoTab />,
                         },
-                        // {
-                        //     key: 'business_setting',
-                        //     icon: ArcSettingsSvgIcon,
-                        //     title: 'Settings',
-                        //     component: <BusinessSettings />,
-                        // },
+                        {
+                            key: 'business_setting',
+                            icon: ArcSettingsSvgIcon,
+                            title: 'Settings',
+                            component: <BusinessSettings />,
+                        },
                     ]}
                 />
             </div>

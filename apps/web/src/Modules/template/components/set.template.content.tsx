@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import NoteComponent from '../../../Components/NoteComponent';
 import SetTemplateBodyContent from './set.template.body.content';
 import SetTemplateFooter from './set.template.footer';
 import SetTemplateMedia from './set.template.media';
@@ -24,11 +25,13 @@ const SetTemplateContent = () => {
             <div className='gap-3 col-flex'>
                 <SetTemplateMedia />
                 <SetTemplateBodyContent />
-                <div className='p-3 text-xs text-blue-500 bg-blue-500/10'>
-                    <strong>Note:</strong> Only named parameters are supported
-                    for template variables. Please use the format{' '}
-                    <code>{'{{your_variable_name}}'}</code> to define variables.
-                </div>
+                <NoteComponent
+                    message={`Only named parameters are
+                            supported for template variables. Please use the
+                            format <code>{'{{your_variable_name}}'}</code> to
+                            define variables.`}
+                />
+
                 <SetVariableSample />
                 <SetTemplateFooter />
             </div>

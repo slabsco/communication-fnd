@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { ReactNode, useCallback } from 'react';
 
 import { ConfirmUtil, Icon, Switch, Tooltip } from '@finnoto/design-system';
 
@@ -6,18 +6,20 @@ import { InfoCircleSvgIcon } from 'assets';
 
 interface BooleanPreferenceCardProps {
     title: string;
-    tooltipMessage: string;
-    checked: boolean;
-    onChange: (checked: boolean) => void;
+    checked?: boolean;
+    onChange?: (checked: boolean) => void;
     disabled?: boolean;
+    description?: string;
+    children?: ReactNode;
 }
 
 const BooleanPreferenceCard: React.FC<BooleanPreferenceCardProps> = ({
     title,
-    tooltipMessage,
     checked,
     onChange,
     disabled = false,
+    description,
+    children,
 }) => {
     const showConfirmUtil = useCallback(
         (val: any) => {
@@ -32,30 +34,30 @@ const BooleanPreferenceCard: React.FC<BooleanPreferenceCardProps> = ({
         [onChange]
     );
     return (
-        <div className='gap-2 p-3 border col-flex'>
-            <div className='flex gap-3 items-center'>
-                <div className='flex gap-2 items-center'>
-                    <h3 className='text-base font-semibold text-gray-900'>
-                        {title}
-                    </h3>
-                    <Tooltip
-                        message={tooltipMessage}
-                        trigger='hover'
-                        displayDelay={300}
-                    >
-                        <div>
-                            <Icon source={InfoCircleSvgIcon} isSvg size={14} />
-                        </div>
-                    </Tooltip>
+        <div className='gap-2 p-3 rounded border col-flex'>
+            <div className='flex gap-3 items-start'>
+                <div className='flex-1 gap-1 col-flex'>
+                    <div className='flex gap-2 items-center'>
+                        <h3 className='text-base font-semibold text-gray-900'>
+                            {title}
+                        </h3>
+                    </div>
+                    {description ? (
+                        <p className='text-sm text-base-secondary'>
+                            {description}
+                        </p>
+                    ) : null}
                 </div>
             </div>
-            <Switch
-                checked={checked}
-                onChange={showConfirmUtil}
-                color='accent'
-                size='md'
-                disabled={disabled}
-            />
+            {children || (
+                <Switch
+                    checked={checked}
+                    onChange={showConfirmUtil}
+                    color='accent'
+                    size='md'
+                    disabled={disabled}
+                />
+            )}
         </div>
     );
 };

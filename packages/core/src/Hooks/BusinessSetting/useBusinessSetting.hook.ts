@@ -1,4 +1,4 @@
-import { Toast } from '@finnoto/design-system';
+import { Modal, Toast } from '@finnoto/design-system';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 
@@ -38,8 +38,10 @@ export const useBusinessSetting = () => {
             });
 
             loading.hide();
-            if (success)
+            if (success) {
+                Modal.close();
                 return Toast.success({ description: 'Settings Updated...' });
+            }
             return toastBackendError(response);
         },
     });
