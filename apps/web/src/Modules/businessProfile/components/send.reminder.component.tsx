@@ -31,7 +31,11 @@ const ViewModal = ({
     const [reminder, setReminder] = useState(preference);
 
     const active = useMemo(() => {
-        const keys = Object.keys(reminder)?.filter((_key) => _key !== 'time');
+        if (!reminder) return 'none';
+
+        const keys = Object?.keys?.(reminder)?.filter(
+            (_key) => _key !== 'time'
+        );
         return keys?.[0] || 'none';
     }, [reminder]);
 
@@ -99,7 +103,7 @@ const ViewModal = ({
                         },
                     ]}
                 />
-                {Object.hasOwn(reminder, 'message') && (
+                {reminder && Object?.hasOwn?.(reminder, 'message') && (
                     <TextareaField
                         showLimit
                         inputClassName='leading-5 py-2 h-full text-sm'
@@ -114,7 +118,7 @@ const ViewModal = ({
                         max={1024}
                     />
                 )}
-                {Object.hasOwn(reminder, 'template_id') && (
+                {reminder && Object.hasOwn(reminder, 'template_id') && (
                     <>
                         <div className='flex gap-2 items-center'>
                             <div className='flex-1'>
