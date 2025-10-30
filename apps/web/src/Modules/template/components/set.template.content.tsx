@@ -28,7 +28,7 @@ const SetTemplateContent = () => {
                 <NoteComponent
                     message={`Only named parameters are
                             supported for template variables. Please use the
-                            format <code>{'{{your_variable_name}}'}</code> to
+                            format {{your_variable_name}} to
                             define variables.`}
                 />
 
