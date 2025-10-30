@@ -277,7 +277,7 @@ const ChatInfoSection = ({
     data: any;
     compress?: boolean;
 }) => {
-    if (!data?.last_replied_at || !data?.expired_at) return <></>;
+    if (!data?.last_replied_at) return <></>;
 
     const mode = DISPLAY_MODES[compress ? 'compress' : 'normal'];
     const CardComponent = mode.cardComponent;
