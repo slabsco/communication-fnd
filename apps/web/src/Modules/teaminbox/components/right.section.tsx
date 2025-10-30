@@ -281,7 +281,11 @@ const ChatInfoSection = ({
 }) => {
     const mode = DISPLAY_MODES[compress ? 'compress' : 'normal'];
     const CardComponent = mode.cardComponent;
-    const title = compress ? 'Expires At' : 'Chat Info';
+    const title = compress
+        ? data?.expired_at
+            ? 'Expired At'
+            : 'Expires At'
+        : 'Chat Info';
     const expiration = getExpirationDate(data);
 
     if (!expiration) return <></>;
