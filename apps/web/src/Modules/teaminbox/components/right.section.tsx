@@ -150,10 +150,7 @@ const getExpirationDate = (data: any) => {
     return {
         label: 'Chat Expires At',
         value: FormatDisplayDateStyled({
-            value: addHours(
-                new Date(data?.last_activity_at || data?.created_at),
-                24
-            ) as any,
+            value: addHours(new Date(data?.last_replied_at), 24) as any,
         }),
     };
 };
@@ -280,6 +277,8 @@ const ChatInfoSection = ({
     data: any;
     compress?: boolean;
 }) => {
+    if (!data?.last_replied_at || !data?.expired_at) return <></>;
+
     const mode = DISPLAY_MODES[compress ? 'compress' : 'normal'];
     const CardComponent = mode.cardComponent;
     const title = compress ? 'Expires At' : 'Chat Info';
