@@ -128,10 +128,21 @@ export const TemplateMessagePreview = ({
         }
         if (format === 'DOCUMENT') {
             return (
-                <div className='overflow-hidden w-full h-60 border'>
+                <div className='overflow-hidden w-full border'>
                     <RenderPdfDocument
                         url={header_media_detail?.document_url}
                         className='w-full h-full'
+                    />
+                </div>
+            );
+        }
+        if (format === 'VIDEO') {
+            return (
+                <div className='overflow-hidden w-full max-h-60 border'>
+                    <video
+                        src={header_media_detail?.document_url}
+                        className='object-contain w-full h-full'
+                        controls
                     />
                 </div>
             );

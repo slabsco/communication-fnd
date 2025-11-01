@@ -60,7 +60,12 @@ const formatRemoveEmpty = (templateState: TemplateState) => {
                                 !param.example ||
                                 (Array.isArray(param.example) &&
                                     param.example.length === 0)
-                        ))
+                        )) &&
+                    (!updatedComponent.example.header_handle ||
+                        !Array.isArray(
+                            updatedComponent.example.header_handle
+                        ) ||
+                        updatedComponent.example.header_handle.length === 0)
                 ) {
                     const { example, ...rest } = updatedComponent;
                     updatedComponent = rest;
