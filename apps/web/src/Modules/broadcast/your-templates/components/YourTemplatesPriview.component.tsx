@@ -138,6 +138,13 @@ export const MessageSectionPreview = ({
                 </div>
             );
         }
+        if (type === 'video') {
+            return (
+                <div className='overflow-hidden w-full h-60 border'>
+                    <video src={value} className='w-full h-full' controls />
+                </div>
+            );
+        }
         if (type === 'text') {
             return replaceVariablesInString(value, sampleContent);
         }

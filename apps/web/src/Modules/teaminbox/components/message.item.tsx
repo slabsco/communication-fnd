@@ -74,6 +74,7 @@ export const MessageItem = ({ message }: { message: any }) => {
                                 message?.template_config,
                                 sampleContent
                             )}
+                            payload={message?.payload}
                             className='max-w-[50%] bg-green-200'
                             showTime={false}
                         />

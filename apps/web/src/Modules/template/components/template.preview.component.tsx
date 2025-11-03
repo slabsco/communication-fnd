@@ -98,10 +98,12 @@ export const TemplateMessagePreview = ({
     state,
     className,
     showTime = true,
+    payload,
 }: {
     state: TemplateState;
     className?: string;
     showTime?: boolean;
+    payload?: any;
 }) => {
     const body = getValue(state?.components, 'BODY');
     const header = getValue(state?.components, 'HEADER');
@@ -137,11 +139,19 @@ export const TemplateMessagePreview = ({
             );
         }
         if (format === 'VIDEO') {
+            const parameters = payload?.template?.components?.find(
+                (_component) => _component?.type === 'header'
+            )?.parameters;
+
+            const videoUrl = parameters?.find?.(
+                (_parameter) => _parameter?.type === 'video'
+            )?.video?.link;
+
             return (
-                <div className='overflow-hidden w-full max-h-60 border'>
+                <div className='overflow-hidden w-full max-h-60 border aspect-video'>
                     <video
-                        src={header_media_detail?.document_url}
-                        className='object-contain w-full h-full'
+                        src={header_media_detail?.document_url || videoUrl}
+                        className='object-cover w-full h-full'
                         controls
                     />
                 </div>
@@ -157,6 +167,7 @@ export const TemplateMessagePreview = ({
         format,
         header_media_detail?.document_url,
         text,
+        payload,
     ]);
 
     const renderButton = (button: any) => {
