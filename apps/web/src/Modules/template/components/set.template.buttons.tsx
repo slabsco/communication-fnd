@@ -45,7 +45,7 @@ const SetTemplateButton = () => {
                 text: '',
                 url: '',
                 example: [''],
-                is_dynamic: false,
+                // is_dynamic: false,
             },
         };
         const next = buttons.map((b, i) =>
@@ -161,7 +161,7 @@ const SetTemplateButton = () => {
                                                 }
                                                 placeholder='Visit website'
                                             />
-                                            <SelectBox
+                                            {/* <SelectBox
                                                 width={150}
                                                 label='URL Type'
                                                 value={
@@ -170,15 +170,17 @@ const SetTemplateButton = () => {
                                                         : 'static'
                                                 }
                                                 options={[
-                                                    {
-                                                        label: 'Dynamic',
-                                                        value: 'Dynamic',
-                                                    },
+                                                    // {
+                                                    //     label: 'Dynamic',
+                                                    //     value: 'Dynamic',
+                                                    // },
                                                     {
                                                         label: 'Static',
                                                         value: 'static',
                                                     },
                                                 ]}
+                                                disabled={true}
+                                                readOnly
                                                 onChange={(opt) => {
                                                     const dynamic =
                                                         opt?.value ===
@@ -198,7 +200,7 @@ const SetTemplateButton = () => {
                                                             : [],
                                                     });
                                                 }}
-                                            />
+                                            /> */}
                                             <InputField
                                                 className='w-full'
                                                 label='Website URL'
