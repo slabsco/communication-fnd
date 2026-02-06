@@ -50,7 +50,11 @@ export const AsyncTemplateViewer = ({
         <>
             <TemplatePreviewer
                 state={initializeVariablesInState(
-                    data?.template_config,
+                    {
+                        ...data?.template_config,
+                        header_media_detail:
+                            data?.attributes?.header_media_detail,
+                    },
                     sample_contents
                 )}
             />

@@ -1,7 +1,10 @@
 import { getVariableParamsFromString, ObjectDto } from '@finnoto/core';
 import { IsEmptyObject } from '@finnoto/design-system';
 
-import { TemplateState } from '../types/template.category.types';
+import {
+    DYNAMIC_MEDIA_URL_VARIABLE_NAME,
+    TemplateState,
+} from '../types/template.category.types';
 
 export const TemplateCategoryConstant = {
     marketing: 'MARKETING',
@@ -120,6 +123,13 @@ export const initializeVariablesInState = (
         return component;
     });
 
+    if (params[DYNAMIC_MEDIA_URL_VARIABLE_NAME] && state.header_media_detail) {
+        state.header_media_detail.dynamic_media = {
+            enabled: true,
+            url: params[DYNAMIC_MEDIA_URL_VARIABLE_NAME],
+        };
+    }
+
     return {
         ...state,
         components: updatedComponents,
@@ -139,6 +149,17 @@ export const extractAvailableVariables = (
     const variableMap = new Map<string, ExtractedVariable>();
     const headerVariables: string[] = [];
     const bodyVariables: string[] = [];
+
+    const { dynamic_media } = state?.header_media_detail || {};
+
+    if (dynamic_media?.enabled) {
+        variableMap.set(DYNAMIC_MEDIA_URL_VARIABLE_NAME, {
+            name: DYNAMIC_MEDIA_URL_VARIABLE_NAME,
+            example: dynamic_media?.url,
+            source: 'HEADER',
+            locations: ['HEADER'],
+        });
+    }
 
     // Track if we need to add the manual coupon_code variable
     let couple_code_example;

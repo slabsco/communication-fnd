@@ -6,6 +6,7 @@ import { cn, FormatDisplayDateStyled, Tooltip } from '@finnoto/design-system';
 import { MessageSectionPreview } from '../../broadcast/your-templates/components/YourTemplatesPriview.component';
 import { TemplateMessagePreview } from '../../template/components/template.preview.component';
 import { initializeVariablesInState } from '../../template/constants/template.format';
+import { DYNAMIC_MEDIA_URL_VARIABLE_NAME } from '../../template/types/template.category.types';
 import { RenderInnerTextMessage } from './render.inner.text.component';
 import { RenderUserMessageBubble } from './render.user.message.bubble';
 import {
@@ -18,12 +19,25 @@ const getData = (components: any[], type: string) => {
     return components?.find((val) => val?.type === type)?.parameters || [];
 };
 
+const getDynamicDocument = (components: any[]) => {
+    if (!components?.length) return [];
+
+    const getLink = (type: string) => {
+        const variable = components?.find((val) => val?.type === type)?.[type];
+        return variable?.link;
+    };
+
+    return getLink('document') || getLink('video') || getLink('image');
+};
+
 export const MessageItem = ({ message }: { message: any }) => {
     const component = message?.payload?.template?.components;
 
     const header = getData(component, 'header');
     const footer = getData(component, 'footer');
     const body = getData(component, 'body');
+
+    const dynamicDocument = getDynamicDocument(header);
 
     const sampleContent = useMemo(() => {
         const content = {};
@@ -34,8 +48,12 @@ export const MessageItem = ({ message }: { message: any }) => {
             content[element?.parameter_name || 'code'] = element?.text;
         });
 
+        if (dynamicDocument) {
+            content[DYNAMIC_MEDIA_URL_VARIABLE_NAME] = dynamicDocument;
+        }
+
         return content;
-    }, [body, footer, header]);
+    }, [body, dynamicDocument, footer, header]);
 
     const isSentBySystem =
         message?.attributes?.sent_by ||
@@ -71,11 +89,16 @@ export const MessageItem = ({ message }: { message: any }) => {
                     {message?.template_config ? (
                         <TemplateMessagePreview
                             state={initializeVariablesInState(
-                                message?.template_config,
+                                {
+                                    ...message?.template_config,
+                                    header_media_detail:
+                                        message?.template_attributes
+                                            ?.header_media_detail,
+                                },
                                 sampleContent
                             )}
                             payload={message?.payload}
-                            className='max-w-[50%] bg-green-200'
+                            className='max-w-[40%] bg-green-200'
                             showTime={false}
                         />
                     ) : (

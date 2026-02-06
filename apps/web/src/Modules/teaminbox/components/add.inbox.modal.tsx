@@ -66,7 +66,10 @@ const AddInboxModal = ({
 
     const api_sample_contents = useMemo(() => {
         if (!templateData) return {};
-        return getVariableExamples(templateData?.template_config);
+        return getVariableExamples({
+            header_media_detail: templateData?.attributes?.header_media_detail,
+            ...templateData?.template_config,
+        });
     }, [templateData]);
 
     const isAllAttributesFilled = useMemo(() => {

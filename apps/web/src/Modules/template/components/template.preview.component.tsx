@@ -112,29 +112,25 @@ export const TemplateMessagePreview = ({
 
     const { format, text = '', example } = header || {};
     const { header_media_detail } = state || {};
+    const { dynamic_media } = header_media_detail || {};
+
+    const url =
+        state.header_media_detail?.document_url ||
+        dynamic_media?.url ||
+        example?.header_handle?.[0];
 
     const renderTitle = useMemo(() => {
         if (format === 'IMAGE') {
             return (
                 <div className='h-[150px] w-full border'>
-                    <img
-                        alt='image'
-                        src={
-                            header_media_detail?.document_url ||
-                            example?.header_handle?.[0]
-                        }
-                        className='w-full h-full'
-                    />
+                    <img alt='image' src={url} className='w-full h-full' />
                 </div>
             );
         }
         if (format === 'DOCUMENT') {
             return (
                 <div className='overflow-hidden w-full border'>
-                    <RenderPdfDocument
-                        url={header_media_detail?.document_url}
-                        className='w-full h-full'
-                    />
+                    <RenderPdfDocument url={url} className='w-full h-full' />
                 </div>
             );
         }
@@ -150,7 +146,7 @@ export const TemplateMessagePreview = ({
             return (
                 <div className='overflow-hidden w-full max-h-60 border aspect-video'>
                     <video
-                        src={header_media_detail?.document_url || videoUrl}
+                        src={url || videoUrl}
                         className='object-cover w-full h-full'
                         controls
                     />
@@ -162,13 +158,7 @@ export const TemplateMessagePreview = ({
         }
 
         return <></>;
-    }, [
-        example?.header_handle,
-        format,
-        header_media_detail?.document_url,
-        text,
-        payload,
-    ]);
+    }, [format, url, payload?.template?.components, text]);
 
     const renderButton = (button: any) => {
         const { type, text, example } = button;

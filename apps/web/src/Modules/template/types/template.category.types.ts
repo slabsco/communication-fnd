@@ -79,3 +79,5 @@ export interface TemplateState {
     category?: CategoryName;
     components: CommonComponentTypes[];
 }
+
+export const DYNAMIC_MEDIA_URL_VARIABLE_NAME = 'dynamic_media_url';

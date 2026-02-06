@@ -1,8 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { InputField } from '@finnoto/design-system';
+import { isValidURL } from '@finnoto/design-system/src/Components/Data-display/Typography/typography.utils';
 
 import { useTemplate } from '../template.context';
+import { DYNAMIC_MEDIA_URL_VARIABLE_NAME } from '../types/template.category.types';
+import { uploadToFacebook } from './set.template.media';
 
 interface ParamItem {
     param_name: string;
@@ -15,25 +18,32 @@ const ParamInput = React.memo(
         param,
         paramType,
         onChange,
+        onBlur,
     }: {
         param: ParamItem;
         paramType: 'body' | 'header';
-        onChange: (
+        onChange?: (
             paramName: string,
             value: string,
             type: 'body' | 'header'
         ) => void;
-    }) => (
-        <InputField
-            placeholder={`Enter ${param.param_name}`}
-            value={param.example || ''}
-            onChange={(val) => onChange(param.param_name, val, paramType)}
-        />
-    )
+        onBlur?: (value: string) => void;
+    }) => {
+        return (
+            <InputField
+                placeholder={`Enter ${param.param_name}`}
+                value={param.example || ''}
+                onChange={(val) => onChange?.(param.param_name, val, paramType)}
+                onBlur={onBlur}
+            />
+        );
+    }
 );
 
 const SetVariableSample = React.memo(() => {
     const { dispatch, state } = useTemplate();
+
+    const { dynamic_media } = state?.header_media_detail || {};
 
     // Get components - memoize with more specific dependencies
     const headerComponent = useMemo(
@@ -114,8 +124,36 @@ const SetVariableSample = React.memo(() => {
         [dispatch, state?.components] // Only depend on dispatch and components array
     );
 
+    const handleDynamicUrlChange = async (value: string) => {
+        if (!isValidURL(value)) return;
+
+        try {
+            const uploadToFb = await uploadToFacebook(value);
+            if (!uploadToFb?.['h']) return;
+
+            dispatch({
+                type: 'UPDATE_HEADER',
+                payload: {
+                    example: {
+                        header_handle: [uploadToFb?.['h']],
+                    },
+                },
+            });
+            dispatch({
+                type: 'UPDATE_HEADER_MEDIA',
+                payload: {
+                    dynamic_media: {
+                        key: DYNAMIC_MEDIA_URL_VARIABLE_NAME,
+                        url: value,
+                        enabled: true,
+                    },
+                },
+            });
+        } catch (error) {}
+    };
+
     // Don't render if no parameters
-    if (!headerParams.length && !bodyParams.length) {
+    if (!headerParams.length && !bodyParams.length && !dynamic_media?.enabled) {
         return null;
     }
 
@@ -139,6 +177,21 @@ const SetVariableSample = React.memo(() => {
                             onChange={handleParamChange}
                         />
                     ))}
+                </div>
+            )}
+
+            {dynamic_media?.enabled && (
+                <div className='gap-2 mt-4 col-flex'>
+                    <h3 className='font-medium'>Header Media Sample</h3>
+                    <ParamInput
+                        key={`header-dynamic_media`}
+                        param={{
+                            param_name: DYNAMIC_MEDIA_URL_VARIABLE_NAME,
+                            example: dynamic_media?.url,
+                        }}
+                        paramType='header'
+                        onBlur={handleDynamicUrlChange}
+                    />
                 </div>
             )}
 

@@ -66,6 +66,9 @@ const SetTemplateMedia = () => {
     const { format, text, example } =
         state.components.find((_val) => _val?.type === 'HEADER') || {};
 
+    const { header_media_detail } = state || {};
+    const { dynamic_media } = header_media_detail || {};
+
     const handleFormatChange = (option: any) => {
         if (!option?.value) {
             dispatch({
@@ -101,9 +104,8 @@ const SetTemplateMedia = () => {
         if (
             !format ||
             !FILE_TYPE_CONFIGS[format as keyof typeof FILE_TYPE_CONFIGS]
-        ) {
+        )
             return null;
-        }
 
         const config =
             FILE_TYPE_CONFIGS[format as keyof typeof FILE_TYPE_CONFIGS];
@@ -119,15 +121,54 @@ const SetTemplateMedia = () => {
 
     return (
         <div className='gap-3 mt-6 col-flex'>
-            <SelectBox
-                width={200}
-                value={format}
-                size='sm'
-                label='Media sample'
-                onChange={handleFormatChange}
-                options={MEDIA_FORMAT_OPTIONS as any}
-                isDisabled={!IsEmptyObject(state?.header_media_detail)}
-            />
+            <div className='flex gap-3 items-end'>
+                <SelectBox
+                    width={200}
+                    value={format}
+                    size='sm'
+                    label='Media sample'
+                    onChange={(e) => {
+                        handleFormatChange(e);
+                    }}
+                    options={MEDIA_FORMAT_OPTIONS as any}
+                    isDisabled={!IsEmptyObject(state?.header_media_detail)}
+                />
+                {['IMAGE', 'VIDEO', 'DOCUMENT'].includes(format) &&
+                    !header_media_detail?.document_url && (
+                        <>
+                            <span className='justify-center items-center text-base font-medium'>
+                                With
+                            </span>
+                            <SelectBox
+                                label='Variable'
+                                width={200}
+                                value={dynamic_media?.enabled}
+                                size='sm'
+                                onChange={(e) => {
+                                    if (e?.value) {
+                                        dispatch({
+                                            type: 'UPDATE_HEADER_MEDIA',
+                                            payload: {
+                                                dynamic_media: {
+                                                    enabled: e?.value,
+                                                },
+                                            },
+                                        });
+                                    } else {
+                                        dispatch({
+                                            type: 'UPDATE_HEADER_MEDIA',
+                                            payload: undefined,
+                                        });
+                                    }
+                                }}
+                                options={[
+                                    { label: 'No', value: false },
+                                    { label: 'Yes', value: true },
+                                ]}
+                            />
+                        </>
+                    )}
+            </div>
 
             {format === 'TEXT' && (
                 <InputField
@@ -139,7 +180,7 @@ const SetTemplateMedia = () => {
                 />
             )}
 
-            {renderMediaUploader()}
+            {!dynamic_media?.enabled && renderMediaUploader()}
         </div>
     );
 };
@@ -213,7 +254,7 @@ const RenderDocumentField = ({
     );
 };
 
-const uploadToFacebook = async (url: string) => {
+export const uploadToFacebook = async (url: string) => {
     const { response, success } = await FetchData({
         className: CommunicationTemplateController,
         method: 'uploadToFacebook',
