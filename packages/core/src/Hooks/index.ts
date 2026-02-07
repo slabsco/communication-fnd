@@ -16,6 +16,7 @@ export * from './HeaderNotification/useHeaderNotification.hook';
 export * from './HeaderNotification/useHeaderNotificationMethods.hook';
 export * from './useGetSubMenuFromMenu.hook';
 
+export * from './useSubscription.hook';
 export * from './CommonComponentHooks';
 export * from './ExpenseHooks';
 export * from './useApp.hook';

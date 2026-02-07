@@ -2,11 +2,13 @@ import { format } from 'date-fns';
 import { useRouter } from 'next/router';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 
+import { Button } from '@finnoto/design-system';
+
 import { ObjectDto } from '../backend/Dtos';
 import { MenuController } from '../backend/meta/controllers/menu.controller';
 import { MetaBusinessController } from '../backend/meta/controllers/meta.business.controller';
 import { PublicRoutes, USER } from '../Constants';
-import { useMutation, useOpenProperties } from '../Hooks';
+import { useMutation, useOpenProperties, useSubscription } from '../Hooks';
 import { useApp } from '../Hooks/useApp.hook';
 import { FetchData } from '../Hooks/useFetchData.hook';
 import { useInterval } from '../Hooks/useInterval.hook';
@@ -48,7 +50,9 @@ export const AuthProvider = ({ children }: any) => {
         'validate.product.interval'
     );
 
-    const businessExpired = user?.userObject?.business?.expired_at;
+    const { data: subscription, renewSubscription } = useSubscription();
+
+    const businessExpired = subscription?.active === false;
     const isPartnerAccount = user?.userObject?.business?.is_partner_account;
 
     const validateProduct = useCallback(
@@ -119,23 +123,22 @@ export const AuthProvider = ({ children }: any) => {
         return null;
     }, [modules, pathname]);
 
-    const { mutateAsync: loadMenuDetails, isLoading: isLoadingMenuDetail } =
-        useMutation({
-            cacheTime: Infinity,
-            mutationFn: async (menuId: number) => {
-                const { success, response } = await FetchData({
-                    className: MenuController,
-                    method: 'show',
-                    methodParams: menuId,
-                });
+    const { mutateAsync: loadMenuDetails } = useMutation({
+        cacheTime: Infinity,
+        mutationFn: async (menuId: number) => {
+            const { success, response } = await FetchData({
+                className: MenuController,
+                method: 'show',
+                methodParams: menuId,
+            });
 
-                if (success) {
-                    setMenuDetails(response);
-                } else {
-                    setMenuDetails(null);
-                }
-            },
-        });
+            if (success) {
+                setMenuDetails(response);
+            } else {
+                setMenuDetails(null);
+            }
+        },
+    });
 
     const checkIsSameMenu = useCallback(
         (menu_id: number) => {
@@ -254,7 +257,7 @@ export const AuthProvider = ({ children }: any) => {
                         Business expired at:{' '}
                         <b>
                             {format(
-                                new Date(businessExpired),
+                                new Date(subscription?.end_date),
                                 "MMMM dd, yyyy 'at' h:mm a"
                             )}
                         </b>
@@ -267,6 +270,23 @@ export const AuthProvider = ({ children }: any) => {
                         We appreciate your business and look forward to
                         continuing to serve you.
                     </p>
+                    <Button
+                        progress
+                        onClick={async (n) => {
+                            const response = await renewSubscription(
+                                subscription?.id
+                            );
+                            if (response?.response?.checkout_url) {
+                                window.location.href =
+                                    response?.response?.checkout_url;
+                            }
+                        }}
+                        className='mt-4'
+                        size='lg'
+                        appearance='primary'
+                    >
+                        Renew Subscription
+                    </Button>
                 </SomethingWentWrong>
             );
         }
