@@ -60,9 +60,9 @@ const SetDynamicDataModal = ({
         <ModalContainer title={'Add Dynamic Node'}>
             <ModalBody className='overflow-y-auto gap-3 col-flex'>
                 {!onlyScript && (
-                    <div className='overflow-hidden h-[400px]'>
+                    <div className='overflow-hidden h-[400px] col-flex gap-2'>
                         <Label label='API Config' required />
-                        <div className='overflow-y-auto'>
+                        <div className='overflow-y-auto flex-1'>
                             <JsEditorComponent
                                 value={apiConfigScript}
                                 onChange={(val) => {

@@ -1,6 +1,6 @@
 export const DynamicDefaultExampleQuestionList = `
 {
-    "html": "<p style=\"padding:0; margin:0\">Hello {{name}}😀,  please order the food.</p>",
+    "html": "<p>Hello {{name}}😀,  please order the food.</p>",
     "header": "Order Food",
     "footer": "thanks for ordering",
     "sections": [
@@ -36,7 +36,7 @@ export const DynamicDefaultExampleQuestionList = `
 }`;
 export const DynamicDefaultExampleQuestionButton = `
 {
-    "html": "<p style=\"padding:0; margin:0\">Hello {{name}}😀,  please order the food.</p>",
+    "html": "<p>Hello {{name}}😀,  please order the food.</p>",
     "header": "Order Food",
     "footer": "thanks for ordering",
     "answer": [
