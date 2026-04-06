@@ -80,6 +80,28 @@ const formatRemoveEmpty = (templateState: TemplateState) => {
                     return null;
                 }
 
+                // Normalize URL buttons: static links should not send empty example / stale flags
+                if (
+                    updatedComponent.type === 'BUTTONS' &&
+                    Array.isArray(updatedComponent.buttons)
+                ) {
+                    updatedComponent = {
+                        ...updatedComponent,
+                        buttons: updatedComponent.buttons.map((btn: any) => {
+                            if (btn?.type !== 'URL') return btn;
+                            const { is_dynamic: _removed, ...rest } = btn;
+                            const dynamic = /\{\{1\}\}\s*$/i.test(
+                                rest?.url ?? ''
+                            );
+                            if (!dynamic) {
+                                const { example, ...staticBtn } = rest;
+                                return staticBtn;
+                            }
+                            return rest;
+                        }),
+                    };
+                }
+
                 return updatedComponent;
             })
             .filter((component: any) => component !== null);

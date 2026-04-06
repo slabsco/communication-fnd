@@ -102,6 +102,7 @@ const RenderNotifications = ({
             ).length > 0
         );
     }, [notificationData]);
+
     const canMarkAsReadAll = useMemo(() => {
         return (
             notificationData.filter((data) =>
@@ -200,7 +201,7 @@ const NotificationItem = ({
     return (
         <div
             className={cn(
-                'flex items-start gap-3 p-3 border-b transition-all last:border-0 cursor-pointer hover:bg-polaris-bg-surface-secondary ',
+                'flex gap-3 items-start p-3 border-b transition-all cursor-pointer last:border-0 hover:bg-polaris-bg-surface-secondary',
                 {
                     'bg-polaris-bg-surface-secondary': !isRead,
                 }
@@ -210,7 +211,7 @@ const NotificationItem = ({
                 onClick?.();
             }}
         >
-            <div className='flex items-center gap-1'>
+            <div className='flex gap-1 items-center'>
                 <span
                     className={cn('w-2 h-2 rounded-full bg-polaris-icon-info', {
                         'opacity-0': isRead,
@@ -239,7 +240,7 @@ const NotificationItem = ({
                 <div className='col-flex'>
                     <p
                         className={cn(
-                            'flex items-center gap-1 text-sm text-polaris-text-primary',
+                            'flex gap-1 items-center text-sm text-polaris-text-primary',
                             {
                                 'text-polaris-text-secondary': !isRead,
                             }
@@ -250,7 +251,7 @@ const NotificationItem = ({
                     </p>
                     <span
                         className={cn(
-                            'flex items-center gap-2 text-xs text-polaris-text-secondary',
+                            'flex gap-2 items-center text-xs text-polaris-text-secondary',
                             {
                                 'text-polaris-text-disabled': !isRead,
                             }
@@ -373,7 +374,7 @@ const ViewAll = ({
     const { product_id } = useApp();
 
     return (
-        <div className='fixed bottom-0 w-full p-2 border-t centralize bg-base-100'>
+        <div className='fixed bottom-0 p-2 w-full border-t centralize bg-base-100'>
             <Link
                 onClick={onClick}
                 className='text-xs link link-hover'

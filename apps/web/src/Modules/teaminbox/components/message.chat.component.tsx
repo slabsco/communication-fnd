@@ -44,6 +44,7 @@ export const MessageChat = ({ data }) => {
     const [files, { removeAt, set: setFiles, push: addFiles }] =
         useList<any[]>();
     const [audioUrl, setAudioUrl] = useState(null);
+    const [isTyping, setIsTyping] = useState(false);
 
     const isSendButtonDisabled = useMemo(() => {
         if (!IsEmptyArray(files)) return false;
@@ -60,6 +61,8 @@ export const MessageChat = ({ data }) => {
     }, []);
 
     const handleSendMessage = async (doc: any) => {
+        console.log('docs');
+
         const { success, response } = await FetchData({
             className: TeamInboxController,
             method: 'sendMessage',
@@ -84,6 +87,7 @@ export const MessageChat = ({ data }) => {
         setFiles([]);
         refetch();
         setAudioUrl(null);
+        setIsTyping(false);
 
         return response;
     };
@@ -167,6 +171,15 @@ export const MessageChat = ({ data }) => {
         );
     }
 
+    const sendTypingIndicator = async () => {
+        const { success } = await FetchData({
+            className: TeamInboxController,
+            method: 'sendTypingIndicator',
+            methodParams: data?.id,
+        });
+        setIsTyping(true);
+    };
+
     const setQuickReplyData = (quickReplyData: any) => {
         const documents = [];
         const attributes = {};
@@ -211,7 +224,13 @@ export const MessageChat = ({ data }) => {
         <div className='sticky right-0 bottom-0 left-0 rounded shadow-inner col-flex'>
             <ChatTextareaComponent
                 input={input}
-                setInput={setInput}
+                setInput={(value) => {
+                    setInput(value);
+                }}
+                onDebounceChange={(value) => {
+                    console.log('value', value);
+                    if (!isTyping) sendTypingIndicator();
+                }}
                 onSelect={setQuickReplyData}
             />
             {!IsEmptyArray(files) && (

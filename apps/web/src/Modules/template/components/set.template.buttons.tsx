@@ -11,6 +11,29 @@ import { CrossSvgIcon } from 'assets';
 
 const MAX_BUTTONS = 10;
 
+/** Meta URL buttons: dynamic suffix uses {{1}} at the end of the URL + one sample in example[0]. */
+const urlTypeOptions = [
+    { label: 'Static', value: 'static' },
+    { label: 'Dynamic', value: 'dynamic' },
+];
+
+const dynamicUrlToPrefix = (url: string | undefined) => {
+    if (!url) return '';
+    return url.replace(/\/?\{\{1\}\}\s*$/i, '');
+};
+
+const prefixToDynamicUrl = (prefixInput: string) => {
+    const stripped = prefixInput.replace(/\{\{1\}\}/gi, '').trim();
+    if (!stripped) {
+        return 'https://www.example.com/{{1}}';
+    }
+    const base = stripped.replace(/\/+$/, '');
+    return `${base}/{{1}}`;
+};
+
+const isUrlButtonDynamic = (btn: { url?: string }) =>
+    /\{\{1\}\}\s*$/i.test(btn?.url ?? '');
+
 const typeOptions = [
     { label: 'Quick Reply', value: 'QUICK_REPLY' },
     { label: 'Visit website (URL)', value: 'URL' },
@@ -44,8 +67,7 @@ const SetTemplateButton = () => {
                 type: 'URL',
                 text: '',
                 url: '',
-                example: [''],
-                // is_dynamic: false,
+                example: [],
             },
         };
         const next = buttons.map((b, i) =>
@@ -80,7 +102,7 @@ const SetTemplateButton = () => {
                             key={index}
                             className='flex gap-3 p-3 rounded border border-base-300'
                         >
-                            <div className='flex flex-1 gap-3 items-center'>
+                            <div className='flex flex-1 gap-3 items-start'>
                                 <SelectBox
                                     width={220}
                                     menuPlacement='top'
@@ -150,68 +172,128 @@ const SetTemplateButton = () => {
                                     )}
 
                                     {btn?.type === 'URL' && (
-                                        <div className='flex gap-3 items-center'>
-                                            <InputField
-                                                label='Button Text'
-                                                value={btn?.text ?? ''}
-                                                onChange={(val) =>
-                                                    updateAt(index, {
-                                                        text: val,
-                                                    })
-                                                }
-                                                placeholder='Visit website'
-                                            />
-                                            {/* <SelectBox
-                                                width={150}
-                                                label='URL Type'
-                                                value={
-                                                    btn?.is_dynamic
-                                                        ? 'Dynamic'
-                                                        : 'static'
-                                                }
-                                                options={[
-                                                    // {
-                                                    //     label: 'Dynamic',
-                                                    //     value: 'Dynamic',
-                                                    // },
-                                                    {
-                                                        label: 'Static',
-                                                        value: 'static',
-                                                    },
-                                                ]}
-                                                disabled={true}
-                                                readOnly
-                                                onChange={(opt) => {
-                                                    const dynamic =
-                                                        opt?.value ===
-                                                        'Dynamic';
+                                        <div className='flex flex-col gap-3'>
+                                            <div className='flex flex-wrap gap-3 items-end'>
+                                                <InputField
+                                                    label='Button Text'
+                                                    value={btn?.text ?? ''}
+                                                    onChange={(val) =>
+                                                        updateAt(index, {
+                                                            text: val,
+                                                        })
+                                                    }
+                                                    placeholder='Visit website'
+                                                />
+                                                <SelectBox
+                                                    width={180}
+                                                    menuPlacement='top'
+                                                    menuPosition='fixed'
+                                                    size='sm'
+                                                    label='Link type'
+                                                    value={
+                                                        isUrlButtonDynamic(btn)
+                                                            ? 'dynamic'
+                                                            : 'static'
+                                                    }
+                                                    options={urlTypeOptions}
+                                                    onChange={(opt) => {
+                                                        const nextMode =
+                                                            opt?.value;
+                                                        if (
+                                                            nextMode ===
+                                                            'dynamic'
+                                                        ) {
+                                                            const prefix =
+                                                                dynamicUrlToPrefix(
+                                                                    btn?.url
+                                                                );
+                                                            updateAt(index, {
+                                                                url: prefixToDynamicUrl(
+                                                                    prefix
+                                                                ),
+                                                                example:
+                                                                    Array.isArray(
+                                                                        btn?.example
+                                                                    ) &&
+                                                                    btn.example
+                                                                        .length >
+                                                                        0
+                                                                        ? btn.example
+                                                                        : [''],
+                                                            });
+                                                        } else {
+                                                            updateAt(index, {
+                                                                url: dynamicUrlToPrefix(
+                                                                    btn?.url
+                                                                ),
+                                                                example: [],
+                                                            });
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
 
-                                                    updateAt(index, {
-                                                        is_dynamic: dynamic,
-                                                        // keep a sample example entry for dynamic; clear for static
-                                                        example: dynamic
-                                                            ? Array.isArray(
-                                                                  btn?.example
-                                                              ) &&
-                                                              btn.example
-                                                                  .length > 0
-                                                                ? btn.example
-                                                                : ['']
-                                                            : [],
-                                                    });
-                                                }}
-                                            /> */}
-                                            <InputField
-                                                className='w-full'
-                                                label='Website URL'
-                                                value={btn?.url ?? ''}
-                                                onChange={(val) =>
-                                                    updateAt(index, {
-                                                        url: val,
-                                                    })
-                                                }
-                                                placeholder='https://www.example.com'
-                                            />
+                                            {isUrlButtonDynamic(btn) ? (
+                                                <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+                                                    <div className='gap-1 col-flex'>
+                                                        <InputField
+                                                            label='URL (before variable)'
+                                                            value={dynamicUrlToPrefix(
+                                                                btn?.url
+                                                            )}
+                                                            onChange={(val) =>
+                                                                updateAt(
+                                                                    index,
+                                                                    {
+                                                                        url: prefixToDynamicUrl(
+                                                                            val
+                                                                        ),
+                                                                    }
+                                                                )
+                                                            }
+                                                            placeholder='https://www.example.com/product'
+                                                        />
+                                                        <span className='text-xs text-base-secondary'>
+                                                            Meta appends{' '}
+                                                            <code className='text-xs'>
+                                                                {'{{1}}'}
+                                                            </code>{' '}
+                                                            for the dynamic
+                                                            segment when the
+                                                            template is sent.
+                                                        </span>
+                                                    </div>
+                                                    <InputField
+                                                        label='Sample for {{1}}'
+                                                        value={
+                                                            Array.isArray(
+                                                                btn?.example
+                                                            )
+                                                                ? btn
+                                                                      ?.example?.[0] ??
+                                                                  ''
+                                                                : ''
+                                                        }
+                                                        onChange={(val) =>
+                                                            updateAt(index, {
+                                                                example: [val],
+                                                            })
+                                                        }
+                                                        placeholder='e.g. order-abc123'
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <InputField
+                                                    label='Website URL'
+                                                    value={btn?.url ?? ''}
+                                                    onChange={(val) =>
+                                                        updateAt(index, {
+                                                            url: val,
+                                                        })
+                                                    }
+                                                    placeholder='https://www.example.com'
+                                                />
+                                            )}
                                         </div>
                                     )}
                                 </div>

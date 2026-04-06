@@ -9,10 +9,12 @@ import { QuickReplySelectBox } from './quick.reply.select.box';
 export const ChatTextareaComponent = ({
     setInput,
     input,
+    onDebounceChange,
     onSelect,
 }: {
     input: string;
     setInput: any;
+    onDebounceChange?: (value: string) => void;
     onSelect: (data: any) => void;
 }) => {
     const ref = useRef<any>(null);
@@ -67,6 +69,7 @@ export const ChatTextareaComponent = ({
                 rows={4}
                 value={IsUndefinedOrNull(input) ? '' : input}
                 onChange={(val) => setInput(val)}
+                onDebounceChange={onDebounceChange}
                 placeholder={
                     'Type your message here or press (⌘ + /) for the quick replies.'
                 }

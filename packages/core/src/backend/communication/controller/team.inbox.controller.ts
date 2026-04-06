@@ -32,6 +32,11 @@ export class TeamInboxController extends CommentDocumentController {
         return this.post();
     }
 
+    async sendTypingIndicator(id: number) {
+        this.api = `${this.endPoint}/${id}/send-typing-indicator`;
+        return this.post();
+    }
+
     async addAssignee(id: number) {
         this.api = `${this.endPoint}/${id}/add-assignee`;
         this.bodyDto = AddAssigneePayloadDto;
