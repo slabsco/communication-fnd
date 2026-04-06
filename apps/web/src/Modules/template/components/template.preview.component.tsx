@@ -26,6 +26,20 @@ import { TemplateState } from '../types/template.category.types';
 const getValue = (components, type) =>
     components?.find((_com) => _com?.type === type);
 
+/** Resolves `text` for a URL button from a sent template payload (Cloud API shape). */
+const getUrlButtonParameterText = (payload: any, buttonIndex: number) => {
+    const components = payload?.template?.components ?? payload?.components;
+    if (!Array.isArray(components)) return undefined;
+    const comp = components.find(
+        (c: any) =>
+            c?.type === 'button' &&
+            String(c?.sub_type ?? '').toLowerCase() === 'url' &&
+            String(c?.index) === String(buttonIndex)
+    );
+    const param = comp?.parameters?.find((p: any) => p?.type === 'text');
+    return param?.text;
+};
+
 const TemplatePreviewComponentContainer = () => {
     const { state } = useTemplate();
     return <TemplatePreviewer state={state} />;
@@ -160,7 +174,7 @@ export const TemplateMessagePreview = ({
         return <></>;
     }, [format, url, payload?.template?.components, text]);
 
-    const renderButton = (button: any) => {
+    const renderButton = (button: any, buttonIndex: number) => {
         const { type, text, example } = button;
 
         if (type === 'QUICK_REPLY') {
@@ -171,9 +185,46 @@ export const TemplateMessagePreview = ({
             );
         }
         if (type === 'URL') {
+            const rawUrl = button.url;
+            const isDynamic = /\{\{1\}\}\s*$/i.test(rawUrl ?? '');
+            const sample = Array.isArray(button.example)
+                ? button.example[0]
+                : undefined;
+            const fromPayload = getUrlButtonParameterText(payload, buttonIndex);
+            const trimmedPayload =
+                fromPayload != null ? String(fromPayload).trim() : '';
+
+            let previewUrl: string | undefined;
+            if (trimmedPayload) {
+                if (isDynamic) {
+                    previewUrl = /^https?:\/\//i.test(trimmedPayload)
+                        ? trimmedPayload
+                        : String(rawUrl ?? '').replace(
+                              /\{\{1\}\}/i,
+                              trimmedPayload
+                          );
+                } else {
+                    previewUrl = trimmedPayload;
+                }
+            } else if (isDynamic && sample) {
+                previewUrl = String(rawUrl ?? '').replace(/\{\{1\}\}/i, sample);
+            } else {
+                previewUrl = rawUrl;
+            }
+
             return (
-                <div className='flex gap-2 justify-center items-center w-full text-xs text-center text-info'>
-                    <Link size={14} /> {text}
+                <div className='flex flex-col gap-0.5 justify-center items-center w-full text-xs text-center text-info'>
+                    <div className='flex gap-2 justify-center items-center'>
+                        <Link size={14} /> {text}
+                    </div>
+                    {previewUrl ? (
+                        <span
+                            className='max-w-full text-[10px] font-normal truncate text-neutral-500'
+                            title={previewUrl}
+                        >
+                            {previewUrl}
+                        </span>
+                    ) : null}
                 </div>
             );
         }
@@ -245,8 +296,8 @@ export const TemplateMessagePreview = ({
                 )}
             </div>
             <div className='flex flex-col gap-2 mt-2 w-full'>
-                {buttons?.map((_button) => {
-                    return renderButton(_button);
+                {buttons?.map((_button, buttonIndex) => {
+                    return renderButton(_button, buttonIndex);
                 })}
             </div>
         </div>

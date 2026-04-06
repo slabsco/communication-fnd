@@ -4,6 +4,7 @@ import { IsEmptyObject } from '@finnoto/design-system';
 import {
     DYNAMIC_MEDIA_URL_VARIABLE_NAME,
     TemplateState,
+    URL_BUTTON_VARIABLE_PREFIX,
 } from '../types/template.category.types';
 
 export const TemplateCategoryConstant = {
@@ -119,6 +120,36 @@ export const initializeVariablesInState = (
             };
         }
 
+        if (component.type === 'BUTTONS' && Array.isArray(component.buttons)) {
+            return {
+                ...component,
+                buttons: component.buttons.map((btn: any, buttonIndex: number) => {
+                    if (
+                        btn?.type !== 'URL' ||
+                        !/\{\{1\}\}\s*$/i.test(String(btn?.url ?? ''))
+                    ) {
+                        return btn;
+                    }
+                    const key = `${URL_BUTTON_VARIABLE_PREFIX}${buttonIndex}`;
+                    const suffix = params[key];
+                    if (
+                        suffix === undefined ||
+                        suffix === null ||
+                        (typeof suffix === 'string' && suffix.trim() === '')
+                    ) {
+                        return btn;
+                    }
+                    return {
+                        ...btn,
+                        url: String(btn.url).replace(
+                            /\{\{1\}\}/i,
+                            String(suffix)
+                        ),
+                    };
+                }),
+            };
+        }
+
         // Return other components unchanged
         return component;
     });
@@ -166,7 +197,7 @@ export const extractAvailableVariables = (
 
     // Process each component in the state
     state?.components?.forEach((component) => {
-        // Check for COPY_CODE button
+        // COPY_CODE sample + dynamic URL (Meta {{1}} suffix) variables for send/preview
         if (component.type === 'BUTTONS' && Array.isArray(component.buttons)) {
             for (const btn of component.buttons) {
                 if (btn?.type === 'COPY_CODE') {
@@ -174,6 +205,26 @@ export const extractAvailableVariables = (
                     break;
                 }
             }
+
+            component.buttons.forEach((btn: any, buttonIndex: number) => {
+                if (
+                    btn?.type === 'URL' &&
+                    /\{\{1\}\}\s*$/i.test(String(btn?.url ?? ''))
+                ) {
+                    const varName = `${URL_BUTTON_VARIABLE_PREFIX}${buttonIndex}`;
+                    const sample = Array.isArray(btn?.example)
+                        ? btn.example[0]
+                        : undefined;
+                    if (!variableMap.has(varName)) {
+                        variableMap.set(varName, {
+                            name: varName,
+                            example: sample,
+                            source: 'BUTTON',
+                            locations: ['MANUAL'],
+                        });
+                    }
+                }
+            });
         }
 
         if (component.type === 'HEADER') {

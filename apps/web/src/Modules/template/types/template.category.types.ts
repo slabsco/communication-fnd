@@ -50,7 +50,6 @@ type UrlButton = {
     text: string;
     url: string;
     example: string[];
-    is_dynamic?: boolean; // dynamic vs static URL
 };
 
 type Button = QuickReplyButton | CopyCodeButton | PhoneNumberButton | UrlButton;
@@ -81,3 +80,6 @@ export interface TemplateState {
 }
 
 export const DYNAMIC_MEDIA_URL_VARIABLE_NAME = 'dynamic_media_url';
+
+/** Prefix for send-time variables: dynamic URL suffix replaces Meta `{{1}}`. Key = `${URL_BUTTON_VARIABLE_PREFIX}${buttonIndex}`. */
+export const URL_BUTTON_VARIABLE_PREFIX = 'url_button_';
