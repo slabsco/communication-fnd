@@ -45,7 +45,7 @@ export const RenderInnerTextMessage = ({ message }: any) => {
 
             if (response.status === 200) {
                 const blob = new Blob([response.data], {
-                    type: response.headers['content-type'],
+                    type: response.headers['content-type'] as string,
                 });
                 return URL.createObjectURL(blob);
             }
