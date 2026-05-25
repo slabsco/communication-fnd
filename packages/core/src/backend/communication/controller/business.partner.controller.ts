@@ -18,4 +18,9 @@ export class BusinessPartnerController extends BaseModel {
 
         return this.post();
     }
+
+    async remove(id: number) {
+        this.api = `${this.endPoint}/${id}`;
+        return this.delete();
+    }
 }

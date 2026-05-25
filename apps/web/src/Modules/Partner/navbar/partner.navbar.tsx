@@ -6,6 +6,7 @@ import {
     PARTNER_CLIENT_CONFIG_ROUTE,
     PARTNER_DASHBOARD_ROUTE,
     useApp,
+    useOpenProperties,
     useUserHook,
 } from '@finnoto/core';
 import {
@@ -16,9 +17,12 @@ import {
     logout,
 } from '@finnoto/design-system';
 
+import { openDebugForm } from '@Modules/user_profile/Forms/changeDebugForm';
+
 import {
     ArcSettingsSvgIcon,
     BusinessSvgIcon,
+    CodeSvgIcon,
     NavHome,
     UserSvgIcon,
 } from 'assets';
@@ -27,6 +31,10 @@ const PartnerNavbar = () => {
     const { basePath } = useApp();
 
     const { user } = useUserHook();
+
+    const [enabledDebug] = useOpenProperties('enable.debug.mode', {
+        convertBoolean: true,
+    });
 
     const handleHomeClick = () => {
         Navigation.navigate({ url: PARTNER_DASHBOARD_ROUTE });
@@ -92,6 +100,14 @@ const PartnerNavbar = () => {
                     </div>
                     <DropdownMenu
                         actions={[
+                            {
+                                name: 'Debug Form',
+                                icon: CodeSvgIcon,
+                                isSvg: true,
+                                action: openDebugForm,
+                                visible: !!enabledDebug,
+                                iconSize: 16,
+                            },
                             {
                                 name: 'Logout',
                                 action: logout,
