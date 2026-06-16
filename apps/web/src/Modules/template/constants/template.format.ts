@@ -7,31 +7,6 @@ import {
     URL_BUTTON_VARIABLE_PREFIX,
 } from '../types/template.category.types';
 
-export const TemplateCategoryConstant = {
-    marketing: 'MARKETING',
-    utility: 'UTILITY',
-    authentication: 'AUTHENTICATION',
-};
-
-export type creationSteps =
-    | 'setup_template'
-    | 'edit_template'
-    | 'submit_review';
-
-export type activeStep = {
-    step: creationSteps;
-    type: string;
-};
-
-export interface HeaderNavigationButton {
-    name: string;
-    key: creationSteps;
-    icon: React.ReactNode;
-    hasComplete?: boolean;
-    active?: boolean;
-    onClick?: () => void;
-}
-
 export type templateActionType =
     | 'UPDATE_CATEGORY'
     | 'UPDATE_NAME'
@@ -123,30 +98,32 @@ export const initializeVariablesInState = (
         if (component.type === 'BUTTONS' && Array.isArray(component.buttons)) {
             return {
                 ...component,
-                buttons: component.buttons.map((btn: any, buttonIndex: number) => {
-                    if (
-                        btn?.type !== 'URL' ||
-                        !/\{\{1\}\}\s*$/i.test(String(btn?.url ?? ''))
-                    ) {
-                        return btn;
+                buttons: component.buttons.map(
+                    (btn: any, buttonIndex: number) => {
+                        if (
+                            btn?.type !== 'URL' ||
+                            !/\{\{1\}\}\s*$/i.test(String(btn?.url ?? ''))
+                        ) {
+                            return btn;
+                        }
+                        const key = `${URL_BUTTON_VARIABLE_PREFIX}${buttonIndex}`;
+                        const suffix = params[key];
+                        if (
+                            suffix === undefined ||
+                            suffix === null ||
+                            (typeof suffix === 'string' && suffix.trim() === '')
+                        ) {
+                            return btn;
+                        }
+                        return {
+                            ...btn,
+                            url: String(btn.url).replace(
+                                /\{\{1\}\}/i,
+                                String(suffix)
+                            ),
+                        };
                     }
-                    const key = `${URL_BUTTON_VARIABLE_PREFIX}${buttonIndex}`;
-                    const suffix = params[key];
-                    if (
-                        suffix === undefined ||
-                        suffix === null ||
-                        (typeof suffix === 'string' && suffix.trim() === '')
-                    ) {
-                        return btn;
-                    }
-                    return {
-                        ...btn,
-                        url: String(btn.url).replace(
-                            /\{\{1\}\}/i,
-                            String(suffix)
-                        ),
-                    };
-                }),
+                ),
             };
         }
 
@@ -377,3 +354,28 @@ export const getVariableExamples = (
         return acc;
     }, {} as Record<string, string | undefined>);
 };
+
+export const TemplateCategoryConstant = {
+    marketing: 'MARKETING',
+    utility: 'UTILITY',
+    authentication: 'AUTHENTICATION',
+};
+
+export type creationSteps =
+    | 'setup_template'
+    | 'edit_template'
+    | 'submit_review';
+
+export type activeStep = {
+    step: creationSteps;
+    type: string;
+};
+
+export interface HeaderNavigationButton {
+    name: string;
+    key: creationSteps;
+    icon: React.ReactNode;
+    hasComplete?: boolean;
+    active?: boolean;
+    onClick?: () => void;
+}
